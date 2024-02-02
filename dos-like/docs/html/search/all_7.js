@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['g_0',['G',['../struct_color_value.html#ab8735735273b982cc3125e51fe46e2f4',1,'ColorValue']]],
+  ['g_5fbg_1',['g_bg',['../edit_8c.html#a2a7399d2d5ecaba6421d97080a20acdf',1,'edit.c']]],
+  ['g_5ffg_2',['g_fg',['../edit_8c.html#a69b25ed5cbfaca8880fa855b33f6aea9',1,'edit.c']]],
+  ['g_5fmodified_3',['g_modified',['../edit_8c.html#ad8307db35306ad3829e85da4e98dbdc3',1,'edit.c']]],
+  ['g_5fmx_4',['g_mx',['../edit_8c.html#a6dbd9845325088675361a28d20d64f36',1,'edit.c']]],
+  ['g_5fmy_5',['g_my',['../edit_8c.html#a0466da0bb91f93b212190b4a522df506',1,'edit.c']]],
+  ['g_5fpos_5fx_6',['g_pos_x',['../edit_8c.html#ad9d39518bb57d9b515c06ea16e139a2e',1,'edit.c']]],
+  ['g_5fpos_5fy_7',['g_pos_y',['../edit_8c.html#a43e31969f1169a666d18c117bd62c3e0',1,'edit.c']]],
+  ['getcolor_8',['getcolor',['../dos_8h.html#a66b46b0ff60c323dc792502e3dc18788',1,'dos.h']]],
+  ['getnum_9',['getnum',['../command_8c.html#a0b40b16a86a0b728e995b90fb1e5ff1b',1,'command.c']]],
+  ['getpal_10',['getpal',['../dos_8h.html#a966042457ca56c7f5803274059f90202',1,'dos.h']]],
+  ['getpixel_11',['getpixel',['../dos_8h.html#a3df5178559ca312e637c931c4f4f5346',1,'dos.h']]],
+  ['getwidth_12',['getwidth',['../edit_8c.html#a91684380962f1979ff24ea16373c0bba',1,'edit.c']]],
+  ['gotoxy_13',['gotoxy',['../dos_8h.html#ae824443b3f661414ba1f2718e17fe97d',1,'dos.h']]],
+  ['goxy_14',['goxy',['../edit_8c.html#ad268c33f7df6ff53934bb824de8dce13',1,'edit.c']]],
+  ['guy_5fchair_15',['GUY_CHAIR',['../stranded_8c.html#ab0fe12982c12f5248bc43a2b6ccb1acaa898ac3df1d9d29ffba846907d7eaf1ba',1,'stranded.c']]],
+  ['guy_5fidle_16',['GUY_IDLE',['../stranded_8c.html#ab0fe12982c12f5248bc43a2b6ccb1acaad8df4346539d0ba5022b7bc718f1492d',1,'stranded.c']]],
+  ['guy_5fjump_17',['GUY_JUMP',['../stranded_8c.html#ab0fe12982c12f5248bc43a2b6ccb1acaad7126b1e5dfcf2812db60e0be39b3212',1,'stranded.c']]],
+  ['guy_5fleft_18',['GUY_LEFT',['../stranded_8c.html#ab0fe12982c12f5248bc43a2b6ccb1acaab8734f88bfb9b20080a4e784fe2de354',1,'stranded.c']]],
+  ['guy_5fright_19',['GUY_RIGHT',['../stranded_8c.html#ab0fe12982c12f5248bc43a2b6ccb1acaa0bcbc06df15756a3472b940bd204a5d9',1,'stranded.c']]]
+];
