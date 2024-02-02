@@ -88,6 +88,10 @@ int main (void) {
 	setvideomode (videomode_80x25_9x16);
 	buf_setxy (0, 0);
 
+	//                          "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+	put_string_xy (0, 0, 14, 1, " LBASIC - The Black Smurff                                                      ");
+	put_string_xy (0, 24, 14, 1, " Bloque: 001 | Oportunidades: 7                                                 ");
+
 	while (!shuttingdown ()) {
 		buf_color (rand () & 15, rand () & 15);
 		buf_print ("HOLA PICHA DE PLATINO");
