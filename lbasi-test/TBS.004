@@ -1,0 +1,8 @@
+cls
+color 08 00
+center " AVENTURA EN LOS PUTOS SEMAFOROS "
+print "Habeis llegado a los sem foros de mierda mamones. OPCIONES: "
+print "1.- Meterte dentro"
+choice 1 1 "Bien. Pasas por una galer¡a secreta al museo del sexo. Bloque 5"
+pause
+cls

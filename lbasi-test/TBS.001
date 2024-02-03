@@ -1,0 +1,53 @@
+cls
+center " DENTRO DEL TREN Y LLEGADA A LA GRAN CIUDAD "
+pause
+cls
+color 10 00
+print "Estas aburrido. Est s solo en tu vag¢n. ¨Qu‚ haces?"
+print "OPCIONES "
+print "1.- Hacerte una paja "
+print "2.- Ir a cagar "
+print "3.- Dormir un poco "
+choice 3 2 "Viene de pronto una vieja y te denuncia. Te meten en la carcel por esc ndalo    p£blico y CADENA PERPETUA" "Vas al servicio del tren. Hay alguien. Llamas a la puerta." "Te quedas dormido para toda la vida. RIP"
+pause
+cls
+print "Nadie responde a la puerta. Se escucha un Oh! Oh!. Abres empujando y de pronto  te encuentras frente a una negra impresionante toc ndose el cl¡toris. Nose ha dado cuenta de que has entrado. "
+print "OPCIONES: "
+print "1.- Follartela "
+print "2.- Salir disimuladamente del WC "
+print "3.- Cortarle su peque¤o nabito "
+choice 3 3 "Es virgen y la duele. Llama a su padre el negrako Mondongo que mide dos metros ymedio y te maltrata hasta morir" "Se da cuenta y te tira por el water. Te haces amigo de las ratas de las cloacas,pero esto se continuar  en otra de las aventuras de TBS en otra aventura. ­No olvides compr rtela!." "Se lo cortas. Ella sangra y llora. pauseQu‚ haces?"
+pause
+cls
+print "OPCIONES "
+print "1.- Comertelo "
+print "2.- Guardartelo en el bolsillo "
+print "3.- Donarlo a una t¢mbola "
+choice 3 3 "Te produce ardores y te mueres" "No tienes bolsillo. Se te cae al suelo y resulta ser una bomba at¢mica." "Vale. Has de rellenar unos FOLLETITOS"
+pause
+cls
+print "Escribes... The black Smurff, Pitufolandia, Por el precio de 40 pitufo- dolares , Pedido CONTRARREEMBOLSO "
+print "Se lo das al t¡o de los tickets y se lo lleva volando. Te vuelves a sen-tar.    Puedes leer una de estas tres revistas para matar el tiempo hasta que eltren    llegue a la gran ciudad. "
+print "OPCIONES "
+print "1.- Revista de cultura y ciencia "
+print "2.- Revista porno GOZO tm "
+print "3.- Folleto de oftalmolog¡a "
+choice 3 1 "pauseQu‚ har  una revista as¡ en tu maleta?. Lees la reproducci¢n de los sapos y te divierte, pero te agotas y ZZZZZZZ!!!" "Te haces 50 pajas y la revista termina con tanta leche que vomitas los ¢rganos." "­Vaya mierda!. La quemas y tu ardes con ella"
+pause
+cls
+print "Tras tres horas durmiendo, se ve a lo lejos la estaci¢n de la gran      ciudad. Para salir has de esperar al pitido del tren "
+#
+print "OPCIONES "
+print "1 "
+print "1.- Salir por la puerta "
+print "2.- Tirarte por la ventana "
+choice 2 2 "Hay mucha gente y como eres muy peque¤o, te pisan y te explotan los pulmones." "Caes encima de tu equipaje. Un t¡o se acerca a t¡. Te informa de que dentro de 2horas has de estar en la GRAN TOMBOLA" ""
+pause
+cls
+print "OPCIONES: "
+print "1.- Ir al museo del sexo "
+print "2.- Ir a los sem foros "
+print "3.- Ir al circo "
+choice 3 3 "Est  cerrado a£n. El guardia mosqueado te corta el glande" "Te metes dentro pero est  oscuro y te mueres de miedo" "Bien. CONTINUA EN BLOQUE 2"
+pause
+cls

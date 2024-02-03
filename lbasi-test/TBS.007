@@ -1,0 +1,62 @@
+cls
+color 06 00
+center " ULTIMO BLOQUE DEL JUEGO: SALIDA DEL HOSPITAL Y VUELTA A LA ALDEA "
+print "Todavกa est s en cama. Ya harto de la Gran Ciudad, quieres volver a tu  querida aldea. Te la imaginas. "
+draw "ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออปบÛÛÛÛÛÛÛÛÛฐÛÛÛฐÛÛÛÛÛÛฐÛÛÛÛÛÛÛฐÛÛÛÛÛฐฐฐÛÛÛฐÛÛฐฐÛÛสสสÛÛÛÛÛÛฐÛÛÛÛสสÛÛÛÛÛÛสÛÛÛÛฐÛÛÛบบÛÛÛÛÛÛÛÛÛหÛÛÛหÛÛÛÛÛÛหÛÛÛÛÛÛÛหÛÛÛÛÛหหหÛÛÛหÛÛหหÛÛฒฒฒÛÛÛÛÛÛหÛÛÛÛฒฒÛÛÛÛÛÛฒÛÛÛÛหÛÛÛบศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ"
+print "Si, has conocido a mucha gente que te gustarกa llevarte  a la aldea contigo y presentarselos a Pitufina. De pronto, llegan tus viejos amigos el negro contorsionista, La tกa de las argollas, las putas de la calle, el pitufo Rojo y su hermano el verde "
+print "Te alegras mucho. De pronto llega alguien m s. Es Pap  Pitufo que se enterข de tu accidente y viene con la furgoneta a buscarte y llevarte de nuevo a casa. Antes de irte quieres hacer algo. "
+print "OPCIONES: "
+print "1.- Follarte a la enfermera "
+print "2.- Follarte a todos tus amigos uno por uno "
+print "3.- Dar un discurso de despedida "
+choice 3 3 "Recuerda que estabas en reabilitaciขn. El mdico te obligข a no follar en tres meses, pero tu no le hiciste caso y..." "pauseDespues de lo que paso con el KMS?. Mueres del tirขn. RIP" "Cuamndo haces tu propuesta, todos se emocionan"
+pause
+cls
+print "En tu discurso comentas todos los buenos momentos que pasaste. Te quieres llevar a todos contigo, incluso a la monitora del museo, a la Cachonda, a Pepe, Chulian, los leones y monos del circo... "
+print "Todos ellos aceptan emocionados llorando. "
+print "OPCIONES: "
+print "Irte ya a la Aldea "
+print "Pegarles un palo a todos e irte solo robandole la furgoneta a Pap  P. "
+print "Correrte de la emociขn "
+choice 3 3 "No est s curado. El mdico no te deja marcharte pegandote un poyazo. RIP)Todos se enfadan contigo (todo el universo" " Y TE ABANDONAN. Mueres de Soledad." "ญEst s curado!. Ya te puedes ir a la aldea con todos."
+pause
+cls
+print "Al llegar a la aldea, te encuentras con la Pitufina. Te reconcilias con ella. Todo es felicidad y amor, follais felices y comeis perdices. "
+print "pauseFIN? "
+center " AVENTURA CONVERSACIONAL POR PHAKHOU Y ARZUR "
+print "Sigue estas aventuras en los comics que aparecen en Judกa Verde. "
+print "Gracias por jugar  "
+print "Adios Hijo puta, vete ya "
+print "Que me dehe "
+print "________________________________________________________________________ "
+pause
+cls
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+beep
+print "Joder cuanto pitido "
+pause
+cls

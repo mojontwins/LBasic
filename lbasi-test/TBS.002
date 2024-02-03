@@ -1,0 +1,43 @@
+cls
+color 03 00
+center " AVENTURA CIRCENSE, TBS "
+print "Llegas a las afueras de la carpa. Recuerdas lo que te dijo el hombre de la      t¢mbola. Dentro de dos horas pitar  tu reloj (la alarma). "
+print "OPCIONES: "
+print "1.- Entrar en la carpa del circo "
+print "2.- Follarte a los leones "
+print "3.- Entrar en la jaula de los monos "
+choice 3 1 "Te encuentras al negro contorsionista y te deja pasar." "Intentas follartelos pero uno de ellos te muerde la parte izquierda del coj¢n derecho. Tu coj¢n explota y te desangras" "Entras en la jaula de los monkeys pero ellos est n cachchchchchondos y te dan   por culo al grito de ­TOMA POR CULO! (esto se canta con m£sica. Llamar a Arzur  para que lo haga). Y adem s una mona te abre el tomate con dos palillos de dien-tes y se mete. "
+pause
+cls
+print "Ves a lo lejos las diferentes diversiones: "
+print "OPCIONES "
+print "1.- Ir a el trapecista "
+print "2.- Ir al hombre ca¤on "
+print "3.- Ir a los camerinos del hombre m s forzudo del mundo "
+choice 3 3 "Te toman como trapecista y te tiran de una cuerda. Tienes v‚rtigo, vomitas y te caes haciendo este ruido CHAF!" "El hombre del ca¤on se hace una apuesta contigo a qu‚ no tienes tu poya lo suficientemente grande como para hacerte una paja metiendola y sac ndola por el agujero del ca¤on. Lo consigues pero cuando tienes tu poya dentro, el hombre dispara el ca¤¢n. rip" "De pronto, antes de entrar en su camerino, te encuentras a una radiante mujer enbolas totalmente para el espect culo de el n§ de las argollas."
+pause
+cls
+print "Te cuenta que el negro contorsionista le obliga a follar con el y le obliga     tambi‚n a decirle mientras le hace una paja la frase de TOMATITO! . "
+print "Decides matar al negro contorsionista para que haya justicia. "
+print "OPCIONES "
+print "1.- Hablar con el negro contorsionista "
+print "2.- Matar al negro contorsionista "
+choice 2 1 "Te dice justamaente lo contrario. Que la mujer de las argollas le obliga a follar con ella diciendo la frase de ALMEJITA..." "Lo matas y la mujer de las argollas se casa contigo. Teneis 10 ni¤os. Sois felices y comeis perdices FALSO FINAL" ""
+pause
+cls
+print "Ahora que cada uno te ha contado su versi¢n, ¨a qui‚n crees? "
+print "OPCIONES "
+print "1.- A la mujer de las argollas "
+print "2.- O al negro contorsionista "
+choice 2 2 "Conf¡as en esa puta. Se repite el FALSO FINAL" "Muy bien. Se hace muy amigo tuyo y te acompa¤a a todos lados." ""
+pause
+cls
+#
+print "­Ha sonado un pitido!. ¨Qu‚ ser ? "
+print "OPCIONES: "
+print "1.- Seguir en el circo "
+print "2.- Ir a la t¢mbola "
+choice 2 2 "Llega un elefante y por accidente te mete la poya por la boca y te sale por TU  poya." "Bien. Es la hora. BLOQUE 3" ""
+pause
+cls
+<FIN>

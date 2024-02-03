@@ -1,0 +1,38 @@
+cls
+center " BLOQUE 6: PERDIDO EN LA GRAN CIUDAD "
+cls
+beep
+draw "ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»º°°°°°°°°°°°°°°°°°°°°ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ºº°°°°°°°°°°°°°°°°°°°°ÛÛÛÛÎÎÛÛÛÛÛÛÛÛÛÎÎÛÛÛÛ°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ºº°°°°°°°°°°°°°°°°°°°°ÛÛÛÛÎÎÛÛÛÛÛÛÛÛÛÎÎÛÛÛÛ°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ºº°°°°°°°°°°°°°°°°°°°°ÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛÛ°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°ººÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄºÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼"
+print "Este es el centro comercial. Se ve a lo lejos. Intenta llegar hasta ‚l  solo,   sin el NC. "
+print "Andando hacia el centro Comercial LASVI, te encuentras al PITUFO ROJO,  amigo   de la infancia y el que te introdujo en el mundo de las llamadas telef¢nicas de cachondeo.                OPCIONES: "
+print "1.- Hablar con el Pitufo Roho "
+print "2.- Ignorarlo y entrar en el centro comercial "
+print "3.- Tirarle un gapo de los tuyos "
+choice 3 3 "Se r¡e de ti. Ve que eres de pueblo y se niega a acompa¤arte. Te pierdes para siempre en la gran ciudad." "El te ve y se da cuenta de que tu lo ignoras. Te pega un tiro con su COLT 44 en to' la oreha." "Le manchas to' la cara y aprovechas para vengarte de lo que te hizo cuando erais m s peque¤os. Hace 7 a¤os el te follo a ti y a Pitufina sin tu permiso [tu te la compraste antes por 2 pitufo dolares [PD]]. "
+pause
+cls
+print "El se rie y se alegra de verte (y se limpia tu gapo). Entonces te ofrece su acompa¤amiento por la gran Ciud . El te pregunta que a donde quieres ir. "
+print "OPCIONES: "
+print "1.- Decir "Quiero ir a follarme a tu pare" "
+print "2.- Decir "Quiero ir al centro comercial" "
+choice 2 1 "El te dice que te dejes de bromas. Vais al centro comercial." "El te obliga a que te folles a su padre antes. Te mueres de asco [buj, tanta arruga junta]"
+pause
+cls
+print "En el centro comercial hay tres sitios a los que ir. OPCIONES "
+print "1.- Ir por escaleras a Juguetes y Ordenadores "
+print "2.- Ir hacia la derecha hacia discos "
+print "3.- Ir a la izquierda a ropa pitufa "
+choice 3 1 "Bieen. Lo que tu ten¡as ganas de ver. En el apartado de Inform tica, juegas hasta saciarte al Cobra Mission, Metal & Lace, Gheisa, Larries, Emmanuelle, La colmena, Sextris y todos los dem s juegos del genero PORRRNO" "Lo £nico que encuentras interesante es el disco de Sabrina y te corres encima. Te coge la policia y te mata de un porrazo [con la poyya]" "Al entrar, te coge un violador y te la mete all¡ mismo. Mientras, tu amigo se r¡e. Mueres de vergenza"
+pause
+cls
+print "Tienes que escoger un juego (te lo obliga el dependiente, si no, te echa). OPCIONES. "
+print "1.- The Black Smurff Adventure, Tales of Robobabes "
+print "2.- KMS de Step Soft y JFK "
+print "3.- Alone in the Dark 27 "
+choice 3 2 "Juegas a esta aventura y aun no esta terminada. Mueres de disgusto." "Oh, te encanta la parte arcade y te haces millones de pajas, pero de agotamiento te ingresan en la UVI" "Te da tanto miedo que te cagas. Mueres de peste."
+pause
+cls
+print "Te encuentras en la UVI en reabilitaci¢n tras agotamiento. El Pitufo Rojo esta all¡ contigo. Te gastas 120 PD en el hospital (te quedan 140) "
+center " CONTINUA EN EL HOSPITAL EN EL BLOQUE 7 "
+pause
+cls
