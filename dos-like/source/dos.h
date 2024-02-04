@@ -39,6 +39,7 @@ unsigned char* swapbuffers( void );
 void waitvbl( void );
 void setpal( int index, int r, int g, int b );
 void getpal( int index, int* r, int* g, int* b );
+int getpal_i (int index);
 
 int shuttingdown( void );
 
@@ -771,6 +772,11 @@ void getpal( int index, int* r, int* g, int* b ) {
     if( b ) {
         *b = cb >> 2;
     }   
+}
+
+
+int getpal_i (int index) {
+    return internals->screen.palette [index];
 }
 
 
