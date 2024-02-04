@@ -9,6 +9,10 @@ void backend_init (void) {
 	printf ("LBASI - Backend simple - basic I/O - escribe -1 para salir\n");
 }
 
+void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top, char *string_bottom, int attempts) {
+	// NO OP
+}
+
 void backend_print (char *string) {
 	printf ("%s\n", string);
 }
@@ -92,9 +96,14 @@ unsigned char backend_choice (int num_choices, int correct, char **choices) {
 	}
 }
 
-void backend_try_again (int attempts) {
-	printf (get_str_try_again (), attempts);
+void backend_try_again (char *string_try_again, int attempts) {
+	printf (string_try_again, attempts);
 	printf ("\n");
+}
+
+int backend_heartbeat (void) {
+	// NO ÔP
+	return 0;
 }
 
 void backend_shutdown (void) {

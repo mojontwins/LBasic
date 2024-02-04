@@ -5,6 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef DOSLIKE
+#include "../dos-like/source/dos.h"
+#endif
+
 #include "lstokens.h"
 #include "backend.h"
 
@@ -17,6 +21,11 @@ char str_game_over [80];
 char str_continue [80];
 char str_restart [80];
 char str_exit [80];
+char str_status_top [80];
+char str_status_bottom [80];
+
+int clr_statusbar_1;
+int clr_statusbar_2;
 
 /*
 
@@ -35,9 +44,21 @@ void init_strings (void) {
 
 	strcpy (str_try_again, "Prueba de nuevo. Intentos: %d");
 	strcpy (str_game_over, "GAME OVER");
-	strcpy (str_continue, "1. Reiniciar este capítulo");
+	strcpy (str_continue, "1. Reiniciar este cap\xA1tulo");
 	strcpy (str_restart, "2. Empezar desde el principio");
 	strcpy (str_exit, "3. Salir");
+	strcpy (str_status_bottom, " Reintentos: ");
+
+	clr_statusbar_1 = 14;
+	clr_statusbar_2 = 1;
+}
+
+int get_clr_statusbar1 (void) {
+	return clr_statusbar_1;
+}
+
+int get_clr_statusbar2 (void) {
+	return clr_statusbar_2;
 }
 
 char *get_str_try_again (void) {
@@ -88,9 +109,10 @@ int lbasi_run_file (FILE *file) {
 				get_tokens ()
 			)) == 0) {
 				attempts --;
+				backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
 				if (attempts >= 0) {
-					backend_try_again (attempts);
+					backend_try_again (str_try_again, attempts);
 				} else {
 					res = 4;
 					run = 0;
@@ -105,6 +127,11 @@ int lbasi_run_file (FILE *file) {
 
 		} else if(strcmp (command_token, "attempts") == 0) {
 			attempts = atoi (get_token (1));
+		}
+
+		// Update screen, etc
+		if (backend_heartbeat ()) {
+			run = 0;
 		}
 	}
 
@@ -130,12 +157,15 @@ int lbasi_run (char *spec, int autoboot) {
 		filename = realloc (filename, strlen (spec) + 4);		// Add space for the extension
 		strcat (filename, file_extension); 						// Concatenate spec + extension
 
-		if ((file = fopen (filename, "r")) != NULL) {
+		sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 
+		if ((file = fopen (filename, "r")) != NULL) {
 			if (!backend_on) {
 				backend_init ();
 				backend_on = 1;
 			}
+
+			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
 			res = lbasi_run_file (file);
 			fclose (file);
@@ -182,7 +212,7 @@ int lbasi_run (char *spec, int autoboot) {
 	return res;
 }
 
-int main (char argc, char *argv []) {
+void main (char argc, char *argv []) {
 	int res;
 	int autoboot;
 	char *spec;
