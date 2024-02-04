@@ -25,3 +25,5 @@ void buf_put_string_xy (int x, int y, int c1, int c2, char *s);
 void lstextmode_init (void);
 void buf_setmode (unsigned char mode);
 void buf_pause (void);
+void buf_gif_at (char *gif, int x, int y, int do_setpal);
+

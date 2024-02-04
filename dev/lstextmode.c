@@ -87,8 +87,21 @@ void buf_scroll_up (int from, int to) {
 		}
 	} else {
 		// Get from 8 * from to 8 * to + 7 
+		int scr_w = screenwidth ();
+		int byte_size = (to - from + 1) * 8 * scr_w;
+		char *temp_buf = malloc (byte_size);
+		unsigned char *buf = screenbuffer ();
+
+		memcpy (temp_buf, buf + from * 8 * scr_w, byte_size);
+
 		// Put at 8 * from - 8
+		memcpy (buf + (from - 1) * 8 * scr_w, temp_buf, byte_size);
+
 		// Clear 8 * to to 8 * to + 7
+		setcolor (buf_c2);
+		bar (0, to * 8, scr_w, 8);
+
+		free (temp_buf);
 	}
 }
 
@@ -101,7 +114,7 @@ void buf_scroll_up_if_needed (void) {
 	}
 }
 
-void buf_printabs (char *s) {
+void _buf_print (char *s, int scroll) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
 		char c;
@@ -111,51 +124,7 @@ void buf_printabs (char *s) {
 		int attrib = buf_get_attrib ();
 
 		while (c = *s ++) {
-			idx = (buf_x + buf_y * scr_w) * 2;
-			buf [idx] = c;
-			buf [idx + 1] = attrib;
-
-			buf_x ++; if (buf_x == scr_w) {
-				buf_x = 0;
-				buf_y ++;
-			}
-		}
-	} else {
-		int x1 = 8 * buf_x;
-		int y1 = 8 * buf_y;
-		int w = 8 * strlen(s);
-		int h = 8;
-		char c;
-		char *substr = " ";
-		int scr_w = screenwidth ();
-
-		while (c = * s ++) {
-			setcolor (buf_c2);
-			if (buf_c2 < 256) bar (x1, y1, 8, 8);
-			substr [0] = c;
-			setcolor (buf_c1);
-			outtextxy (x1, y1, substr);
-
-			x1 += 8; buf_x ++; if (buf_x == scr_w) {
-				buf_x = x1 = 0;
-				buf_y ++;
-				y1 += 8;
-			}
-		}
-	}
-}
-
-void buf_print (char *s) {
-	if (buf_mode == LS_MODE_TEXT) {
-		unsigned char *buf = screenbuffer ();
-		char c;
-		int scr_w = screenwidth ();
-
-		int idx;
-		int attrib = buf_get_attrib ();
-
-		while (c = *s ++) {
-			buf_scroll_up_if_needed ();
+			if (scroll) buf_scroll_up_if_needed ();
 			
 			idx = (buf_x + buf_y * scr_w) * 2;
 			buf [idx] = c;
@@ -173,10 +142,14 @@ void buf_print (char *s) {
 		int h = 8;
 		char c;
 		char *substr = " ";
-		int scr_w = screenwidth ();
+		int scr_w = screenwidth () / 8;
 
 		while (c = * s ++) {
-			buf_scroll_up_if_needed ();
+			if (scroll) {
+				buf_scroll_up_if_needed ();
+				y1 = 8 * buf_y;
+			}
+
 			setcolor (buf_c2);
 			if (buf_c2 < 256) bar (x1, y1, 8, 8);
 			substr [0] = c;
@@ -190,6 +163,14 @@ void buf_print (char *s) {
 			}
 		}
 	}
+}
+
+void buf_printabs (char *s) {
+	_buf_print (s, 0);
+}
+
+void buf_print (char *s) {
+	_buf_print (s, 1);
 }
 
 void buf_print_ln (char *s) {
@@ -259,12 +240,15 @@ void buf_setmode(unsigned char mode) {
 	switch (buf_mode) {
 		case LS_MODE_GFX:
 			setvideomode (videomode_320x200);
+			buf_setviewport (1, 200/8 - 2);
 			break;
 		case LS_MODE_GFX_SQ:
 			setvideomode (videomode_320x240);
+			buf_setviewport (1, 240 / 8 - 2);
 			break;
 		case LS_MODE_GFX_HIRES:
-			setvideomode (videomode_640x480);
+			setvideomode (videomode_640x350);
+			buf_setviewport (1, 350 / 8 - 2);
 			break;
 		default:
 			setvideomode (videomode_80x25_9x16);
@@ -284,3 +268,28 @@ void buf_pause (void) {
 	}
 }
 
+void buf_gif_at (char *gif, int x, int y, int do_setpal) {
+	// Wont load a gif bigger than the screen so...
+	char *gif_buffer;
+	char *pal_buffer = malloc (768);
+	int w, h, p;
+
+	gif_buffer = loadgif (gif, &w, &h, &p, pal_buffer);
+
+	blit (x, y, gif_buffer, w, h, 0, 0, w, h);
+
+	if (do_setpal) {
+		char *pal_ptr = pal_buffer;
+		int i;
+		int r, g, b;
+		for (i = 0; i < p; i ++) {
+			r = (int) *pal_ptr; pal_ptr ++;
+			g = (int) *pal_ptr; pal_ptr ++;
+			b = (int) *pal_ptr; pal_ptr ++;
+			setpal (i, r, g, b);
+		}
+	}
+
+	free (gif_buffer);
+	free (pal_buffer);
+}
