@@ -11,6 +11,7 @@
 
 #include "lstokens.h"
 #include "backend.h"
+#include "sys_utils.h"
 
 #define LINE_BUFFER_SIZE 2048
 #define DEFAULT_ATTEMPTS 5
@@ -71,6 +72,7 @@ int lbasi_run_file (FILE *file) {
 	int run = 1;
 
 	char line_buffer [LINE_BUFFER_SIZE];
+	char temp_buffer [256];
 	char *command_token;
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
@@ -80,8 +82,12 @@ int lbasi_run_file (FILE *file) {
 
 		// Execute
 		command_token = get_token (0);
+		utils_tolower (command_token);
 
 		if (strcmp(command_token, "print") == 0) {
+			backend_print_ln (get_token (1));
+
+		} else if (strcmp(command_token, "write") == 0) {
 			backend_print (get_token (1));
 
 		} else if(strcmp (command_token, "center") == 0) {
@@ -127,6 +133,24 @@ int lbasi_run_file (FILE *file) {
 
 		} else if(strcmp (command_token, "attempts") == 0) {
 			attempts = atoi (get_token (1));
+
+		} else if(strcmp (command_token, "let") == 0) {
+			int flag = flags_parse_value (get_token (1));
+			int value = flags_parse_value (get_token (2));
+
+			flags_set (flag, value);
+		} else if (strcmp (command_token, "input") == 0) {
+			int flag = flags_parse_value (get_token (1));			
+			itoa (backend_read_option (0), temp_buffer, 10);
+			int value = flags_parse_value (temp_buffer);
+
+			flags_set (flag, value);
+
+		} else if (strcmp (command_token, "tell") == 0) {
+			int flag = flags_parse_value (get_token (1));
+			itoa (flag, temp_buffer, 10);
+			backend_print (temp_buffer);
+
 		}
 
 		// Update screen, etc
@@ -136,6 +160,28 @@ int lbasi_run_file (FILE *file) {
 	}
 
 	return res;
+}
+
+void lbasi_read_labels (FILE *file) {
+	char line_buffer [LINE_BUFFER_SIZE];
+	
+	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
+		if (line_buffer [0] == ':') {
+			if (labels_add (ftell (file), line_buffer) == 0) {
+				backend_print_ln ("Warning! label too long:");
+				backend_print_ln (line_buffer);
+			}
+		}
+	}
+
+	fseek (file, 0, SEEK_SET);
+}
+
+void lbasi_goto (FILE *file, char *label) {
+	int label_index = labels_find (label);
+	int label_filepos = labels_get_filepos (label_index);
+
+	fseek (file, label_filepos, SEEK_SET);
 }
 
 int lbasi_run (char *spec, int autoboot) {
@@ -164,6 +210,12 @@ int lbasi_run (char *spec, int autoboot) {
 				backend_init ();
 				backend_on = 1;
 			}
+
+			// First find & store all labels
+
+			lbasi_read_labels (file);
+
+			// Now let's parse.
 
 			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 

@@ -13,8 +13,12 @@ void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top
 	// NO OP
 }
 
-void backend_print (char *string) {
+void backend_print_ln (char *string) {
 	printf ("%s\n", string);
+}
+
+void backend_print (char *string) {
+	printf (string);
 }
 
 void backend_center (char *string) {
@@ -69,7 +73,7 @@ unsigned char backend_read_option (int num_choices) {
 			if (c == EOF) break;
 		}
 
-		if (input >= 1 && input <= num_choices) {
+		if (num_choices == 0 || (input >= 1 && input <= num_choices)) {
 			return input;
 		}
 	}

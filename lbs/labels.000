@@ -1,0 +1,8 @@
+:label1
+print "Hola michis"
+:label2
+print "Hola puchis"
+go :end
+
+:end 
+print "Final"

@@ -2,6 +2,7 @@
 
 void backend_init (void);
 void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top, char *string_bottom, int attempts);
+void backend_print_ln (char *string);
 void backend_print (char *string);
 void backend_center (char *string);
 void backend_color (int c1, int c2);

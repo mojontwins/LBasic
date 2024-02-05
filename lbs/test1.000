@@ -1,0 +1,25 @@
+let 1 10
+let 2 20
+let 3 $20
+let 4 2
+let 5 $4
+let 6 $$4
+
+write "Values "
+tell $1 
+write " "
+tell $2
+write " "
+tell $3
+write " "
+tell $4
+write " "
+tell $5
+write " "
+tell $6
+
+print " Now an input 7: "
+input 7
+write "Value: " 
+tell $7
+print " "

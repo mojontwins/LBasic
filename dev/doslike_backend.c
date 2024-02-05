@@ -46,8 +46,12 @@ void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top
 	buf_color (c1, c2);
 }
 
-void backend_print (char *string) {
+void backend_print_ln (char *string) {
 	buf_print_ln (string);
+}
+
+void backend_print (char *string) {
+	buf_print (string);
 }
 
 void backend_center (char *string) {
@@ -103,41 +107,53 @@ unsigned char backend_read_option (int num_choices) {
 	char input [INPUT_LENGTH + 1];
 	memset (input, 0, INPUT_LENGTH + 1);
 
-	int c = *readchars ();
-	while (!backend_heartbeat () && c != '\r' && len + 1 < INPUT_LENGTH) {
-		buf_setxy (x, y);
-		buf_print (">");
-		buf_print (input);
-		buf_print ("_ ");
+	while (1) {
+		int c = *readchars ();
+		while (!backend_heartbeat () && c != '\r' && len + 1 < INPUT_LENGTH) {
+			buf_setxy (x, y);
+			buf_print (">");
+			buf_print (input);
+			buf_print ("_ ");
 
-		if (c >= '0' && c <= '9') {
-			input [len ++] = c;
-		} else {
-			switch( c >> 8 ) {
-				case 0x08: 
-					// Backspace
-					if( len > 0 ) {
-						--len; 
-						input [len] = 0;
-					}
-					break;
+			if (c >= '0' && c <= '9') {
+				input [len ++] = c;
+			} else {
+				switch( c >> 8 ) {
+					case 0x08: 
+						// Backspace
+						if( len > 0 ) {
+							--len; 
+							input [len] = 0;
+						}
+						break;
+				}
+			}
+
+			c = *readchars ();
+			if (c == '\0') {
+				if (*readkeys () == KEY_BACK) {
+					c = 0x08 << 8;
+				}
 			}
 		}
 
-		c = *readchars ();
-		if (c == '\0') {
-			if (*readkeys () == KEY_BACK) {
-				c = 0x08 << 8;
+		if (num_choices == 0 || (input >= 1 && input <= num_choices)) {
+			buf_setxy (x, y);
+			buf_print (">");
+			buf_print (input);
+			buf_print_ln (" ");
+
+			return atoi (input);
+		} else {
+			buf_setxy (x, y);
+			buf_print (">");
+			for (int i = 0; i < strlen (input) + 1; i ++) {
+				buf_print (" ");
 			}
 		}
 	}
 
-	buf_setxy (x, y);
-	buf_print (">");
-	buf_print (input);
-	buf_print_ln (" ");
-
-	return atoi (input);
+	
 }
 
 int backend_heartbeat (void) {
