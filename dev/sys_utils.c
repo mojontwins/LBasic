@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 #include "sys_utils.h"
 
 /*
@@ -62,11 +63,24 @@ void labels_clear (void) {
 	cur_label = 0;
 }
 
+char *labels_copy_clean (char *dst, char *src) {
+	char *dstp = dst;
+	char *srcp = src;
+	char c;
+
+	while ((c = *srcp ++) && c != '\n' && c != '\r') {
+		*dstp ++ = c;
+	}
+
+	return dst;
+}
+
 int labels_add (int file_pos, char *label) {
 	if (cur_label == MAX_LABELS || strlen (label) > LABEL_LEN) return 0;
 
 	labels [cur_label].file_pos = file_pos;
 	strcpy (labels [cur_label].text, label);
+
 	cur_label ++;
 
 	return 1;
@@ -76,7 +90,7 @@ int labels_find (char *label) {
 	int res = -1;
 
 	for(int i = 0; i < cur_label; i ++) {
-		if (strcmp (labels [cur_label].text, label) == 0) return i;
+		if (strcmp (labels [i].text, label) == 0) return i;
 	}
 
 	return res;

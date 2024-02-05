@@ -6,7 +6,7 @@
 #include "backend.h"
 
 void backend_init (void) {
-	printf ("LBASI - Backend simple - basic I/O - escribe -1 para salir\n");
+	printf ("LBASI - Backend simple - basic I/O\n");
 }
 
 void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top, char *string_bottom, int attempts) {

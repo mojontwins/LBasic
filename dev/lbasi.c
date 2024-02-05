@@ -66,6 +66,13 @@ char *get_str_try_again (void) {
 	return str_try_again;
 }
 
+void lbasi_goto (FILE *file, char *label) {
+	int label_index = labels_find (label);
+	int label_filepos = labels_get_filepos (label_index);
+
+	fseek (file, label_filepos, SEEK_SET);
+}
+
 int lbasi_run_file (FILE *file) {
 	int res = 0;
 	int choice_res;
@@ -151,6 +158,29 @@ int lbasi_run_file (FILE *file) {
 			itoa (flag, temp_buffer, 10);
 			backend_print (temp_buffer);
 
+		} else if (strcmp (command_token, "go") == 0) {
+			lbasi_goto (file, get_token (1));
+
+		} else if (strcmp (command_token, "eq") == 0) {
+			int val1 = flags_parse_value (get_token (1));
+			int val2 = flags_parse_value (get_token (2));
+
+			if (val1 == val2) lbasi_goto (file, get_token (3));
+		} else if (strcmp (command_token, "neq") == 0) {
+			int val1 = flags_parse_value (get_token (1));
+			int val2 = flags_parse_value (get_token (2));
+
+			if (val1 != val2) lbasi_goto (file, get_token (3));
+		} else if (strcmp (command_token, "ge") == 0) {
+			int val1 = flags_parse_value (get_token (1));
+			int val2 = flags_parse_value (get_token (2));
+
+			if (val1 >= val2) lbasi_goto (file, get_token (3));
+		} else if (strcmp (command_token, "lt") == 0) {
+			int val1 = flags_parse_value (get_token (1));
+			int val2 = flags_parse_value (get_token (2));
+
+			if (val1 < val2) lbasi_goto (file, get_token (3));
 		}
 
 		// Update screen, etc
@@ -167,7 +197,8 @@ void lbasi_read_labels (FILE *file) {
 	
 	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
 		if (line_buffer [0] == ':') {
-			if (labels_add (ftell (file), line_buffer) == 0) {
+			parse_to_tokens (line_buffer);			
+			if (labels_add (ftell (file), get_token (0)) == 0) {
 				backend_print_ln ("Warning! label too long:");
 				backend_print_ln (line_buffer);
 			}
@@ -175,13 +206,6 @@ void lbasi_read_labels (FILE *file) {
 	}
 
 	fseek (file, 0, SEEK_SET);
-}
-
-void lbasi_goto (FILE *file, char *label) {
-	int label_index = labels_find (label);
-	int label_filepos = labels_get_filepos (label_index);
-
-	fseek (file, label_filepos, SEEK_SET);
 }
 
 int lbasi_run (char *spec, int autoboot) {

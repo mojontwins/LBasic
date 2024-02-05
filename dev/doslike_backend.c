@@ -137,13 +137,15 @@ unsigned char backend_read_option (int num_choices) {
 			}
 		}
 
-		if (num_choices == 0 || (input >= 1 && input <= num_choices)) {
+		int input_i = atoi (input);
+
+		if (num_choices == 0 || (input_i >= 1 && input_i <= num_choices)) {
 			buf_setxy (x, y);
 			buf_print (">");
 			buf_print (input);
 			buf_print_ln (" ");
 
-			return atoi (input);
+			return input_i;
 		} else {
 			buf_setxy (x, y);
 			buf_print (">");
