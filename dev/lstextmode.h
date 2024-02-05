@@ -2,6 +2,7 @@
 #define LS_MODE_GFX  		1
 #define LS_MODE_GFX_SQ		2
 #define LS_MODE_GFX_HIRES	3
+#define LS_MODE_GFX_MED		4
 
 void buf_setviewport (int y1, int y2);
 void buf_setxy (int x, int y);
@@ -23,7 +24,8 @@ void buf_cls (void);
 void buf_clscroll (void);
 void buf_put_string_xy (int x, int y, int c1, int c2, char *s);
 void lstextmode_init (void);
-void buf_setmode (unsigned char mode);
+void buf_setmode (int mode);
+int buf_getmode (void);
 void buf_pause (void);
 void buf_gif_at (char *gif, int x, int y, int do_setpal);
 

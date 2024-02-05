@@ -10,6 +10,7 @@ void utils_tolower (char *s);
 
 #define MAX_FLAGS 256
 
+void flags_clear (void);
 int flags_get (int index);
 void flags_set (int index, int value);
 int flags_parse_value (char *s);

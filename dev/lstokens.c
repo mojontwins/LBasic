@@ -37,7 +37,7 @@ void parse_to_tokens (char *string) {
 	do {
 		cur_char = *pt ++;
 
-		if (cur_char == 0 || cur_char == '\r' || cur_char == '\n' || (cur_char == ' ' && in_quotes == 0)) {
+		if (cur_char == 0 || cur_char == '\r' || cur_char == '\n' || ((cur_char == ' ' || cur_char == '\t') && in_quotes == 0)) {
 			if (cur_index > 0) {
 				tokens [cur_token ++][cur_index] = 0;
 				cur_index = 0;

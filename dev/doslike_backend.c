@@ -12,6 +12,7 @@
 #define INPUT_LENGTH 10
 
 char *full_line = "                                                                                ";
+int show_status = 1;
 
 void backend_init (void) {
 	lstextmode_init ();
@@ -19,31 +20,37 @@ void backend_init (void) {
 	buf_clscroll ();
 }
 
+void backend_set_show_status (int i) {
+	show_status = i;
+}
+
 void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top, char *string_bottom, int attempts) {
-	int x, y;
-	int c1, c2;
-	char attempts_str [3];
+	if (buf_getmode () == LS_MODE_TEXT && show_status) {
+		int x, y;
+		int c1, c2;
+		char attempts_str [3];
 
-	x = buf_getx (); y = buf_gety ();
-	c1 = buf_getc1 (); c2 = buf_getc2 ();
+		x = buf_getx (); y = buf_gety ();
+		c1 = buf_getc1 (); c2 = buf_getc2 ();
 
-	buf_setxy (0, 0);
-	buf_color (clr_statusbar1, clr_statusbar2);
-	buf_printabs (full_line);
-	
-	buf_setxy (0, 0);
-	buf_printabs (string_top);
+		buf_setxy (0, 0);
+		buf_color (clr_statusbar1, clr_statusbar2);
+		buf_printabs (full_line);
+		
+		buf_setxy (0, 0);
+		buf_printabs (string_top);
 
-	buf_setxy (0, 24);
-	buf_printabs (full_line);
-	
-	buf_setxy (0, 24);
-	buf_printabs (string_bottom);
-	sprintf (attempts_str, "%1d", attempts);
-	buf_printabs (attempts_str);
+		buf_setxy (0, 24);
+		buf_printabs (full_line);
+		
+		buf_setxy (0, 24);
+		buf_printabs (string_bottom);
+		sprintf (attempts_str, "%1d", attempts);
+		buf_printabs (attempts_str);
 
-	buf_setxy (x, y);
-	buf_color (c1, c2);
+		buf_setxy (x, y);
+		buf_color (c1, c2);
+	}	
 }
 
 void backend_print_ln (char *string) {
@@ -162,6 +169,30 @@ int backend_heartbeat (void) {
 	waitvbl ();
 
 	return shuttingdown ();
+}
+
+void backend_gif_at (char *gif, int x, int y, int load_pal) {
+	if (buf_getmode () != LS_MODE_TEXT) {
+		buf_gif_at (gif, x, y, load_pal);
+	}
+}
+
+void backend_wait_frames (int frames) {
+	while (!backend_heartbeat () && frames --);
+}
+
+void backend_set_mode (char *mode) {
+	if (strcmp (mode, "text") == 0) {
+		buf_setmode (LS_MODE_TEXT);
+	} else if (strcmp (mode, "gfx") == 0) {
+		buf_setmode (LS_MODE_GFX);
+	} else if (strcmp (mode, "gfx_sq") == 0) {
+		buf_setmode (LS_MODE_GFX_SQ);
+	} else if (strcmp (mode, "gfx_med") == 0) {
+		buf_setmode (LS_MODE_GFX_MED);
+	} else if (strcmp (mode, "gfx_hi") == 0) {
+		buf_setmode (LS_MODE_GFX_HIRES);
+	}
 }
 
 void backend_shutdown (void) {

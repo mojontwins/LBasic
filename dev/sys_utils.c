@@ -19,6 +19,10 @@ void utils_tolower (char *s) {
 
 int s_flags [MAX_FLAGS];
 
+void flags_clear (void) {
+	memset (s_flags, 0, MAX_FLAGS * sizeof (int));
+}
+
 int flags_get (int index) {
 	return s_flags [index];
 }

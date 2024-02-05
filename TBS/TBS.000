@@ -1,3 +1,38 @@
+# Al ejecutar todas las flags valen 0
+eq $255 1 :run
+
+# presentación
+mode gfx
+pic "tbs/tbs1.gif" 2
+pic "tbs/tbs2.gif" 0.5
+pic "tbs/tbs1.gif" 1
+pic "tbs/tbs2.gif" 0.5
+pic "tbs/tbs1.gif" 1
+pic "tbs/tbs3.gif" 1
+pic "tbs/tbs4.gif" 2
+
+let 0 0
+:anim1
+pic "tbs/tbs5.gif" 0.8
+pic "tbs/tbs6.gif" 0.3
+pic "tbs/tbs7.gif" 0.5
+pic "tbs/tbs6.gif" 0.3
+inc 0
+lt $0 5 :anim1
+
+pic "tbs/tbs7.gif" 1
+pic "tbs/tbs8.gif" 0.5
+pic "tbs/tbs9.gif" 0.5
+pic "tbs/tbs10.gif" 0.5
+pic "tbs/tbs11.gif" 1
+pic "tbs/tbs12.gif" 0.3
+pic "tbs/tbs13.gif" 0.3
+pic "tbs/tbs14.gif" 2
+
+let 255 1
+
+:run
+mode text
 center " THE BLACK SMURFF (TBS), BY PHAKHOU & ARZUR "
 color 10 00
 pause

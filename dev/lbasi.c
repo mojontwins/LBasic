@@ -97,25 +97,25 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp(command_token, "write") == 0) {
 			backend_print (get_token (1));
 
-		} else if(strcmp (command_token, "center") == 0) {
+		} else if (strcmp (command_token, "center") == 0) {
 			backend_center (get_token (1));
 
-		} else if(strcmp (command_token, "color") == 0) {
+		} else if (strcmp (command_token, "color") == 0) {
 			backend_color (atoi (get_token (1)), atoi (get_token (2)));
 
-		} else if(strcmp (command_token, "pause") == 0) {
+		} else if (strcmp (command_token, "pause") == 0) {
 			backend_pause ();
 
-		} else if(strcmp (command_token, "beep") == 0) {
+		} else if (strcmp (command_token, "beep") == 0) {
 			backend_beep ();
 
-		} else if(strcmp (command_token, "cls") == 0) {
+		} else if (strcmp (command_token, "cls") == 0) {
 			backend_cls ();
 
-		} else if(strcmp (command_token, "draw") == 0) {
+		} else if (strcmp (command_token, "draw") == 0) {
 			backend_draw (get_token (1));
 
-		} else if(strcmp (command_token, "choice") == 0) {
+		} else if (strcmp (command_token, "choice") == 0) {
 			while ((choice_res = backend_choice (
 				atoi (get_token (1)),
 				atoi (get_token (2)),
@@ -138,10 +138,19 @@ int lbasi_run_file (FILE *file) {
 				run = 0;
 			}
 
-		} else if(strcmp (command_token, "attempts") == 0) {
+		} else if (strcmp (command_token, "attempts") == 0) {
 			attempts = atoi (get_token (1));
 
-		} else if(strcmp (command_token, "let") == 0) {
+		} else if (strcmp (command_token, "statusbar") == 0) {
+			char *onoff = get_token (1);
+			utils_tolower (onoff);
+			backend_set_show_status (strcmp (onoff, "off") == 0);
+
+		}
+
+		// *** FLAGS ***
+
+		else if (strcmp (command_token, "let") == 0) {
 			int flag = flags_parse_value (get_token (1));
 			int value = flags_parse_value (get_token (2));
 
@@ -158,7 +167,29 @@ int lbasi_run_file (FILE *file) {
 			itoa (flag, temp_buffer, 10);
 			backend_print (temp_buffer);
 
-		} else if (strcmp (command_token, "go") == 0) {
+		} else if (strcmp (command_token, "inc") == 0) {
+			int flag = flags_parse_value (get_token (1));
+			flags_set (flag, flags_get (flag) + 1);
+
+		} else if (strcmp (command_token, "dec") == 0) {
+			int flag = flags_parse_value (get_token (1));
+			flags_set (flag, flags_get (flag) - 1);
+
+		} else if (strcmp (command_token, "add") == 0) {
+			int flag = flags_parse_value (get_token (1));
+			int value = flags_parse_value (get_token (1));
+			flags_set (flag, flags_get (flag) + value);
+
+		} else if (strcmp (command_token, "sub") == 0) {
+			int flag = flags_parse_value (get_token (1));
+			int value = flags_parse_value (get_token (1));
+			flags_set (flag, flags_get (flag) - value);
+
+		}
+
+		// *** BRANCHING ***
+
+		else if (strcmp (command_token, "go") == 0) {
 			lbasi_goto (file, get_token (1));
 
 		} else if (strcmp (command_token, "eq") == 0) {
@@ -181,6 +212,44 @@ int lbasi_run_file (FILE *file) {
 			int val2 = flags_parse_value (get_token (2));
 
 			if (val1 < val2) lbasi_goto (file, get_token (3));
+		}
+
+		// *** GFX MODE ***
+
+		else if (strcmp (command_token, "mode") == 0) {
+			// mode TEXT, GFX, GFX_SQ, GFX_MED, GFX_HI
+			char *mode = get_token (1);
+
+			utils_tolower (mode);
+			backend_set_mode (mode);
+			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
+
+		}
+
+		// *** PRESENTS.EXE ***
+
+		else if (strcmp (command_token, "pic") == 0) {
+			// pic "pic.gif" seconds|kbd
+			backend_gif_at (get_token (1), 0, 0, 1);
+
+			char *duration = get_token (2);
+			utils_tolower (duration);
+
+			if (strcmp (duration, "kbd") == 0) {
+				backend_pause ();
+			} else {
+				// Wait 60 * seconds frames (can be float)
+				backend_wait_frames (60 * atof (duration));
+			}
+
+		} else if (strcmp (command_token, "cut") == 0) {
+			// cut "cut.gif" x y
+			backend_gif_at (get_token (1), flags_parse_value (get_token(2)), flags_parse_value (get_token(3)), 1);
+
+		} else if (strcmp (command_token, "sleep") == 0) {
+			// Wait 60 * seconds frames (can be float)
+			backend_wait_frames (60 * atof (get_token (1)));
+
 		}
 
 		// Update screen, etc
@@ -219,6 +288,8 @@ int lbasi_run (char *spec, int autoboot) {
 
 	FILE *file;
 
+	flags_clear ();
+
 	while (playing) {
 		// Make filename
 		
@@ -256,10 +327,10 @@ int lbasi_run (char *spec, int autoboot) {
 
 				case 4:
 					// Out of attempts
-					backend_print (str_game_over);
-					backend_print (str_continue);
-					backend_print (str_restart);
-					backend_print (str_exit);
+					backend_print_ln (str_game_over);
+					backend_print_ln (str_continue);
+					backend_print_ln (str_restart);
+					backend_print_ln (str_exit);
 
 					switch (backend_read_option (3)) {
 						case 1:

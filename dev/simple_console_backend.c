@@ -9,6 +9,10 @@ void backend_init (void) {
 	printf ("LBASI - Backend simple - basic I/O\n");
 }
 
+void backend_set_show_status (int i) {
+	// NO OP
+}
+
 void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top, char *string_bottom, int attempts) {
 	// NO OP
 }
@@ -111,5 +115,17 @@ int backend_heartbeat (void) {
 }
 
 void backend_shutdown (void) {
+	// NO OP
+}
+
+void backend_gif_at (char *gif, int x, int y, int load_pal) {
+	// NO OP
+}
+
+void backend_wait_frames (int frames) {
+	// NO OP
+}
+
+void backend_set_mode (char *mode) {
 	// NO OP
 }

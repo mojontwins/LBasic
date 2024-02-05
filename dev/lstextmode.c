@@ -231,29 +231,38 @@ void buf_put_string_xy (int x, int y, int c1, int c2, char *s) {
 	}
 }
 
-void lstextmode_init (void) {
-	buf_setmode (LS_MODE_TEXT);
-}
-
-void buf_setmode(unsigned char mode) {
+void buf_setmode(int mode) {
 	buf_mode = mode;
 	switch (buf_mode) {
 		case LS_MODE_GFX:
 			setvideomode (videomode_320x200);
-			buf_setviewport (1, 200/8 - 2);
 			break;
 		case LS_MODE_GFX_SQ:
 			setvideomode (videomode_320x240);
-			buf_setviewport (1, 240 / 8 - 2);
 			break;
 		case LS_MODE_GFX_HIRES:
 			setvideomode (videomode_640x350);
-			buf_setviewport (1, 350 / 8 - 2);
+			break;
+		case LS_MODE_GFX_MED:
+			setvideomode (videomode_640x200);
 			break;
 		default:
 			setvideomode (videomode_80x25_9x16);
 			break;
 	}
+
+	if (buf_mode == LS_MODE_TEXT) {
+		buf_setviewport (1, screenheight () - 2);
+		buf_clscroll ();
+	} else {
+		buf_setviewport (1, screenheight () / 8);
+		buf_cls ();
+	}
+
+}
+
+int buf_getmode (void) {
+	return buf_mode;
 }
 
 int heartbeat (void) {
@@ -292,4 +301,8 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 
 	free (gif_buffer);
 	free (pal_buffer);
+}
+
+void lstextmode_init (void) {
+	buf_setmode (LS_MODE_TEXT);
 }
