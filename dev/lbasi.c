@@ -28,6 +28,8 @@ char str_status_bottom [80];
 int clr_statusbar_1;
 int clr_statusbar_2;
 
+char main_path_spec [256];
+
 /*
 
 	lbasi spec
@@ -52,6 +54,18 @@ void init_strings (void) {
 
 	clr_statusbar_1 = 14;
 	clr_statusbar_2 = 1;
+}
+
+void update_path_spec (char *fullpath) {
+	char *last_slash = strrchr (fullpath, '/');
+
+	if (last_slash != NULL) {
+		int parentLen = strlen(fullpath) - strlen(last_slash + 1);
+		strncpy(main_path_spec, fullpath, parentLen);
+	} else {
+		main_path_spec [0] = 0;
+	}
+
 }
 
 int get_clr_statusbar1 (void) {
@@ -117,10 +131,10 @@ int lbasi_run_file (FILE *file) {
 
 		} else if (strcmp (command_token, "choice") == 0) {
 			while ((choice_res = backend_choice (
-				atoi (get_token (1)),
-				atoi (get_token (2)),
+				flags_parse_value (get_token (1)), 		// Number of choices. Beware using flags here!
+				flags_parse_value (get_token (2)), 		// Correct choice. 
 				get_tokens ()
-			)) == 0) {
+			)) == 0 && !backend_get_break ()) {
 				attempts --;
 				backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
@@ -138,6 +152,12 @@ int lbasi_run_file (FILE *file) {
 				run = 0;
 			}
 
+		} else if (strcmp (command_token, "viewport") == 0) {
+			backend_set_viewport (
+				flags_parse_value (get_token (1)),
+				flags_parse_value (get_token (2))
+			);
+
 		} else if (strcmp (command_token, "attempts") == 0) {
 			attempts = atoi (get_token (1));
 
@@ -145,6 +165,18 @@ int lbasi_run_file (FILE *file) {
 			char *onoff = get_token (1);
 			utils_tolower (onoff);
 			backend_set_show_status (strcmp (onoff, "off") == 0);
+
+		} else if (strcmp (command_token, "margins") == 0) {
+			backend_set_margins (
+				flags_parse_value (get_token (1)),
+				flags_parse_value (get_token (2))
+			);
+			
+		} else if (strcmp (command_token, "ww") == 0 || strcmp (command_token, "wordwrap") == 0) {
+			backend_wordwrap (get_token (1));
+
+		} else if (strcmp (command_token, "ansibin") == 0) {
+			backend_ansibin (main_path_spec, get_token (1));
 
 		}
 
@@ -230,7 +262,7 @@ int lbasi_run_file (FILE *file) {
 
 		else if (strcmp (command_token, "pic") == 0) {
 			// pic "pic.gif" seconds|kbd
-			backend_gif_at (get_token (1), 0, 0, 1);
+			backend_gif_at (main_path_spec, get_token (1), 0, 0, 1);
 
 			char *duration = get_token (2);
 			utils_tolower (duration);
@@ -244,7 +276,7 @@ int lbasi_run_file (FILE *file) {
 
 		} else if (strcmp (command_token, "cut") == 0) {
 			// cut "cut.gif" x y
-			backend_gif_at (get_token (1), flags_parse_value (get_token(2)), flags_parse_value (get_token(3)), 1);
+			backend_gif_at (main_path_spec, get_token (1), flags_parse_value (get_token(2)), flags_parse_value (get_token(3)), 1);
 
 		} else if (strcmp (command_token, "sleep") == 0) {
 			// Wait 60 * seconds frames (can be float)
@@ -254,6 +286,10 @@ int lbasi_run_file (FILE *file) {
 
 		// Update screen, etc
 		if (backend_heartbeat ()) {
+			run = 0;
+		}
+
+		if (backend_get_break ()) {
 			run = 0;
 		}
 	}
@@ -300,7 +336,9 @@ int lbasi_run (char *spec, int autoboot) {
 
 		sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 
-		if ((file = fopen (filename, "r")) != NULL) {
+		if ((file = fopen (filename, "r")) != NULL) {			
+			update_path_spec (filename);
+
 			if (!backend_on) {
 				backend_init ();
 				backend_on = 1;

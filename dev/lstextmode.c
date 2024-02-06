@@ -8,6 +8,7 @@
 
 int buf_x, buf_y;
 int buf_c1, buf_c2;
+int buf_col1, buf_col2;
 int viewport_y1 = 1;
 int viewport_y2 = 23;
 int buf_mode = LS_MODE_TEXT;
@@ -15,6 +16,11 @@ int buf_mode = LS_MODE_TEXT;
 void buf_setviewport (int y1, int y2) {
 	viewport_y1 = y1;
 	viewport_y2 = y2;
+}
+
+void buf_setmargins (int col1, int col2) {
+	buf_col1 = col1;
+	buf_col2 = col2;
 }
 
 void buf_setxy (int x, int y) {
@@ -165,6 +171,41 @@ void _buf_print (char *s, int scroll) {
 	}
 }
 
+void buf_wordwrap (char *s) {
+	// col1, col2 are INCLUSIVE i.e. 0 79 for full width
+
+	char word [256]; char *wp = word;
+	char c;
+
+	while (c = *s ++) {
+		// Obtain a whole word
+		if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == 0) {
+			*wp = 0;		// End string
+
+			if (buf_x + strlen (word) - 1 > buf_col2) {
+				buf_y ++;
+				buf_x = buf_col1;
+			}
+
+			_buf_print ("word", 1);
+
+			if (buf_x <= buf_col2) {
+				_buf_print (" ", 1);
+			}
+
+			wp = word;
+		} else {
+			*wp ++ = c;
+		}
+
+		if (c == 0) break;
+	}
+
+	buf_y ++;
+	buf_x = 0;
+	buf_scroll_up_if_needed ();
+}
+
 void buf_printabs (char *s) {
 	_buf_print (s, 0);
 }
@@ -253,9 +294,11 @@ void buf_setmode(int mode) {
 
 	if (buf_mode == LS_MODE_TEXT) {
 		buf_setviewport (1, screenheight () - 2);
+		buf_setmargins (0, screenwidth () - 1);
 		buf_clscroll ();
 	} else {
 		buf_setviewport (1, screenheight () / 8);
+		buf_setmargins (0, screenwidth () / 8 - 1);
 		buf_cls ();
 	}
 
@@ -301,6 +344,15 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 
 	free (gif_buffer);
 	free (pal_buffer);
+}
+
+void buf_textmode_pic (char *pic) {
+	if (buf_mode == LS_MODE_TEXT) {
+		char *buf = screenbuffer ();
+		FILE *pf = fopen (pic, "rb");
+		fread (buf, sizeof (char), 80*25*2, pf);
+		fclose (pf);
+	}
 }
 
 void lstextmode_init (void) {

@@ -13,11 +13,22 @@
 
 char *full_line = "                                                                                ";
 int show_status = 1;
+int forced_break = 0;
 
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
 	buf_clscroll ();
+}
+
+int backend_get_break (void) {
+	return forced_break;
+}
+
+char *compute_full_path (char *pathspec, char *filename) {
+	char *full_path = strdup (pathspec);
+	strcat (full_path, filename);
+	return full_path;
 }
 
 void backend_set_show_status (int i) {
@@ -51,6 +62,10 @@ void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top
 		buf_setxy (x, y);
 		buf_color (c1, c2);
 	}	
+}
+
+void backend_set_viewport (int l1, int l2) {
+	buf_setviewport (l1, l2);
 }
 
 void backend_print_ln (char *string) {
@@ -95,7 +110,7 @@ unsigned char backend_choice (int num_choices, int correct, char **choices) {
 
 	while (!backend_heartbeat ()) {
 		input = backend_read_option (num_choices);
-		backend_print (choices [input + 2]);
+		if (input <= num_choices) backend_print (choices [input + 2]);
 		return input == correct;
 	}
 }
@@ -146,6 +161,11 @@ unsigned char backend_read_option (int num_choices) {
 
 		int input_i = atoi (input);
 
+		if (input_i == 99) {
+			forced_break = 1;
+			return 99;
+		}
+
 		if (num_choices == 0 || (input_i >= 1 && input_i <= num_choices)) {
 			buf_setxy (x, y);
 			buf_print (">");
@@ -171,14 +191,29 @@ int backend_heartbeat (void) {
 	return shuttingdown ();
 }
 
-void backend_gif_at (char *gif, int x, int y, int load_pal) {
+void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal) {
+	char *fullpath = compute_full_path (pathspec, gif);
+
 	if (buf_getmode () != LS_MODE_TEXT) {
-		buf_gif_at (gif, x, y, load_pal);
+		buf_gif_at (fullpath, x, y, load_pal);
 	}
+
+	free (fullpath);
 }
 
 void backend_wait_frames (int frames) {
-	while (!backend_heartbeat () && frames --);
+	while (!backend_heartbeat () && frames --) {
+		int c = *readchars ();
+		if (c > 0) break;
+	}
+}
+
+void backend_set_margins (int col1, int col2) {
+	buf_setmargins (col1, col2);
+}
+
+void backend_wordwrap (char *s) {
+	buf_wordwrap (s);
 }
 
 void backend_set_mode (char *mode) {
@@ -193,6 +228,14 @@ void backend_set_mode (char *mode) {
 	} else if (strcmp (mode, "gfx_hi") == 0) {
 		buf_setmode (LS_MODE_GFX_HIRES);
 	}
+}
+
+void backend_ansibin (char *pathspec, char *filename) {
+	char *fullpath = compute_full_path (pathspec, filename);
+
+	buf_textmode_pic (fullpath);
+
+	free (fullpath);
 }
 
 void backend_shutdown (void) {

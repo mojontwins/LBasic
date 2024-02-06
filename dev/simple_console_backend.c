@@ -1,12 +1,30 @@
 //#define DEBUG
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "lbasi.h"
 #include "backend.h"
 
+int forced_break = 0;
+
 void backend_init (void) {
 	printf ("LBASI - Backend simple - basic I/O\n");
+}
+
+int backend_get_break (void) {
+	return forced_break;
+}
+
+char *compute_full_path (char *pathspec, char *filename) {
+	char *full_path = strdup (pathspec);
+	strcat (full_path, filename);
+	return full_path;
+}
+
+void backend_set_viewport (int l1, int l2) {
+	// NO OP
 }
 
 void backend_set_show_status (int i) {
@@ -77,6 +95,11 @@ unsigned char backend_read_option (int num_choices) {
 			if (c == EOF) break;
 		}
 
+		if (input == 99) {
+			forced_break = 1;
+			return 99;
+		}
+
 		if (num_choices == 0 || (input >= 1 && input <= num_choices)) {
 			return input;
 		}
@@ -88,20 +111,28 @@ unsigned char backend_choice (int num_choices, int correct, char **choices) {
 	char c;
 	int input_numeric;
 
-	while (1) {
-		#ifdef DEBUG
-			printf ("[%d:%d]", num_choices, correct);
-		#endif
+	#ifdef DEBUG
+		printf ("[%d:%d]", num_choices, correct);
+	#endif
 
-		input = backend_read_option (num_choices);
+	input = backend_read_option (num_choices);
 
-		#ifdef DEBUG
-			printf ("[%d]", input);
-		#endif
+	#ifdef DEBUG
+		printf ("[%d]", input);
+	#endif
 
-		backend_print (choices [input + 2]);
-		return input == correct;
-	}
+	if (input <= num_choices) backend_print (choices [input + 2]);
+	return input == correct;
+
+}
+
+void backend_set_margins (int col1, int col2) {
+	// NO OP
+}
+
+void backend_wordwrap (char *s) {
+	// ALMOST NO OP
+	backend_print_ln (s);
 }
 
 void backend_try_again (char *string_try_again, int attempts) {
@@ -118,12 +149,32 @@ void backend_shutdown (void) {
 	// NO OP
 }
 
-void backend_gif_at (char *gif, int x, int y, int load_pal) {
+void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal) {
 	// NO OP
 }
 
 void backend_wait_frames (int frames) {
 	// NO OP
+}
+
+void backend_ansibin (char *pathspec, char *filename) {
+	char *fullpath = compute_full_path (pathspec, filename);
+
+	char buffer [80*25*2];
+	FILE *pf = fopen (fullpath, "rb");
+	fread (buffer, sizeof (char), 80*25*2, pf);
+	fclose (pf);
+
+	char *pbuffer = buffer;
+	for (int y = 0; y < 25; y ++) {
+		for (int x = 0; x < 80; x ++) {
+			printf ("%c", *pbuffer ++); 		// Print char
+			pbuffer ++; 						// Skip color
+		}
+		printf ("\n");
+	}
+
+	free (fullpath);
 }
 
 void backend_set_mode (char *mode) {
