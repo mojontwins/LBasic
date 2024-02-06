@@ -76,11 +76,33 @@ void backend_cls (void) {
 }
 
 void backend_draw (char *string) {
-	#ifdef DEBUG
-		printf ("DRAW\n");
-	#endif
-	// TODO: Interpret embedded color codes
-	backend_print (string);
+	char c; while (c = *string ++) {
+		switch (c) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '=':
+			case '!':
+			case 34:
+			case '$':
+			case '%':
+			case '&':
+			case 0xFA:
+			case '/':
+				break;
+
+			default:
+				printf ("%c", c);
+				break;
+		}
+	}
+
+	printf ("\n");
 }
 
 unsigned char backend_read_option (int num_choices) {

@@ -88,6 +88,11 @@ void backend_color (int c1, int c2) {
 void backend_pause (void) {
 	while (!backend_heartbeat ()) {
 		int c = *readchars ();
+		if (c == 0) break;
+	}
+
+	while (!backend_heartbeat ()) {
+		int c = *readchars ();
 		if (c > 0) break;
 	}
 }
@@ -101,8 +106,58 @@ void backend_cls (void) {
 }
 
 void backend_draw (char *string) {
-	// TODO: do this properly
-	backend_print (string);
+	int c1 = buf_getc1 ();
+	int c2 = buf_getc2 ();
+
+	int oc1 = c1;
+	int oc2 = c2;
+
+	char c; while (c = *string ++) {
+		switch (c) {
+			case '0':
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+				c1 = c - '0';
+				buf_color (c1, c2);
+				break;
+
+			case '=':
+				c2 = 0;
+				buf_color (c1, c2);
+				break;
+
+			case '!':
+			case 34:
+			case '$':
+			case '%':
+			case '&':
+				c2 = c - 32;
+				buf_color (c1, c2);
+				break;
+
+			case 0xFA:
+				c2 = 3;
+				buf_color (c1, c2);
+				break;
+
+			case '/':
+				c2 = 7;
+				buf_color (c1, c2); 
+				break;
+
+			default:
+				buf_char (c);
+				break;
+		}
+	}
+
+	buf_color (oc1, oc2);
+	buf_print_ln ("");
 }
 
 unsigned char backend_choice (int num_choices, int correct, char **choices) {
@@ -128,6 +183,11 @@ unsigned char backend_read_option (int num_choices) {
 	int y = buf_gety ();
 	char input [INPUT_LENGTH + 1];
 	memset (input, 0, INPUT_LENGTH + 1);
+
+	while (!backend_heartbeat ()) {
+		int c = *readchars ();
+		if (c == 0) break;
+	}
 
 	while (1) {
 		int c = *readchars ();

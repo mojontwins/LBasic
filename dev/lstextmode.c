@@ -120,6 +120,24 @@ void buf_scroll_up_if_needed (void) {
 	}
 }
 
+void buf_char (char c) {
+	buf_scroll_up_if_needed ();
+	if (buf_mode == LS_MODE_TEXT) {
+		unsigned char *buf = screenbuffer ();
+		
+		int scr_w = screenwidth ();
+		int idx = (buf_x + buf_y * scr_w) * 2;
+		
+		buf [idx] = c;
+		buf [idx + 1] = buf_get_attrib ();
+
+		buf_x ++; if (buf_x == scr_w) {
+			buf_x = 0;
+			buf_y ++;
+		}
+	}
+}
+
 void _buf_print (char *s, int scroll) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
@@ -216,9 +234,11 @@ void buf_print (char *s) {
 
 void buf_print_ln (char *s) {
 	buf_print (s);
-	buf_y ++;
-	buf_x = 0;
-	buf_scroll_up_if_needed ();
+	if (buf_x != 0) { 
+		buf_y ++;
+		buf_x = 0;
+		// buf_scroll_up_if_needed ();
+	}
 }
 
 void buf_cls (void) {

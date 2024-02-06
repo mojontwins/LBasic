@@ -14,6 +14,7 @@
 #include "sys_utils.h"
 
 #define LINE_BUFFER_SIZE 2048
+#define LEGACY_BUFFER_SIZE 16
 #define DEFAULT_ATTEMPTS 5
 
 int attempts;
@@ -94,6 +95,8 @@ int lbasi_run_file (FILE *file) {
 
 	char line_buffer [LINE_BUFFER_SIZE];
 	char temp_buffer [256];
+	char legacy_buffer [LEGACY_BUFFER_SIZE];
+	char draw_buffer [2048];
 	char *command_token;
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
@@ -282,6 +285,105 @@ int lbasi_run_file (FILE *file) {
 			// Wait 60 * seconds frames (can be float)
 			backend_wait_frames (60 * atof (get_token (1)));
 
+		}
+
+		// *** LEGACY ***
+
+		else if (strcmp (command_token, "<fin>") == 0) {
+			backend_pause ();
+
+		} else {
+			// read command
+			char command_char = line_buffer [0];
+			char *argument = line_buffer + 1;
+			char *text;
+			argument [strlen (argument) - 1] = '\0';
+
+			int n_opt, c_opt;
+
+			//printf ("%d %c [%s]\n", command_char, command_char, argument);
+
+			switch (command_char) {
+				case '=': backend_cls (); break;
+	
+				case '#': backend_beep (); break;
+
+				case '\xA8': backend_pause (); break;
+
+				case 'c': 
+					backend_color (
+						10 * argument [0] + argument [1], 
+						10 * argument [2] + argument [3]
+					);
+					break;
+
+				case '*':
+					// Legacy choice
+
+					n_opt = (int)(argument [1] - '0');
+					c_opt = (int)(argument [3] - '0');
+					char c;
+					char *reader = argument + 4;
+
+					// Read & parse prints into get_token (3) onwards
+					for (int i = 0; i < n_opt; i ++) {
+						text = get_token (i + 3);
+						
+						while ((c = *reader ++) != ')') {
+							*text ++ = c;
+						}
+						
+						*text = '\0';
+					}
+
+					while ((choice_res = backend_choice (
+						n_opt, 		// Number of choices. Beware using flags here!
+						c_opt, 		// Correct choice. 
+						get_tokens ()
+					)) == 0 && !backend_get_break ()) {
+						attempts --;
+						backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
+
+						if (attempts >= 0) {
+							backend_try_again (str_try_again, attempts);
+						} else {
+							res = 4;
+							run = 0;
+							break;
+						}
+					}
+
+					if (choice_res < 0) {
+						res = choice_res;
+						run = 0;
+					}
+					
+					break;
+				case 'p': backend_print_ln (argument); break;
+	
+				case '\x87': backend_center (argument); break;
+	
+				case '@':
+					// Legacy cursor
+					// TODO
+					break;
+
+				case 'd':
+					text = draw_buffer;
+					while (fgets (legacy_buffer, LEGACY_BUFFER_SIZE, file) != NULL) {
+						if (strcmp (legacy_buffer, "<END>") == 0) break;
+						*text ++ = legacy_buffer [0];
+					}
+					*text = '\0';
+
+					backend_draw (draw_buffer);
+					break;
+
+				case '-':
+					// Legacy play					
+					break;
+			}
+			
 		}
 
 		// Update screen, etc

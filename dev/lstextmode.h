@@ -17,6 +17,7 @@ void buf_color (int c1, int c2);
 int buf_getc1 (void);
 int buf_getc2 (void);
 int buf_get_attrib (void);
+void buf_char (char c);
 void buf_scroll_up (int from, int to);
 void buf_printabs (char *s);
 void buf_print (char *s);

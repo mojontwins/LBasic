@@ -3,10 +3,12 @@ DECLARE SUB button (y, x, c1, c2, x$)
 DECLARE SUB centra (y, T$)
 DECLARE SUB manto (c1, c2)
 
-DIM h$(3)
-DIM y(4)
+DIM reh$(3)
+DIM arry(4)
 DIM help$(4)
 DIM opt$(4)
+
+fromstart:
 
 CLS
 SCREEN 0
@@ -380,7 +382,7 @@ saveset:
 	CLOSE #1
 	PRINT
 	PRINT "Pulsa una tecla para reiniciar el LBasic 6.0"
-	DO: LOOP WHILE INKEY$ = "": RUN
+	DO: LOOP WHILE INKEY$ = "": goto fromstart
 
 quitset:
 	PRINT
@@ -401,10 +403,10 @@ menu:
 	COLOR 7, 1
 	PRINT "  Editar  ³  Corregir  ³  Ejecutar un programa  ³      (C) Versi¢n 6.03, 1994 "
 	choice = 1
-	y(1) = 1
-	y(2) = 12
-	y(3) = 25
-	y(4) = 50
+	arry(1) = 1
+	arry(2) = 12
+	arry(3) = 25
+	arry(4) = 50
 	opt$(1) = "  Editar  "
 	opt$(2) = "  Corregir  "
 	opt$(3) = "  Ejecutar un programa  "
@@ -422,14 +424,14 @@ kodansha:
 	GOSUB imprimir
 	k$ = INKEY$
 	SELECT CASE k$
-		CASE CHR$(0) + "K": GOSUB left
-		CASE CHR$(0) + "M": GOSUB right
+		CASE CHR$(0) + "K": GOSUB crleft
+		CASE CHR$(0) + "M": GOSUB crright
 		CASE CHR$(13): GOSUB intro
 	END SELECT
 	GOTO kodansha
 
 imprimir:
-	LOCATE 1, y(choice)
+	LOCATE 1, arry(choice)
 	COLOR 9, 7
 	PRINT opt$(choice)
 	VIEW PRINT 1 TO 25
@@ -439,16 +441,16 @@ imprimir:
 	RETURN
 
 borrar:
-	LOCATE 1, y(choice)
+	LOCATE 1, arry(choice)
 	COLOR 7, 1
 	PRINT opt$(choice)
 	RETURN
 
-left:
+crleft:
 	IF choice > 1 THEN GOSUB borrar: choice = choice - 1
 	RETURN
 
-right:
+crright:
 	IF choice < 3 THEN GOSUB borrar: choice = choice + 1
 	RETURN
 
@@ -474,7 +476,7 @@ corregir2:
 	err1 = 0
 	LINE INPUT "* > "; pp$
 	IF pp$ <> "" AND RIGHT$(pp$, 1) <> "\" THEN pp$ = pp$ + "\"
-	FILES pp$
+	shell "dir /b /d " + pp$
 	IF err1 = 1 THEN GOTO corregir2
 	PRINT
 	PRINT "¨Est  aqu¡ tu programa?"
@@ -530,7 +532,7 @@ neww:
 	PRINT
 	PRINT "pulsa una tecla"
 	DO: LOOP WHILE INKEY$ = ""
-	RUN
+	goto fromstart
 	END
 
 ejecutar:
@@ -546,7 +548,7 @@ ejecutar:
 	PRINT
 	PRINT "¨Hiciste eso con el programa que vas a cargar?"
 	LINE INPUT "(s)¡ ¢ (n)o "; q$
-	IF q$ = "n" THEN PRINT : PRINT "Pulsa una tecla para reiniciar LBasic 6.0": DO: LOOP WHILE INKEY$ = "": RUN
+	IF q$ = "n" THEN PRINT : PRINT "Pulsa una tecla para reiniciar LBasic 6.0": DO: LOOP WHILE INKEY$ = "": goto fromstart
 	PRINT
 	PRINT "Bien, pues introduce el path, el s¡mbolo '\' y el nombre sin extensi¢n."
 	PRINT
@@ -554,7 +556,7 @@ ejecutar:
 	err1 = 0
 
 	OPEN nombre$ + ".lbs" FOR INPUT AS #1
-	IF err1 = 1 THEN DO: LOOP WHILE INKEY$ = "": RUN
+	IF err1 = 1 THEN DO: LOOP WHILE INKEY$ = "": goto fromstart
 	err1 = 0
 	textc1 = 7
 	textc2 = 0
@@ -631,7 +633,7 @@ ok01:
 	NEXT currentblock
 
 	PRINT "0, OK, 0:1"
-	DO: LOOP WHILE INKEY$ = "": RUN
+	DO: LOOP WHILE INKEY$ = "": goto fromstart
 
 ok02:
 	CLOSE #1
@@ -653,11 +655,11 @@ runchoice:
 	x = 5
 
 	FOR n = 1 TO num
-		h$(n) = ""
+		reh$(n) = ""
 repeatdone:
 		x = x + 1
 		IF MID$(a$, x, 1) = ")" THEN GOTO nextdone
-		h$(n) = h$(n) + MID$(a$, x, 1)
+		reh$(n) = reh$(n) + MID$(a$, x, 1)
 		GOTO repeatdone
 nextdone:
 	NEXT
@@ -665,10 +667,10 @@ nextdone:
 
 	INPUT r
 	
-	IF r = ver THEN GOTO pass ELSE PRINT h$(r): PRINT "... ­GAME OVER!": PRINT "Deber¡as haber puesto"; ver: DO: LOOP WHILE INKEY$ = "": resetblok% = -1: RETURN
+	IF r = ver THEN GOTO pass ELSE PRINT reh$(r): PRINT "... ­GAME OVER!": PRINT "Deber¡as haber puesto"; ver: DO: LOOP WHILE INKEY$ = "": resetblok% = -1: RETURN
 
 pass:
-	PRINT h$(r)
+	PRINT reh$(r)
 	PRINT
 	RETURN
 
@@ -678,7 +680,6 @@ runprint:
 	RETURN
 
 runcentra:
-centra:
 	h$ = RIGHT$(a$, LEN(a$) - 1)
 	l = 40 - LEN(h$) / 2
 	PRINT TAB(l); h$
@@ -718,7 +719,7 @@ selectcolors:
 runplay:
 	err1 = 0
 	nota$ = RIGHT$(a$, LEN(a$) - 1)
-	PLAY nota$
+	'PLAY nota$
 	IF err1 = 1 THEN PRINT "­ Error en la l¡nea " + STR$(lin) + " en el bloque " + m2$ + " en notas !"
 	err1 = 0
 	RETURN
