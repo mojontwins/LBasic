@@ -1,0 +1,47 @@
+c0700
+=
+c1401
+pEL CARGUERO 
+c0700
+p
+p
+pAcabas de entrar en el carguero que te llevar  a la Tierra. Entras en la bodega de carga... 
+pY encuentras tres objetos: 
+pUna Linterna 
+pUn muelle 
+pUn rayo l ser 
+p
+pIntroduce '1' para la Linterna÷ '2' para el muelle y '3' para el laser. 
+* 3 1Ok! Perfecto! Ahora prosigue en tu aventura con una linterna.)El muelle se dispara... y te propulsa÷ a toda velocidad÷ al centro del sal¢n de tu casa... Luego el carguero sale... y te deja en la Luna... ­Mala suerte!...)La pistola÷ se dispara÷ y... ya sabes lo que pasa.)
+¨
+=
+pTe incorporas÷ y ves ante t¡ un pasillo que lleva a las bodegas÷ un laberinto   para alguien como t£÷ que no sabes nada de naves. 
+pEst  muy oscuro. 
+p1.- Enciendo la Linterna÷ ¢ 2.- No la enciendo. 
+p
+* 2 2La luz que despide la linterna alumbra el camino÷ con lo que puedes salir...    Pero÷ adem s de eso÷ la luz atrae a los guardias que te echan de la nave...)Bueno- aunque a trompicones puedes avanzar...)
+¨
+=
+p
+pLlegas a una gran galer¡a÷ con el techo abovedado en forma de c£pula÷ con un    tragaluz en el exterior. La luz que se recibe es muy t‚nue... 
+p¨Qu‚ hago? 
+pAl Norte puedo ver algo as¡ como una cabina de mando... 
+ppero- si me muevo un poco hacia la derecha÷ te puedes esconder en un sitio que  parece acogedor÷ y esperar... 
+p
+pPulsa '1' para ir al norte o '2' para quedarte en el escondite. 
+* 2 2Avanzas hacia el norte÷ hasta que te introduces en la cabina. Pero alli hay al- guien: Uno de los empleados de carga y descarga÷ que te manda a tu casita...)Pasa el tiempo... y caes en un profundo sue¤o.)
+¨
+=
+c1500
+pEst s so¤ando... Algo que no es un sue¤o normal... 
+c0700
+p
+pEn realidad lo que est s so¤ando es una trampa mortal que te est  tendiendo al- guien... Que s¢lo vive para fastidiarte... 
+p
+?
+¨
+=
+p
+p
+pSigue las aventuras en el sue¤o!! 
+<FIN>
