@@ -26,8 +26,9 @@ char menu_help3 [] = " Para jugar a un programa que hayas hecho";
 char *menu_help [] = { menu_help1, menu_help2, menu_help3 };
 
 char **editor_lines;
-int editor_n_lines = 0;
-int editor_current_line;
+int editor_n_lines = 0; 	// Total number of lines allocated
+int editor_current_line;	// Line being edited
+int editor_last_line; 		// Last line in program
 
 #define LINE_BUFFER_SIZE 2048
 
@@ -164,41 +165,43 @@ int editor (void) {
 
 	int x = 0; 
 	int y = 1;
+	int i;
 	int editor_next_line = editor_n_lines;
+
+	first_line_to_display = 0
 
 	while (editing) {
 
 		if (new_line) {
+			// Add new line.
+			// - If editor_last_line + 1 == editor_n_lines allocate more lines 
+			if (editor_last_line + 1 == editor_n_lines) lines_add_new ();
 
-			if (line_pointer != NULL) y += 1 + strlen (line_pointer) / 80;
-			x = cursor = 0;
+			// Advance to the next line
+			editor_current_line ++;
+			editor_last_line ++;
 
-			// Increase size of buffer in 1 line
-			lines_add_new ();
-
-			// Now shuffle all pointers.
-			for (int i = editor_n_lines - 2; i > editor_current_line; i --) {
-				editor_lines [i + 1] = editor_lines [i];
+			// Now shuffle all pointers to make room for the new line
+			for (int i = editor_last_line; i > editor_current_line; i --) {
+				editor_lines [i] = editor_lines [i - 1];
 			}
 
+			// Create new, blank line
 			line_pointer = (char *) malloc (1 * sizeof (char));
 			line_pointer [0] = '\0';
+			cursor = 0;
 
-			editor_current_line = editor_next_line;
+			// Add to lines
 			editor_lines [editor_current_line] = line_pointer;
+
+			if (editor_current_line > editor_last_line) {
+				editor_last_line = editor_current_line;
+			}
 
 			new_line = 0;
 		} 
 
 		if (line_change) {
-			if (editor_next_line < editor_current_line) {
-				// Moving up, subtract 'next line' height
-				y -= strlen (editor_lines [editor_next_line]) / 80 + 1;
-			} else {
-				// Moving down, add 'current line' height;
-				y += strlen (editor_lines [editor_current_line]) / 80 + 1;
-			}
-			x = 0;
 			editor_current_line = editor_next_line;
 			line_pointer = editor_lines [editor_current_line];
 			if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);
@@ -248,7 +251,7 @@ int editor (void) {
 				}
 			}
 			if (key == KEY_DOWN) {
-				if (editor_current_line < editor_n_lines - 1) {
+				if (editor_current_line < editor_last_line) {
 					editor_next_line = editor_current_line + 1;
 					line_change = 1;
 				}
@@ -261,23 +264,33 @@ int editor (void) {
 			++keys;
 		}
 
-		int bkg = editor_current_line & 1 ? 8 : 0;
+		// Display
+		y = 1;
+		buf_clscroll ();
+		while (1) {
+			int line_no = first_line_to_display + i;
+			int bkg = line_no & 1 ? 8 : 0;
 
-		// TO DO:: TAKE CARE OF POSSIBLE SCROLLING!
-		buf_setxy (x, y);
-		buf_color (7, bkg);
-		buf_print_abs (line_pointer);
+			if (line_no > editor_last_line) break;
+			
+			buf_setxy (0, y)
+			buf_color (7, bkg);
+			buf_print_abs (editor_lines [line_no]);
 
-		c = line_pointer [cursor]; if(c == 0) c = ' ';
-		buf_setxy (x + cursor % 80, y + cursor / 80);
-		buf_color (0, 14);
-		buf_char (c);
+			// Draw cursor?
+			if (line_no == editor_current_line) {
+				c = line_pointer [cursor]; if (c == 0) c = ' ';
+				buf_setxy (cursor % 80, y + cursor / 80);
+				buf_color (0, 14);
+				buf_char (c);
+			}
+
+			y += 1 + strlen (editor_lines [line_no]) / 80;
+
+			if (y > 23) break;
+		}
 
 		waitvbl ();
-
-		buf_setxy (x + cursor % 80, y + cursor / 80);
-		buf_color (7, bkg);
-		buf_char (c);
 	}
 }
 
@@ -285,7 +298,10 @@ void main (char argc, char *argv []) {
 	buf_setviewport (1, 23);
 	splash_screen_1 ();
 
-	editor_current_line = 0;
+	editor_current_line = -1;
+	editor_last_line = -1;
+	editor_n_lines = 0;
+
 	while (menu () != 4) {
 		// MEH
 		editor ();
