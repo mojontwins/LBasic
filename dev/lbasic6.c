@@ -162,13 +162,14 @@ int editor (void) {
 	int cursor = 0;
 	char *line_pointer = NULL;
 	char c;
+	int cur_line_rendered;
 
 	int x = 0; 
 	int y = 1;
 	int i;
 	int editor_next_line = editor_n_lines;
 
-	first_line_to_display = 0
+	int first_line_to_display = 0;
 
 	while (editing) {
 
@@ -187,27 +188,32 @@ int editor (void) {
 			}
 
 			// Create new, blank line
-			line_pointer = (char *) malloc (1 * sizeof (char));
-			line_pointer [0] = '\0';
+			char *blank_line = (char *) malloc (1 * sizeof (char));
+			blank_line [0] = '\0';
 			cursor = 0;
 
 			// Add to lines
-			editor_lines [editor_current_line] = line_pointer;
-
-			if (editor_current_line > editor_last_line) {
-				editor_last_line = editor_current_line;
-			}
+			editor_lines [editor_current_line] = blank_line;
 
 			new_line = 0;
 		} 
 
 		if (line_change) {
+			// Scroll display up is trivial
+			if(editor_next_line < first_line_to_display) {
+				first_line_to_display = editor_next_line;
+			}
+
+			// Scroll down is more tricky ... done elsehwere?
+
 			editor_current_line = editor_next_line;
-			line_pointer = editor_lines [editor_current_line];
-			if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);
+
 
 			line_change = 0;
 		}
+
+		line_pointer = editor_lines [editor_current_line];
+		if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);
 
 		// Read keys and write to line.
 		unsigned char const* chars = (unsigned char*) readchars ();
@@ -222,6 +228,7 @@ int editor (void) {
 				// Increment buffer size, move right part right 1 char, insert
 
 				line_pointer = realloc (line_pointer, (line_length + 2) * sizeof (char));
+				editor_lines [editor_current_line] = line_pointer;
 
 				for (int i = line_length; i >= cursor; i --) {
 					line_pointer [i + 1] = line_pointer [i];
@@ -266,6 +273,10 @@ int editor (void) {
 
 		// Display
 		y = 1;
+		i = 0;
+		cur_line_rendered = 0;
+
+		buf_color (7, 0);
 		buf_clscroll ();
 		while (1) {
 			int line_no = first_line_to_display + i;
@@ -273,21 +284,33 @@ int editor (void) {
 
 			if (line_no > editor_last_line) break;
 			
-			buf_setxy (0, y)
+			buf_setxy (0, y);
 			buf_color (7, bkg);
 			buf_print_abs (editor_lines [line_no]);
 
 			// Draw cursor?
 			if (line_no == editor_current_line) {
-				c = line_pointer [cursor]; if (c == 0) c = ' ';
-				buf_setxy (cursor % 80, y + cursor / 80);
-				buf_color (0, 14);
-				buf_char (c);
+				int ycursor = y + cursor / 80;
+
+				if (ycursor < 24) {
+					cur_line_rendered = 1;
+
+					c = line_pointer [cursor]; if (c == 0) c = ' ';
+					buf_setxy (cursor % 80, ycursor);
+					buf_color (0, 14);
+					buf_char (c);
+				}
 			}
 
 			y += 1 + strlen (editor_lines [line_no]) / 80;
 
-			if (y > 23) break;
+			if (y > 23) {
+				if (!cur_line_rendered) first_line_to_display ++;
+
+				break;
+			}
+
+			i ++;
 		}
 
 		waitvbl ();
