@@ -3015,21 +3015,33 @@ static int app_proc( app_t* app, void* user_data ) {
    
     app_title( app, app_filename( app ) );
 
-    #ifndef __wasm__
-    bool fullscreen = true;
-    #else
+    //#ifndef __wasm__
+    //bool fullscreen = true;
+    //#else
     bool fullscreen = false;
-    #endif
+    //#endif
+
+
    
     int modargc = 0;
     char* modargv[ 256 ];
     for( int i = 0; i < app_context->argc; ++i ) {
+        /*
         if( strcmp( app_context->argv[ i ], "--window" ) == 0 ) {
             fullscreen = false;
         }
         else if( strcmp( app_context->argv[ i ], "-w" ) == 0 ) {
             fullscreen = false;
-        } else {
+        } 
+        */
+        if( strcmp( app_context->argv[ i ], "--full" ) == 0 ) {
+            fullscreen = false;
+        }
+        else if( strcmp( app_context->argv[ i ], "-f" ) == 0 ) {
+            fullscreen = false;
+        } 
+
+        else {
             if( modargc >= sizeof( modargv ) / sizeof( *modargv ) ) {
                 break;
             }
