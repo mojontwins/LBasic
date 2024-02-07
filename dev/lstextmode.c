@@ -112,9 +112,7 @@ void buf_scroll_up (int from, int to) {
 }
 
 void buf_scroll_up_if_needed (void) {
-	int scr_h = screenheight ();
-
-	while (buf_y >= viewport_y2 + 1) {
+	while (buf_y > viewport_y2) {
 		buf_scroll_up (viewport_y1 + 1, viewport_y2);
 		buf_y --;
 	}
@@ -148,8 +146,12 @@ void _buf_print (char *s, int scroll) {
 		int attrib = buf_get_attrib ();
 
 		while (c = *s ++) {
-			if (scroll) buf_scroll_up_if_needed ();
-			
+			if (scroll) {
+				buf_scroll_up_if_needed ();
+			} else {
+				if (buf_y > viewport_y2) break;
+			}
+
 			idx = (buf_x + buf_y * scr_w) * 2;
 			buf [idx] = c;
 			buf [idx + 1] = attrib;
@@ -172,6 +174,8 @@ void _buf_print (char *s, int scroll) {
 			if (scroll) {
 				buf_scroll_up_if_needed ();
 				y1 = 8 * buf_y;
+			} else {
+				if (buf_y > viewport_y2) break;
 			}
 
 			setcolor (buf_c2);
@@ -224,7 +228,7 @@ void buf_wordwrap (char *s) {
 	buf_scroll_up_if_needed ();
 }
 
-void buf_printabs (char *s) {
+void buf_print_abs (char *s) {
 	_buf_print (s, 0);
 }
 
@@ -337,6 +341,9 @@ void buf_pause (void) {
 	while (!heartbeat ()) {
 		int c = *readchars ();
 		if (c > 0) break;
+	}
+
+	while (heartbeat () && c == *readchars ()) {
 	}
 }
 

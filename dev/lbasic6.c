@@ -11,7 +11,7 @@
 #include "lstextmode.h"
 #include "interpreter.h"
 
-int menu_x [3] = { 1, 12, 25 };
+int menu_x [3] = { 0, 11, 24 };
 
 char menu_opt1 [] = "  Editar  ";
 char menu_opt2 [] = "  Corregir  ";
@@ -37,9 +37,9 @@ void splash_screen_1 (void) {
 	
 	buf_color (7, 1);
 	buf_setxy (0, 24);
-	buf_printabs ("  Pulsa una tecla para comenzar \xB3 Introduce ' men\xA3 ' siempre que quieras usarlo ");
+	buf_print_abs ("  Pulsa una tecla para comenzar \xB3 Introduce ' men\xA3 ' siempre que quieras usarlo ");
 	buf_setxy (0, 0);
-	buf_printabs ("  Compilador Lokosoft LBasic versi\xA2n 6.03. (C)opyright 1994 by Loko Soft        ");
+	buf_print_abs ("  Compilador Lokosoft LBasic versi\xA2n 6.03. (C)opyright 1994 by Loko Soft        ");
 	buf_color (7, 0);
 
 	buf_pause ();
@@ -52,23 +52,23 @@ int menu (void) {
 
 	buf_color (7, 1);
 	buf_setxy (0, 0);
-	buf_printabs ("  Editar  \xB3  Corregir  \xB3  Ejecutar un programa  \xB3      (C) Versi\xA2n 6.03, 1994   ");
+	buf_print_abs ("  Editar  \xB3  Corregir  \xB3  Ejecutar un programa  \xB3      (C) Versi\xA2n 6.03, 1994   ");
 
 	while (menu_on) {
 		if (option_old != option) {
 			if (option_old != 0xff) {
 				buf_color (7, 1);
 				buf_setxy (menu_x [option_old], 0);
-				buf_printabs (menu_opt [option_old]);
+				buf_print_abs (menu_opt [option_old]);
 			}
 
 			buf_color (9, 7);
 			buf_setxy (menu_x [option], 0);
-			buf_printabs (menu_opt [option]);
+			buf_print_abs (menu_opt [option]);
 
 			buf_color (7, 1);
-			buf_setxy (0, 23);
-			buf_printabs (menu_help [option]);
+			buf_setxy (0, 24);
+			buf_print_abs (menu_help [option]);
 
 			option_old = option;
 		}
@@ -228,7 +228,7 @@ int editor (void) {
 		// TO DO:: TAKE CARE OF POSSIBLE SCROLLING!
 		buf_setxy (x, y);
 		buf_color (7, 0);
-		buf_printabs (line_pointer);
+		buf_print_abs (line_pointer);
 
 		c = line_pointer [cursor]; if(c == 0) c = ' ';
 		buf_setxy (x + cursor % 80, y + cursor / 80);

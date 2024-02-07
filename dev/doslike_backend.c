@@ -46,18 +46,18 @@ void backend_statusbar (int clr_statusbar1, int clr_statusbar2, char *string_top
 
 		buf_setxy (0, 0);
 		buf_color (clr_statusbar1, clr_statusbar2);
-		buf_printabs (full_line);
+		buf_print_abs (full_line);
 		
 		buf_setxy (0, 0);
-		buf_printabs (string_top);
+		buf_print_abs (string_top);
 
 		buf_setxy (0, 24);
-		buf_printabs (full_line);
+		buf_print_abs (full_line);
 		
 		buf_setxy (0, 24);
-		buf_printabs (string_bottom);
+		buf_print_abs (string_bottom);
 		sprintf (attempts_str, "%1d", attempts);
-		buf_printabs (attempts_str);
+		buf_print_abs (attempts_str);
 
 		buf_setxy (x, y);
 		buf_color (c1, c2);
