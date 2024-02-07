@@ -19,9 +19,9 @@ char menu_opt3 [] = "  Ejecutar un programa  ";
 
 char *menu_opt [] = { menu_opt1, menu_opt2, menu_opt3 };
 
-char menu_help1 [] = "Para hacer un programa                  ";
-char menu_help2 [] = "Para hacer correcciones en un programa  ";
-char menu_help3 [] = "Para jugar a un programa que hayas hecho";
+char menu_help1 [] = " Para hacer un programa                  ";
+char menu_help2 [] = " Para hacer correcciones en un programa  ";
+char menu_help3 [] = " Para jugar a un programa que hayas hecho";
 
 char *menu_help [] = { menu_help1, menu_help2, menu_help3 };
 
@@ -47,10 +47,14 @@ void splash_screen_1 (void) {
 
 int menu (void) {
 	int menu_on = 1;
+	int key_return = 1;
 	int option = 0;
 	int option_old = 0xff;
 
 	buf_color (7, 1);
+	buf_setxy (0, 24);
+	buf_print_abs ("                                                                                ");
+
 	buf_setxy (0, 0);
 	buf_print_abs ("  Editar  \xB3  Corregir  \xB3  Ejecutar un programa  \xB3      (C) Versi\xA2n 6.03, 1994   ");
 
@@ -75,7 +79,7 @@ int menu (void) {
 
 		// Read cursors
 
-		enum keycode_t* keys = readkeys();
+		enum keycode_t *keys = readkeys();
 		int old_key = 0;
 		
 		while (*keys) {
@@ -90,7 +94,9 @@ int menu (void) {
 				old_key = key;
 			}
 			if (key == KEY_RETURN) {
-				menu_on = 0;
+				if (key_return == 0) menu_on = 0;
+			} else {
+				key_return = 0;
 			}
 			if (key == KEY_ESCAPE) {
 				option = 4; menu_on = 0;
@@ -153,36 +159,51 @@ int editor (void) {
 	int line_length;
 	int editing = 1;
 	int cursor = 0;
-	char *line_pointer;
+	char *line_pointer = NULL;
 	char c;
 
 	int x = 0; 
 	int y = 1;
+	int editor_next_line = editor_n_lines;
 
 	while (editing) {
 
 		if (new_line) {
 
+			if (line_pointer != NULL) y += 1 + strlen (line_pointer) / 80;
+			x = cursor = 0;
+
 			// Increase size of buffer in 1 line
 			lines_add_new ();
 
 			// Now shuffle all pointers.
-			for (int i = editor_n_lines - 2; i > editor_current_line; i ++) {
+			for (int i = editor_n_lines - 2; i > editor_current_line; i --) {
 				editor_lines [i + 1] = editor_lines [i];
 			}
-
-			editor_current_line ++;
 
 			line_pointer = (char *) malloc (1 * sizeof (char));
 			line_pointer [0] = '\0';
 
+			editor_current_line = editor_next_line;
 			editor_lines [editor_current_line] = line_pointer;
 
 			new_line = 0;
 		} 
 
 		if (line_change) {
-			//
+			if (editor_next_line < editor_current_line) {
+				// Moving up, subtract 'next line' height
+				y -= strlen (editor_lines [editor_next_line]) / 80 + 1;
+			} else {
+				// Moving down, add 'current line' height;
+				y += strlen (editor_lines [editor_current_line]) / 80 + 1;
+			}
+			x = 0;
+			editor_current_line = editor_next_line;
+			line_pointer = editor_lines [editor_current_line];
+			if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);
+
+			line_change = 0;
 		}
 
 		// Read keys and write to line.
@@ -206,6 +227,8 @@ int editor (void) {
 				line_pointer [cursor] = c;
 				cursor ++;			
 			}
+
+			chars ++;
 		}
 
 		// Special keys.
@@ -218,16 +241,31 @@ int editor (void) {
 			if (key == KEY_RIGHT) {
 				if (cursor < strlen (line_pointer)) cursor ++;
 			}
+			if (key == KEY_UP) {
+				if (editor_current_line > 0) {
+					editor_next_line = editor_current_line - 1;
+					line_change = 1;
+				}
+			}
+			if (key == KEY_DOWN) {
+				if (editor_current_line < editor_n_lines - 1) {
+					editor_next_line = editor_current_line + 1;
+					line_change = 1;
+				}
+			}
 			if (key == KEY_RETURN) {
+				editor_next_line = editor_current_line + 1;
 				new_line = 1;
 			}
 
 			++keys;
 		}
 
+		int bkg = editor_current_line & 1 ? 8 : 0;
+
 		// TO DO:: TAKE CARE OF POSSIBLE SCROLLING!
 		buf_setxy (x, y);
-		buf_color (7, 0);
+		buf_color (7, bkg);
 		buf_print_abs (line_pointer);
 
 		c = line_pointer [cursor]; if(c == 0) c = ' ';
@@ -236,6 +274,10 @@ int editor (void) {
 		buf_char (c);
 
 		waitvbl ();
+
+		buf_setxy (x + cursor % 80, y + cursor / 80);
+		buf_color (7, bkg);
+		buf_char (c);
 	}
 }
 
@@ -243,6 +285,7 @@ void main (char argc, char *argv []) {
 	buf_setviewport (1, 23);
 	splash_screen_1 ();
 
+	editor_current_line = 0;
 	while (menu () != 4) {
 		// MEH
 		editor ();

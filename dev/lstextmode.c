@@ -149,7 +149,7 @@ void _buf_print (char *s, int scroll) {
 			if (scroll) {
 				buf_scroll_up_if_needed ();
 			} else {
-				if (buf_y > viewport_y2) break;
+				if (buf_y >= screenheight ()) break;
 			}
 
 			idx = (buf_x + buf_y * scr_w) * 2;
@@ -175,7 +175,7 @@ void _buf_print (char *s, int scroll) {
 				buf_scroll_up_if_needed ();
 				y1 = 8 * buf_y;
 			} else {
-				if (buf_y > viewport_y2) break;
+				if (buf_y >= screenheight ()) break;
 			}
 
 			setcolor (buf_c2);
@@ -338,13 +338,17 @@ int heartbeat (void) {
 }
 
 void buf_pause (void) {
+	int c;
+
 	while (!heartbeat ()) {
-		int c = *readchars ();
+		c = *readchars ();
 		if (c > 0) break;
 	}
 
-	while (heartbeat () && c == *readchars ()) {
-	}
+	enum keycode_t* keys;
+	do {
+		keys = readkeys();
+	} while (*keys);
 }
 
 void buf_gif_at (char *gif, int x, int y, int do_setpal) {
