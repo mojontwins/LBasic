@@ -126,6 +126,8 @@ int menu (void) {
 
 		waitvbl ();
 	}
+
+	return option;
 }
 
 char *lines_add_new (void) {
@@ -300,7 +302,7 @@ int editor (void) {
 			// decrease last line /
 			editor_last_line --;
 			editor_current_line --;
-			cursor = strlen (editor_lines [editor_last_line]);
+			cursor = strlen (editor_lines [editor_last_line]) + 1;
 
 			delete_line = 0;
 		}
