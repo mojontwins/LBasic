@@ -297,8 +297,10 @@ int editor (void) {
 			// Clear last line
 			editor_lines [editor_last_line] = NULL;
 
-			// decrease last line
+			// decrease last line /
 			editor_last_line --;
+			editor_current_line --;
+			cursor = strlen (editor_lines [editor_last_line]);
 
 			delete_line = 0;
 		}
