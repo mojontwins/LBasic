@@ -153,6 +153,28 @@ void lines_read_from_file (FILE *file) {
 	editor_current_line = editor_n_lines;
 }
 
+char get_character_input (unsigned char const* chars, enum keycode_t *keys) {
+	// Attempts to get CP 437 encoded characters including latin / extended
+	int shift = keystate (KEY_SHIFT);
+
+	int x = 0; char tempbuf [16];
+	
+	unsigned long long key;
+	while (key = *keys ++) {
+		buf_setxy(x, 24);
+		sprintf(tempbuf, "%d", key);
+		buf_print_abs (tempbuf);
+		x += 8;
+		buf_setxy(x, 24);
+		buf_print_abs ("XXXXXXXX");
+	}
+
+	char c;
+	while (c = *chars ++) {
+		return c;
+	}
+}
+
 int editor (void) {
 	// File is already loaded.
 	int line_change = 0;
@@ -220,25 +242,22 @@ int editor (void) {
 		enum keycode_t* keys = readkeys ();
 
 		// Characters
-		while (c = *chars) {
-			if (c >= ' ') {
-				// Insert a new character (end / middle)
-				line_length = strlen (line_pointer);
-				
-				// Increment buffer size, move right part right 1 char, insert
+		c = get_character_input (chars, keys);
+		if (c >= ' ') {
+			// Insert a new character (end / middle)
+			line_length = strlen (line_pointer);
+			
+			// Increment buffer size, move right part right 1 char, insert
 
-				line_pointer = realloc (line_pointer, (line_length + 2) * sizeof (char));
-				editor_lines [editor_current_line] = line_pointer;
+			line_pointer = realloc (line_pointer, (line_length + 2) * sizeof (char));
+			editor_lines [editor_current_line] = line_pointer;
 
-				for (int i = line_length; i >= cursor; i --) {
-					line_pointer [i + 1] = line_pointer [i];
-				}
-
-				line_pointer [cursor] = c;
-				cursor ++;			
+			for (int i = line_length; i >= cursor; i --) {
+				line_pointer [i + 1] = line_pointer [i];
 			}
 
-			chars ++;
+			line_pointer [cursor] = c;
+			cursor ++;			
 		}
 
 		// Special keys.
