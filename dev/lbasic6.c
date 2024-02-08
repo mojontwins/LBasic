@@ -159,70 +159,84 @@ void lines_read_from_file (FILE *file) {
 	editor_current_line = editor_n_lines;
 }
 
+int find_color (char *s) {
+	if (strlen (s) == 0) return;
+
+	if (s[0] == ':') return 10;
+
+	if (
+		strcmp (s, "print") == 0 ||
+		strcmp (s, "choice") == 0 ||
+		strcmp (s, "color") == 0 ||
+		strcmp (s, "centra") == 0 ||
+		strcmp (s, "pause") == 0 ||
+		strcmp (s, "beep") == 0
+	) return 12;
+
+	return 7;
+}
+
+void syntax_hightlight (int bkg, char *s) {
+	// Generates several buf_print_ab if nice stuff detected.
+	char all_purpose_buffer [sizeof (s)];
+	int l = strlen (s);
+	int initial_space_done = 0;
+	int found_keyword = 0;
+	int last_i = 0;
+
+	// Attempt to disregard arbitrary tab/space shit at the beginning
+
+	all_purpose_buffer [0] = 0;
+
+	for (int i = 0; i <= l; i ++) {
+		char c = s [i];
+		if (initial_space_done == 0) {
+			if (c == ' ' || c == '\t') {
+				// bleh
+			} else {
+				// Print space at the beginning
+				if (i > 0) {
+					strncpy (all_purpose_buffer, s, i);
+					buf_color (7, bkg); 
+					buf_print_abs (all_purpose_buffer);
+				}
+				last_i = i;
+				initial_space_done = 1;
+			}
+		} 
+
+
+		if (initial_space_done == 1) {
+
+			if (found_keyword == 0) {
+				if (c == ' ' || c == '\t' || c == 0) {
+					strncpy (all_purpose_buffer, s + last_i, i - last_i);
+					buf_color (find_color (all_purpose_buffer), bkg);
+					buf_print_abs (all_purpose_buffer);
+					found_keyword = 1;
+					last_i = i;
+				}
+
+				if (c == 0) break;
+			} 
+
+			if (found_keyword) {
+				strncpy (all_purpose_buffer, s + last_i, i - last_i);
+				buf_color (7, bkg);
+				buf_print_abs (all_purpose_buffer);
+				break;
+			}
+		}
+	}
+}
+
 unsigned char get_character_input (unsigned char const* chars, enum keycode_t *keys) {
-	// Attempts to get CP 437 encoded characters including latin / extended
-
-	// Codes returned in keys:
-	// 152 ç/Ç
-	// 153 ñ/Ñ
-	// 155 º/ª
-	// 156 ¡/¿
-	// 157 ´/¨
-
-
-	int x = 0; char tempbuf [16];
-	
 	unsigned long long key;
 	while (key = *keys ++) {
-		/*
-		int shift = keystate (KEY_SHIFT);
-
-				buf_setxy(x, 24);
-		sprintf(tempbuf, "%d        ", key);
-		buf_print_abs (tempbuf);
-		x += 8;
-		buf_setxy(x, 24);
-
-		switch (key) {
-			case 152:
-				// CP 437 Ç / ç 
-				return shift ? 0x80 : 0x87;
-
-			case 153:
-				// CP 437 Ñ / ñ
-				return shift ? 0xA5 : 0xA4;
-
-			case 155:
-				// CP 437 ª / º
-				return shift ? 0xA6 : 0xA7;
-
-			case 156:
-				// CP 437 ¿ / ¡
-				return shift ? 0xA8 : 0xAD;
-
-			case 157:
-				// Register ´
-				if (shift) {
-					pending_diaeresis = 1;
-					pending_tilde = 0;
-				} else {
-					pending_diaeresis = 0;
-					pending_tilde = 1;
-
-					buf_setxy(40,24);buf_print_abs ("REG ´");
-				}
-				return 0;
-		} 
-		*/
 	}
 
 	char c;
 	while (c = *chars ++) {
-
-		sprintf(tempbuf, "%d %c      ", c, c);
-		buf_setxy(x, 24);
-		buf_print_abs (tempbuf);
-
 		// Translate to CP 437
 		if (c < 0) return iso_ext_to_cp437 [128 + c];
 
@@ -402,7 +416,8 @@ int editor (void) {
 			
 			buf_setxy (0, y);
 			buf_color (7, bkg);
-			buf_print_abs (editor_lines [line_no]);
+			//buf_print_abs (editor_lines [line_no]);
+			syntax_hightlight (bkg, editor_lines [line_no]);
 
 			// Draw cursor?
 			if (line_no == editor_current_line) {
