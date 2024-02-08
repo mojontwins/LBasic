@@ -232,6 +232,7 @@ int editor (void) {
 	// File is already loaded.
 	int line_change = 0;
 	int new_line = 1;
+	int delete_line = 0;
 	int line_length;
 	int editing = 1;
 	int cursor = 0;
@@ -287,6 +288,21 @@ int editor (void) {
 			line_change = 0;
 		}
 
+		if (delete_line) {
+			// Shuffle all lines up
+			for(int i = editor_current_line; i < editor_last_line; i ++) {
+				editor_lines [i] = editor_lines [i + 1];
+			}
+
+			// Clear last line
+			editor_lines [editor_last_line] = NULL;
+
+			// decrease last line
+			editor_last_line --;
+
+			delete_line = 0;
+		}
+
 		line_pointer = editor_lines [editor_current_line];
 		if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);
 
@@ -296,6 +312,7 @@ int editor (void) {
 
 		// Characters
 		c = get_character_input (chars, keys);
+
 		if (c >= ' ') {
 			// Insert a new character (end / middle)
 			line_length = strlen (line_pointer);
@@ -311,6 +328,29 @@ int editor (void) {
 
 			line_pointer [cursor] = c;
 			cursor ++;			
+		} else {
+			switch (c) {
+				case 8:
+					// Delete
+
+					// If cursor is on the 1st character -> delete this line
+					
+					if (cursor == 0) {
+						delete_line = 1;
+					} else {
+						// Delete character to the left of the cursor.
+						cursor --;
+						for (int i = cursor; i < strlen (line_pointer); i ++) {
+							line_pointer [i] = line_pointer [i + 1];
+						}
+					}
+
+					break;
+
+				case 27:
+					// Exit
+					editing = 0;
+			}
 		}
 
 		// Special keys.
