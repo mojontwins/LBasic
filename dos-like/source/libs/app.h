@@ -126,7 +126,7 @@ typedef struct app_input_event_t
     union data_t
         {
         app_key_t key;
-        char char_code;
+        unsigned char char_code;
         struct { int x; int y; } mouse_pos;
         struct { float x; float y; } mouse_delta;
         float wheel_delta;

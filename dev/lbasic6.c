@@ -10,6 +10,7 @@
 
 #include "lstextmode.h"
 #include "interpreter.h"
+#include "conversion.h"
 
 int menu_x [3] = { 0, 11, 24 };
 
@@ -29,6 +30,9 @@ char **editor_lines;
 int editor_n_lines = 0; 	// Total number of lines allocated
 int editor_current_line;	// Line being edited
 int editor_last_line; 		// Last line in program
+
+int pending_tilde; 			// True if ´ was pressed
+int pending_diaeresis; 		// True if ¨ was pressed
 
 #define LINE_BUFFER_SIZE 2048
 
@@ -153,24 +157,73 @@ void lines_read_from_file (FILE *file) {
 	editor_current_line = editor_n_lines;
 }
 
-char get_character_input (unsigned char const* chars, enum keycode_t *keys) {
+unsigned char get_character_input (unsigned char const* chars, enum keycode_t *keys) {
 	// Attempts to get CP 437 encoded characters including latin / extended
-	int shift = keystate (KEY_SHIFT);
+
+	// Codes returned in keys:
+	// 152 ç/Ç
+	// 153 ñ/Ñ
+	// 155 º/ª
+	// 156 ¡/¿
+	// 157 ´/¨
+
 
 	int x = 0; char tempbuf [16];
 	
 	unsigned long long key;
 	while (key = *keys ++) {
-		buf_setxy(x, 24);
-		sprintf(tempbuf, "%d", key);
+		/*
+		int shift = keystate (KEY_SHIFT);
+
+				buf_setxy(x, 24);
+		sprintf(tempbuf, "%d        ", key);
 		buf_print_abs (tempbuf);
 		x += 8;
 		buf_setxy(x, 24);
-		buf_print_abs ("XXXXXXXX");
+
+		switch (key) {
+			case 152:
+				// CP 437 Ç / ç 
+				return shift ? 0x80 : 0x87;
+
+			case 153:
+				// CP 437 Ñ / ñ
+				return shift ? 0xA5 : 0xA4;
+
+			case 155:
+				// CP 437 ª / º
+				return shift ? 0xA6 : 0xA7;
+
+			case 156:
+				// CP 437 ¿ / ¡
+				return shift ? 0xA8 : 0xAD;
+
+			case 157:
+				// Register ´
+				if (shift) {
+					pending_diaeresis = 1;
+					pending_tilde = 0;
+				} else {
+					pending_diaeresis = 0;
+					pending_tilde = 1;
+
+					buf_setxy(40,24);buf_print_abs ("REG ´");
+				}
+				return 0;
+		} 
+		*/
 	}
 
 	char c;
 	while (c = *chars ++) {
+
+		sprintf(tempbuf, "%d %c      ", c, c);
+		buf_setxy(x, 24);
+		buf_print_abs (tempbuf);
+
+		// Translate to CP 437
+		if (c < 0) return iso_ext_to_cp437 [128 + c];
+
 		return c;
 	}
 }
@@ -183,7 +236,7 @@ int editor (void) {
 	int editing = 1;
 	int cursor = 0;
 	char *line_pointer = NULL;
-	char c;
+	unsigned char c;
 	int cur_line_rendered;
 
 	int x = 0; 
@@ -343,6 +396,8 @@ void main (char argc, char *argv []) {
 	editor_current_line = -1;
 	editor_last_line = -1;
 	editor_n_lines = 0;
+	pending_tilde = 0;
+	pending_diaeresis = 0;
 
 	while (menu () != 4) {
 		// MEH

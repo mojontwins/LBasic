@@ -3178,7 +3178,7 @@ static int app_proc( app_t* app, void* user_data ) {
     int curs_y = 0;
     bool keystate[ KEYCOUNT ] = { 0 };
     enum keycode_t keys[ 256 ] = { (enum keycode_t)0 };
-    char chars[ 256] = { 0 };
+    unsigned char chars[ 256] = { 0 };
     APP_U64 crt_time_us = 0;
     APP_U64 prev_time = app_time_count( app );       
     while( !thread_atomic_int_load( &user_thread_context.user_thread_finished ) ) {
