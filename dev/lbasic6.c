@@ -178,56 +178,55 @@ int find_color (char *s) {
 
 void syntax_hightlight (int bkg, char *s) {
 	// Generates several buf_print_ab if nice stuff detected.
-	char all_purpose_buffer [sizeof (s)];
-	int l = strlen (s);
-	int initial_space_done = 0;
+	int n_tokens;
 	int found_keyword = 0;
-	int last_i = 0;
 
-	// Attempt to disregard arbitrary tab/space shit at the beginning
+	int state = 0; 
+	int l = strlen (s);
+	
+	int chars_to_copy = 0;
+	char temp_buffer[l + 1];
+	char c;
 
-	all_purpose_buffer [0] = 0;
+	int temp_index = 0;
 
-	for (int i = 0; i <= l; i ++) {
-		char c = s [i];
-		if (initial_space_done == 0) {
+	for (int i = 0; i < l; i ++) {
+		c = s [i];
+
+		if (state == 0) {
 			if (c == ' ' || c == '\t') {
-				// bleh
+				temp_buffer [temp_index ++] = c;
 			} else {
-				// Print space at the beginning
-				if (i > 0) {
-					strncpy (all_purpose_buffer, s, i);
-					buf_color (7, bkg); 
-					buf_print_abs (all_purpose_buffer);
-				}
-				last_i = i;
-				initial_space_done = 1;
-			}
-		} 
+				temp_buffer [temp_index] = '\0';
+				temp_index = 0;
+				state = 1;
 
-
-		if (initial_space_done == 1) {
-
-			if (found_keyword == 0) {
-				if (c == ' ' || c == '\t' || c == 0) {
-					strncpy (all_purpose_buffer, s + last_i, i - last_i);
-					buf_color (find_color (all_purpose_buffer), bkg);
-					buf_print_abs (all_purpose_buffer);
-					found_keyword = 1;
-					last_i = i;
-				}
-
-				if (c == 0) break;
-			} 
-
-			if (found_keyword) {
-				strncpy (all_purpose_buffer, s + last_i, i - last_i);
 				buf_color (7, bkg);
-				buf_print_abs (all_purpose_buffer);
-				break;
+				buf_print_abs (temp_buffer);
 			}
 		}
+
+		if (state == 1) {
+			if (!(c == ' ' || c == '\t' || c == 34)) {
+				temp_buffer [temp_index ++] = c;
+			} else {
+				temp_buffer [temp_index] = '\0';
+				temp_index = 0;
+				state = 2;
+
+				buf_color (find_color (temp_buffer), bkg);
+				buf_print_abs (temp_buffer);
+			}
+		}
+
+		if (state == 2) {
+			temp_buffer [temp_index ++] = c;
+		}
 	}
+
+	temp_buffer [temp_index] = '\0';
+	buf_color (state == 1 ? find_color(temp_buffer) : 7, bkg);
+	buf_print_abs(temp_buffer);
 }
 
 unsigned char get_character_input (unsigned char const* chars, enum keycode_t *keys) {
@@ -305,6 +304,9 @@ int editor (void) {
 		}
 
 		if (delete_line) {
+			// Free current line
+			free (editor_lines [editor_current_line]);
+
 			// Shuffle all lines up
 			for(int i = editor_current_line; i < editor_last_line; i ++) {
 				editor_lines [i] = editor_lines [i + 1];
@@ -354,9 +356,12 @@ int editor (void) {
 					// If cursor is on the 1st character -> delete this line
 					
 					if (cursor == 0) {
-						delete_line = 1;
+						if (strlen (line_pointer) == 0) {
+							delete_line = 1;
+						}
 					} else {
 						// Delete character to the left of the cursor.
+						
 						cursor --;
 						for (int i = cursor; i < strlen (line_pointer); i ++) {
 							line_pointer [i] = line_pointer [i + 1];
@@ -462,4 +467,5 @@ void main (char argc, char *argv []) {
 		// MEH
 		editor ();
 	}
+
 }

@@ -16,6 +16,8 @@ void main (char argc, char *argv []) {
 	int autoboot;
 	char *spec;
 
+	lstokens_init ();
+	
 	if (argc == 1) {
 		spec = strdup ("boot");
 		autoboot = 1;
@@ -56,5 +58,6 @@ void main (char argc, char *argv []) {
 			break;
 	}
 
+	lstokens_free ();
 	free (spec);
 }
