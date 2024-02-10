@@ -11,3 +11,4 @@
 [ ] Save / Load
 [ ] Choice / Choigo / Go / Print / Color wizards
 [ ] RUN / RUN FROM / NEW
+[ ] Editor DRAW

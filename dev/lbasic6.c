@@ -12,27 +12,31 @@
 #include "interpreter.h"
 #include "conversion.h"
 
-int menu_x [3] = { 0, 11, 24 };
+int menu_x [] = { 0, 9, 18, 27, 38 };
 
-char menu_opt1 [] = "  Editar  ";
-char menu_opt2 [] = "  Corregir  ";
-char menu_opt3 [] = "  Ejecutar un programa  ";
+char menu_opt1 [] = " Editar ";
+char menu_opt2 [] = " Cargar ";
+char menu_opt3 [] = " Grabar ";
+char menu_opt4 [] = " Ejecutar ";
+char menu_opt5 [] = " Borrar ";
 
-char *menu_opt [] = { menu_opt1, menu_opt2, menu_opt3 };
+
+char *menu_opt [] = { menu_opt1, menu_opt2, menu_opt3, menu_opt4, menu_opt5 };
 
 char menu_help1 [] = " Para hacer un programa                  ";
-char menu_help2 [] = " Para hacer correcciones en un programa  ";
-char menu_help3 [] = " Para jugar a un programa que hayas hecho";
+char menu_help2 [] = " Para cargar un programa del disco       ";
+char menu_help3 [] = " Para guardar un programa en el disco    ";
+char menu_help4 [] = " Para jugar al programa que est\xA0 cargado ";
+char menu_help5 [] = " Para borrar el programa de la memoria   ";
 
-char *menu_help [] = { menu_help1, menu_help2, menu_help3 };
+char *menu_help [] = { menu_help1, menu_help2, menu_help3, menu_help4, menu_help5 };
 
 char **editor_lines;
 int editor_n_lines = 0; 	// Total number of lines allocated
 int editor_current_line;	// Line being edited
 int editor_last_line; 		// Last line in program
 
-int pending_tilde; 			// True if ´ was pressed
-int pending_diaeresis; 		// True if ¨ was pressed
+int needs_saving = 0;		// Altered loaded program
 
 #define LINE_BUFFER_SIZE 2048
 
@@ -44,10 +48,15 @@ void splash_screen_1 (void) {
 	buf_setxy (0, 24);
 	buf_print_abs ("  Pulsa una tecla para comenzar \xB3 Introduce ' men\xA3 ' siempre que quieras usarlo ");
 	buf_setxy (0, 0);
-	buf_print_abs ("  Compilador Lokosoft LBasic versi\xA2n 6.03. (C)opyright 1994 by Loko Soft        ");
+	buf_print_abs ("  Compilador Lokosoft LBasic versi\xA2n Legacy (C)opyright 1994-2024 by Loko Soft  ");
 	buf_color (7, 0);
 
 	buf_pause ();
+}
+
+int yes_or_no (char *message) {
+	int res = 0;
+
 }
 
 int menu (void) {
@@ -61,7 +70,7 @@ int menu (void) {
 	buf_print_abs ("                                                                                ");
 
 	buf_setxy (0, 0);
-	buf_print_abs ("  Editar  \xB3  Corregir  \xB3  Ejecutar un programa  \xB3      (C) Versi\xA2n 6.03, 1994   ");
+	buf_print_abs (" Editar \xB3 Cargar \xB3 Grabar \xB3 Ejecutar \xB3 Borrar       (C) LBasic Legacy 1994-2024 ");
 
 	while (menu_on) {
 		if (option_old != option) {
@@ -91,11 +100,11 @@ int menu (void) {
 			unsigned long long key = (unsigned long long) *keys;
 
 			if (key == KEY_LEFT) {
-				option --; if (option < 0) option = 2;
+				option --; if (option < 0) option = 4;
 				old_key = key;
 			} 
 			if (key == KEY_RIGHT) {
-				option ++; if (option > 2) option = 0;
+				option ++; if (option > 4) option = 0;
 				old_key = key;
 			}
 			if (key == KEY_RETURN) {
@@ -104,7 +113,7 @@ int menu (void) {
 				key_return = 0;
 			}
 			if (key == KEY_ESCAPE) {
-				option = 4; menu_on = 0;
+				option = 0xff; menu_on = 0;
 			}
 
 			++keys;
@@ -128,6 +137,10 @@ int menu (void) {
 	}
 
 	return option;
+}
+
+char *get_file_spec (void) {
+	
 }
 
 char *lines_add_new (void) {
@@ -254,6 +267,7 @@ int editor (void) {
 	char *line_pointer = NULL;
 	unsigned char c;
 	int cur_line_rendered;
+	char info_buf [16];
 
 	int x = 0; 
 	int y = 1;
@@ -262,7 +276,16 @@ int editor (void) {
 
 	int first_line_to_display = 0;
 
+	buf_setxy (0, 24);
+	buf_color (7, 1);
+
+	buf_print_abs (" F3 CHOICE \xB3 F4 TEXT \xB3 F5 RUN \xB3 F6 RUN FROM \xB3 F10 MENU \xB3                        ");
+	
 	while (editing) {
+		sprintf (info_buf, "%04d:%02d", editor_current_line, cursor);
+		buf_setxy (73, 24);
+		buf_color (4, 7);
+		buf_print_abs (info_buf);
 
 		if (new_line) {
 			// Add new line.
@@ -460,10 +483,8 @@ void main (char argc, char *argv []) {
 	editor_current_line = -1;
 	editor_last_line = -1;
 	editor_n_lines = 0;
-	pending_tilde = 0;
-	pending_diaeresis = 0;
 
-	while (menu () != 4) {
+	while (menu () != 0xff) {
 		// MEH
 		editor ();
 	}

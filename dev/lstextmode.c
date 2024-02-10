@@ -68,6 +68,40 @@ int buf_get_attrib (void) {
 	return (buf_c1 & 0xf) | ((buf_c2 & 0xf) << 4);
 }
 
+void buf_box (int x1, int y1, int x2, int y2) {
+	unsigned char *buf = screenbuffer ();
+	int scr_w = screenwidth ();
+	int scr_w_bytes = scr_w * 2;
+	int attrib = buf_get_attrib ();
+
+	for (int y = y1; y <= y2; y ++) {
+		for (int x = x1; x <= x2; x ++) {
+			char c;
+			if (x > x1 && x < x2) {
+				if (y == y1 || y == y2) {
+					c = 0xC4;
+				} else {
+					c = 32;
+				}
+			} else if (x == x1 || x == x2) {
+				if (y != y1 && y != y2) {
+					c = 0xB3;
+				} else {
+					if (x == x1) {
+						c = y == y1 ? 0xDA : 0xC0;
+					} else {
+						c = y == y1 ? 0xBF : 0xD9;
+					}
+				}
+			}
+
+			int idx = y * scr_w_bytes + x * 2;
+			buf [idx] = c;
+			buf [idx + 1] = attrib;
+		}
+	}
+}
+
 void buf_scroll_up (int from, int to) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
