@@ -4,6 +4,11 @@
 #define LS_MODE_GFX_HIRES	3
 #define LS_MODE_GFX_MED		4
 
+#define BUF_KEY_ENTER 		1
+#define BUF_KEY_ESC 		2
+#define BUF_KEY_YES 		4
+#define BUF_KEY_NO 			8
+
 void buf_setviewport (int y1, int y2);
 void buf_setmargins (int col1, int col2);
 void buf_setxy (int x, int y);
@@ -35,4 +40,6 @@ void buf_textmode_pic (char *pic);
 void buf_box (int x1, int x2, int y1, int y2);
 int buf_get_mouse_x (void);
 int buf_get_mouse_y (void);
+int buf_get_mouse_b (int button);
+int buf_get_keystate (int keys);
 int buf_heartbeat (void);

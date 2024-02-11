@@ -9,6 +9,7 @@
 #include "../dos-like/source/dos.h"
 #endif
 
+#include "lstokens.h"
 #include "interpreter.h"
 
 void main (char argc, char *argv []) {

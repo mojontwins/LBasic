@@ -29,6 +29,20 @@ int buf_get_mouse_y (void) {
 	return buf_mouse_y;
 }
 
+int buf_get_mouse_b (int button) {
+	if (button & 1) return keystate (KEY_LBUTTON);
+	if (button & 2) return keystate (KEY_RBUTTON);
+	return 0;
+}
+
+int buf_get_keystate (int keys) {
+	if (keys & BUF_KEY_ENTER) return keystate (KEY_RETURN);
+	if (keys & BUF_KEY_ESC) return keystate (KEY_ESCAPE);
+	if (keys & BUF_KEY_YES) return keystate (KEY_S);
+	if (keys & BUF_KEY_NO) return keystate (KEY_N);
+	return 0; 
+}
+
 void buf_setviewport (int y1, int y2) {
 	viewport_y1 = y1;
 	viewport_y2 = y2;

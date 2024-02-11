@@ -21,6 +21,12 @@ char menu_opt3 [] = " Grabar ";
 char menu_opt4 [] = " Ejecutar ";
 char menu_opt5 [] = " Borrar ";
 
+#define OPTION_EDIT 0
+#define OPTION_LOAD 1
+#define OPTION_SAVE 2
+#define OPTION_RUN 3
+#define OPTION_DEL 4
+
 char *menu_opt [] = { menu_opt1, menu_opt2, menu_opt3, menu_opt4, menu_opt5 };
 
 char menu_help1 [] = " Para hacer un programa                  ";
@@ -32,11 +38,13 @@ char menu_help5 [] = " Para borrar el programa de la memoria   ";
 char *menu_help [] = { menu_help1, menu_help2, menu_help3, menu_help4, menu_help5 };
 
 char **editor_lines;
-int editor_n_lines = 0; 	// Total number of lines allocated
+int editor_n_lines; 		// Total number of lines allocated
 int editor_current_line;	// Line being edited
 int editor_last_line; 		// Last line in program
 
-int needs_saving = 0;		// Altered loaded program
+int needs_saving;			// Altered loaded program
+int last_option = 0;
+int first_line_to_display = 0;
 
 #define LINE_BUFFER_SIZE 2048
 
@@ -51,16 +59,19 @@ void splash_screen_1 (void) {
 	buf_print_abs ("  Compilador Lokosoft LBasic versi\xA2n Legacy (C)opyright 1994-2024 by Loko Soft  ");
 	buf_color (7, 0);
 
-	tui_alert ("Esto es una alerta!");
+	tui_alert ("Compilador LBasic Legacy", "\xAD" "Bienvenid@s!");
 
-	buf_pause ();
+	buf_color (7, 0);
+	buf_clscroll ();
 }
 
 int menu (void) {
 	int menu_on = 1;
-	int key_return = 1;
-	int option = 0;
+	int option = last_option;
 	int option_old = 0xff;
+	int key_enter = 1;
+
+	while (!buf_heartbeat () && keystate (KEY_RETURN));
 
 	buf_color (7, 1);
 	buf_setxy (0, 24);
@@ -69,7 +80,8 @@ int menu (void) {
 	buf_setxy (0, 0);
 	buf_print_abs (" Editar \xB3 Cargar \xB3 Grabar \xB3 Ejecutar \xB3 Borrar       (C) LBasic Legacy 1994-2024 ");
 
-	while (menu_on) {
+	int old_key = 0;
+	while (!buf_heartbeat () && menu_on) {
 		if (option_old != option) {
 			if (option_old != 0xff) {
 				buf_color (7, 1);
@@ -91,7 +103,6 @@ int menu (void) {
 		// Read cursors
 
 		enum keycode_t *keys = readkeys();
-		int old_key = 0;
 		
 		while (*keys) {
 			unsigned long long key = (unsigned long long) *keys;
@@ -100,39 +111,35 @@ int menu (void) {
 				option --; if (option < 0) option = 4;
 				old_key = key;
 			} 
+
 			if (key == KEY_RIGHT) {
 				option ++; if (option > 4) option = 0;
 				old_key = key;
 			}
-			if (key == KEY_RETURN) {
-				if (key_return == 0) menu_on = 0;
-			} else {
-				key_return = 0;
-			}
+
 			if (key == KEY_ESCAPE) {
 				option = 0xff; menu_on = 0;
+				old_key = key;
 			}
 
 			++keys;
 		}
 
-		// Wait for depress
-		if (old_key) {
-			int pressed = 1;
-			while (pressed) {
-				pressed = 0;
-				keys = readkeys(); while (*keys) {
-					unsigned long long key = (unsigned long long) *keys;
-					if (key == old_key) {
-						pressed = 1;
-					}
-				}
+		if (keystate (KEY_RETURN)) {
+			if (key_enter == 0) {
+				key_enter = 1;
+				menu_on = 0;
 			}
+		} else {
+			key_enter = 0;
 		}
 
 		waitvbl ();
 	}
 
+	while (!buf_heartbeat () && keystate (old_key));
+
+	last_option = option;
 	return option;
 }
 
@@ -167,6 +174,8 @@ void lines_read_from_file (FILE *file) {
 	}
 
 	editor_current_line = editor_n_lines;
+	needs_saving = 0;
+	first_line_to_display = 0;
 }
 
 int find_color (char *s) {
@@ -253,6 +262,52 @@ unsigned char get_character_input (unsigned char const* chars, enum keycode_t *k
 	}
 }
 
+void display_editor_lines (int cursor) {
+	int y = 1;
+	int i = 0;
+	int cur_line_rendered = 0;
+
+	char *line_pointer = editor_lines [editor_current_line];
+
+	buf_color (7, 0);
+	buf_clscroll ();
+	while (1) {
+		int line_no = first_line_to_display + i;
+		int bkg = line_no & 1 ? 8 : 0;
+
+		if (line_no > editor_last_line) break;
+		
+		buf_setxy (0, y);
+		buf_color (7, bkg);
+		//buf_print_abs (editor_lines [line_no]);
+		syntax_hightlight (bkg, editor_lines [line_no]);
+
+		// Draw cursor?
+		if (cursor >= 0 && line_no == editor_current_line) {
+			int ycursor = y + cursor / 80;
+
+			if (ycursor < 24) {
+				cur_line_rendered = 1;
+
+				char c = line_pointer [cursor]; if (c == 0) c = ' ';
+				buf_setxy (cursor % 80, ycursor);
+				buf_color (0, 14);
+				buf_char (c);
+			}
+		}
+
+		y += 1 + strlen (editor_lines [line_no]) / 80;
+
+		if (y > 23) {
+			if (!cur_line_rendered) first_line_to_display ++;
+
+			break;
+		}
+
+		i ++;
+	}
+}
+
 int editor (void) {
 	// File is already loaded.
 	int line_change = 0;
@@ -263,15 +318,9 @@ int editor (void) {
 	int cursor = 0;
 	char *line_pointer = NULL;
 	unsigned char c;
-	int cur_line_rendered;
 	char info_buf [16];
 
-	int x = 0; 
-	int y = 1;
-	int i;
 	int editor_next_line = editor_n_lines;
-
-	int first_line_to_display = 0;
 
 	buf_setxy (0, 24);
 	buf_color (7, 1);
@@ -307,6 +356,7 @@ int editor (void) {
 			editor_lines [editor_current_line] = blank_line;
 
 			new_line = 0;
+			needs_saving = 1;
 		} 
 
 		if (line_change) {
@@ -341,6 +391,7 @@ int editor (void) {
 			cursor = strlen (editor_lines [editor_last_line]) + 1;
 
 			delete_line = 0;
+			needs_saving = 1;
 		}
 
 		line_pointer = editor_lines [editor_current_line];
@@ -367,6 +418,7 @@ int editor (void) {
 			}
 
 			line_pointer [cursor] = c;
+			needs_saving = 1;
 			cursor ++;			
 		} else {
 			switch (c) {
@@ -385,6 +437,7 @@ int editor (void) {
 						cursor --;
 						for (int i = cursor; i < strlen (line_pointer); i ++) {
 							line_pointer [i] = line_pointer [i + 1];
+							needs_saving = 1;
 						}
 					}
 
@@ -393,6 +446,7 @@ int editor (void) {
 				case 27:
 					// Exit
 					editing = 0;
+					while (buf_get_keystate (BUF_KEY_ESC));
 			}
 		}
 
@@ -427,66 +481,73 @@ int editor (void) {
 		}
 
 		// Display
-		y = 1;
-		i = 0;
-		cur_line_rendered = 0;
-
-		buf_color (7, 0);
-		buf_clscroll ();
-		while (1) {
-			int line_no = first_line_to_display + i;
-			int bkg = line_no & 1 ? 8 : 0;
-
-			if (line_no > editor_last_line) break;
-			
-			buf_setxy (0, y);
-			buf_color (7, bkg);
-			//buf_print_abs (editor_lines [line_no]);
-			syntax_hightlight (bkg, editor_lines [line_no]);
-
-			// Draw cursor?
-			if (line_no == editor_current_line) {
-				int ycursor = y + cursor / 80;
-
-				if (ycursor < 24) {
-					cur_line_rendered = 1;
-
-					c = line_pointer [cursor]; if (c == 0) c = ' ';
-					buf_setxy (cursor % 80, ycursor);
-					buf_color (0, 14);
-					buf_char (c);
-				}
-			}
-
-			y += 1 + strlen (editor_lines [line_no]) / 80;
-
-			if (y > 23) {
-				if (!cur_line_rendered) first_line_to_display ++;
-
-				break;
-			}
-
-			i ++;
-		}
+		display_editor_lines (cursor);
 
 		waitvbl ();
 	}
 }
 
+void dialog_program_not_present (void) {
+	return tui_alert ("\xAD" "Imposible!", "No hay programa en memoria");
+}
+
+int dialog_program_present_sure (void) {
+	return tui_yes_or_no ("\xA8" "Seguro?", "Hay cambios sin grabar");
+}
+
 void main (char argc, char *argv []) {
+	buf_setmode (LS_MODE_TEXT);
+
+	setpal (6, 0xaa, 0xaa, 0);
+
 	buf_setviewport (1, 23);
 	splash_screen_1 ();
-
-	//AAAA00
-	setpal (6, 0xaa, 0xaa, 0);
 
 	editor_current_line = -1;
 	editor_last_line = -1;
 	editor_n_lines = 0;
+	needs_saving = 0;
 
-	while (menu () != 0xff) {
-		// MEH
-		editor ();
+	int option;
+	while ((option = menu ()) != 0xff) {
+
+		switch (option) {
+			case OPTION_EDIT:			
+				editor ();
+				break;
+
+			case OPTION_LOAD:
+				if (!needs_saving || dialog_program_present_sure ()) {
+
+				}
+				break;
+
+			case OPTION_SAVE:
+				if (needs_saving) {
+
+				} else {
+					dialog_program_not_present ();
+				}
+				break;
+
+
+			case OPTION_RUN:
+				if (needs_saving) {
+
+				} else {
+					dialog_program_not_present ();
+				}
+				break;
+
+			case OPTION_DEL:
+				if (!needs_saving || dialog_program_present_sure ()) {
+					lines_free_all ();
+				}
+				break;
+		}
+
+		buf_color (7, 0);
+		buf_clscroll ();
 	}
 
 }
