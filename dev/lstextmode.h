@@ -4,11 +4,6 @@
 #define LS_MODE_GFX_HIRES	3
 #define LS_MODE_GFX_MED		4
 
-#define BUF_KEY_ENTER 		1
-#define BUF_KEY_ESC 		2
-#define BUF_KEY_YES 		4
-#define BUF_KEY_NO 			8
-
 void buf_setviewport (int y1, int y2);
 void buf_setmargins (int col1, int col2);
 void buf_setxy (int x, int y);

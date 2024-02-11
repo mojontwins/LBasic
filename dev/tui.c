@@ -1,4 +1,6 @@
 #include <string.h>
+
+#include "keys.h"
 #include "lstextmode.h"
 
 void tui_general_box (char *message, char *alt, char symbol) {
@@ -46,11 +48,11 @@ void tui_alert (char *message, char *alt) {
 
 	while (
 		!tui_button_and_check (35, 13, 44, 15, "\xADOK!") && 
-		!buf_get_keystate (BUF_KEY_ENTER | BUF_KEY_ESC) &&
 		!buf_heartbeat ()
-	);
-
-	while (!buf_heartbeat () && buf_get_keystate (BUF_KEY_ENTER | BUF_KEY_ESC));
+	) {
+		keys_read ();
+		if (keys_get_this_frame () & (MT_KEY_ENTER | MT_KEY_ESC)) break;
+	}
 }
 
 int tui_yes_or_no (char *message, char *alt) {
@@ -62,23 +64,18 @@ int tui_yes_or_no (char *message, char *alt) {
 		int button_yes = tui_button_and_check (30, 13, 37, 15, "[S]\xA1");
 		int button_no  = tui_button_and_check (42, 13, 49, 15, "[N]o");
 
-		if (button_yes) {
+		keys_read ();
+		int keys = keys_get_this_frame (); 
+		int key_yes = keys & MT_KEY_YES;
+		int key_no = keys & MT_KEY_NO;
+
+		if (button_yes || key_yes) {
 			res = 1; break;
 		}
 
-		if (button_no) {
+		if (button_no || key_no) {
 			break;
 		}
-
-/*
-		if (buf_get_keystate (BUF_KEY_YES) || button_yes) {
-			res = 1; break;
-		}
-
-		if (buf_get_keystate (BUF_KEY_NO) || button_no) {
-			res = 0; break;
-		}
-		*/
 	}
 
 	return res;

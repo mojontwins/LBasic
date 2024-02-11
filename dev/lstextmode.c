@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "../dos-like/source/dos.h"
 #include "lstextmode.h"
 
@@ -33,14 +34,6 @@ int buf_get_mouse_b (int button) {
 	if (button & 1) return keystate (KEY_LBUTTON);
 	if (button & 2) return keystate (KEY_RBUTTON);
 	return 0;
-}
-
-int buf_get_keystate (int keys) {
-	if (keys & BUF_KEY_ENTER) return keystate (KEY_RETURN);
-	if (keys & BUF_KEY_ESC) return keystate (KEY_ESCAPE);
-	if (keys & BUF_KEY_YES) return keystate (KEY_S);
-	if (keys & BUF_KEY_NO) return keystate (KEY_N);
-	return 0; 
 }
 
 void buf_setviewport (int y1, int y2) {

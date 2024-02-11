@@ -4,14 +4,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef DOSLIKE
 #include "../dos-like/source/dos.h"
-#endif
 
 #include "lstextmode.h"
 #include "interpreter.h"
 #include "conversion.h"
 #include "tui.h"
+#include "keys.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -44,7 +43,7 @@ int editor_last_line; 		// Last line in program
 
 int needs_saving;			// Altered loaded program
 int last_option = 0;
-int first_line_to_display = 0;
+int first_line_to_display;
 
 #define LINE_BUFFER_SIZE 2048
 
@@ -102,36 +101,26 @@ int menu (void) {
 
 		// Read cursors
 
-		enum keycode_t *keys = readkeys();
+		readchars ();
+		readkeys (); 						// dos-like Debuff?
 		
-		while (*keys) {
-			unsigned long long key = (unsigned long long) *keys;
+		keys_read (); 						// My own handler
+		int keys = keys_get_this_frame ();
 
-			if (key == KEY_LEFT) {
-				option --; if (option < 0) option = 4;
-				old_key = key;
-			} 
+		if (keys & MT_KEY_LEFT)  {
+			option --; if (option < 0) option = 4;
+		} 
 
-			if (key == KEY_RIGHT) {
-				option ++; if (option > 4) option = 0;
-				old_key = key;
-			}
-
-			if (key == KEY_ESCAPE) {
-				option = 0xff; menu_on = 0;
-				old_key = key;
-			}
-
-			++keys;
+		if (keys & MT_KEY_RIGHT) {
+			option ++; if (option > 4) option = 0;
 		}
 
-		if (keystate (KEY_RETURN)) {
-			if (key_enter == 0) {
-				key_enter = 1;
-				menu_on = 0;
-			}
-		} else {
-			key_enter = 0;
+		if (keys & MT_KEY_ESC) {
+			option = 0xff; menu_on = 0;
+		}
+
+		if (keys & MT_KEY_ENTER) {
+			menu_on = 0;
 		}
 
 		waitvbl ();
@@ -141,6 +130,25 @@ int menu (void) {
 
 	last_option = option;
 	return option;
+}
+
+void debuff_keys (void) {
+	int any = 0;
+	do {
+		
+		unsigned char const* chars = (unsigned char*) readchars ();
+		enum keycode_t* keys = readkeys ();
+
+		char c;
+		while (c = *chars ++) {
+			any = 1;
+		}		
+
+		unsigned long long key;
+		while (key = (unsigned long long) *keys ++) {
+			any = 1;
+		}
+	} while (any);
 }
 
 char *get_file_spec (void) {
@@ -159,11 +167,20 @@ void lines_free_all (void) {
 	}
 
 	free (editor_lines);
+
+	editor_current_line = -1;
+	editor_last_line = -1;
+	editor_n_lines = 0;
+	needs_saving = 0;
+
+	first_line_to_display = 0;
 }
 
 void lines_read_from_file (FILE *file) {
 	char line_buffer [LINE_BUFFER_SIZE];
 	int lines_read = 0;	
+
+	lines_free_all ();
 
 	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
 		lines_read ++;
@@ -266,11 +283,13 @@ void display_editor_lines (int cursor) {
 	int y = 1;
 	int i = 0;
 	int cur_line_rendered = 0;
-
-	char *line_pointer = editor_lines [editor_current_line];
-
+	
 	buf_color (7, 0);
 	buf_clscroll ();
+
+	if (editor_current_line < 0) return;
+	char *line_pointer = editor_lines [editor_current_line];
+
 	while (1) {
 		int line_no = first_line_to_display + i;
 		int bkg = line_no & 1 ? 8 : 0;
@@ -310,11 +329,12 @@ void display_editor_lines (int cursor) {
 
 int editor (void) {
 	// File is already loaded.
-	int line_change = 0;
+
 	int new_line = 1;
+	int line_change = 0;
 	int delete_line = 0;
+	
 	int line_length;
-	int editing = 1;
 	int cursor = 0;
 	char *line_pointer = NULL;
 	unsigned char c;
@@ -327,6 +347,9 @@ int editor (void) {
 
 	buf_print_abs (" F3 CHOICE \xB3 F4 TEXT \xB3 F5 RUN \xB3 F6 RUN FROM \xB3 F10 MENU \xB3                        ");
 	
+	debuff_keys ();
+
+	int editing = 1;
 	while (editing) {
 		sprintf (info_buf, "%04d:%02d", editor_current_line, cursor);
 		buf_setxy (73, 24);
@@ -400,6 +423,7 @@ int editor (void) {
 		// Read keys and write to line.
 		unsigned char const* chars = (unsigned char*) readchars ();
 		enum keycode_t* keys = readkeys ();
+		//keys_read (); int keys_this_frame = keys_get_this_frame ();
 
 		// Characters
 		c = get_character_input (chars, keys);
@@ -446,7 +470,7 @@ int editor (void) {
 				case 27:
 					// Exit
 					editing = 0;
-					while (buf_get_keystate (BUF_KEY_ESC));
+					while (keystate (KEY_ESCAPE));
 			}
 		}
 
@@ -495,6 +519,14 @@ int dialog_program_present_sure (void) {
 	return tui_yes_or_no ("\xA8" "Seguro?", "Hay cambios sin grabar");
 }
 
+void save_program (void) {
+
+}
+
+void load_program (void) {
+
+}
+
 void main (char argc, char *argv []) {
 	buf_setmode (LS_MODE_TEXT);
 
@@ -503,10 +535,8 @@ void main (char argc, char *argv []) {
 	buf_setviewport (1, 23);
 	splash_screen_1 ();
 
-	editor_current_line = -1;
-	editor_last_line = -1;
-	editor_n_lines = 0;
-	needs_saving = 0;
+	lines_free_all ();
+	cursoff ();
 
 	int option;
 	while ((option = menu ()) != 0xff) {
@@ -533,7 +563,7 @@ void main (char argc, char *argv []) {
 
 			case OPTION_RUN:
 				if (needs_saving) {
-
+					save_program ();
 				} else {
 					dialog_program_not_present ();
 				}
@@ -546,8 +576,11 @@ void main (char argc, char *argv []) {
 				break;
 		}
 
+		display_editor_lines (-1);
+		/*
 		buf_color (7, 0);
 		buf_clscroll ();
+		*/
 	}
 
 }
