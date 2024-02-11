@@ -12,6 +12,22 @@ int buf_col1, buf_col2;
 int viewport_y1 = 1;
 int viewport_y2 = 23;
 int buf_mode = LS_MODE_TEXT;
+int buf_mouse_x = 0;
+int buf_mouse_y = 0;
+
+int buf_get_mouse_x (void) {
+	buf_mouse_x = mousex ();
+	if (buf_mouse_x < 0) buf_mouse_x = 0;
+	if (buf_mouse_x >= screenwidth ()) buf_mouse_x = screenwidth () - 1;
+	return buf_mouse_x;
+}
+
+int buf_get_mouse_y (void) {
+	buf_mouse_y = mousey ();
+	if (buf_mouse_y < 0) buf_mouse_y = 0;
+	if (buf_mouse_y >= screenheight ()) buf_mouse_y = screenheight () - 1;
+	return buf_mouse_y;
+}
 
 void buf_setviewport (int y1, int y2) {
 	viewport_y1 = y1;
@@ -366,7 +382,7 @@ int buf_getmode (void) {
 	return buf_mode;
 }
 
-int heartbeat (void) {
+int buf_heartbeat (void) {
 	waitvbl ();
 	return shuttingdown ();
 }
@@ -374,7 +390,7 @@ int heartbeat (void) {
 void buf_pause (void) {
 	int c;
 
-	while (!heartbeat ()) {
+	while (!buf_heartbeat ()) {
 		c = *readchars ();
 		if (c > 0) break;
 	}

@@ -11,6 +11,7 @@
 #include "lstextmode.h"
 #include "interpreter.h"
 #include "conversion.h"
+#include "tui.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -19,7 +20,6 @@ char menu_opt2 [] = " Cargar ";
 char menu_opt3 [] = " Grabar ";
 char menu_opt4 [] = " Ejecutar ";
 char menu_opt5 [] = " Borrar ";
-
 
 char *menu_opt [] = { menu_opt1, menu_opt2, menu_opt3, menu_opt4, menu_opt5 };
 
@@ -51,12 +51,9 @@ void splash_screen_1 (void) {
 	buf_print_abs ("  Compilador Lokosoft LBasic versi\xA2n Legacy (C)opyright 1994-2024 by Loko Soft  ");
 	buf_color (7, 0);
 
+	tui_alert ("Esto es una alerta!");
+
 	buf_pause ();
-}
-
-int yes_or_no (char *message) {
-	int res = 0;
-
 }
 
 int menu (void) {
@@ -479,6 +476,9 @@ int editor (void) {
 void main (char argc, char *argv []) {
 	buf_setviewport (1, 23);
 	splash_screen_1 ();
+
+	//AAAA00
+	setpal (6, 0xaa, 0xaa, 0);
 
 	editor_current_line = -1;
 	editor_last_line = -1;

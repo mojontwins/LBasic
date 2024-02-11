@@ -33,3 +33,6 @@ void buf_pause (void);
 void buf_gif_at (char *gif, int x, int y, int do_setpal);
 void buf_textmode_pic (char *pic);
 void buf_box (int x1, int x2, int y1, int y2);
+int buf_get_mouse_x (void);
+int buf_get_mouse_y (void);
+int buf_heartbeat (void);
