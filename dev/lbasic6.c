@@ -163,11 +163,13 @@ char *lines_add_new (void) {
 }
 
 void lines_free_all (void) {
-	for (int i = 0; i < editor_n_lines; i ++) {
-		free (editor_lines [i]);
-	}
+	if (editor_lines) {
+		for (int i = 0; i < editor_n_lines; i ++) {
+			free (editor_lines [i]);
+		}
 
-	free (editor_lines);
+		free (editor_lines);
+	}
 
 	editor_current_line = -1;
 	editor_last_line = -1;
@@ -200,7 +202,7 @@ void load_program (void) {
 
 	while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
 		lines_add_new ();
-
+setpal (0, 0, 0xaa, 0); waitvbl ();
 		// This allocates a bit more mem than needed
 		// But who cares?
 		char *clean_line = malloc (strlen (line_buffer)); 
@@ -597,6 +599,7 @@ void main (char argc, char *argv []) {
 				break;
 		}
 
+		setpal (0, 0, 0, 0); waitvbl ();
 		display_editor_lines (-1);
 		/*
 		buf_color (7, 0);
