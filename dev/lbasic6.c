@@ -177,11 +177,28 @@ void lines_free_all (void) {
 	first_line_to_display = 0;
 }
 
-void lines_read_from_file (FILE *file) {
+
+void save_program (void) {
+	// TODO: Find file spec (path, name, ext)
+	char *file_spec = "test/test.000";
+
+	FILE *pf = fopen (file_spec, "w");
+	for(int i = 0; i < editor_last_line; i ++) {
+		fprintf (pf, "%s\r\n", editor_lines [i]);
+	}
+	fclose (pf);
+}
+
+void load_program (void) {
+	// TODO: Find file spec (path, name, ext)
+	char *file_spec = "test/test.000";
 	char line_buffer [LINE_BUFFER_SIZE];
 	int lines_read = 0;	
+	
+	lines_free_all ();
+	FILE *pf = fopen (file_spec, "r");
 
-	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
+	while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
 		lines_add_new ();
 
 		// This allocates a bit more mem than needed
@@ -199,9 +216,13 @@ void lines_read_from_file (FILE *file) {
 		lines_read ++;
 	}
 
+	fclose (pf);
+	
 	editor_current_line = editor_last_line;
 	needs_saving = 0;
 	first_line_to_display = 0;
+
+	program_loaded = 1;
 }
 
 int find_color (char *s) {
@@ -526,29 +547,6 @@ void dialog_program_not_present (void) {
 
 int dialog_program_present_sure (void) {
 	return tui_yes_or_no ("\xA8" "Seguro?", "Hay cambios sin grabar");
-}
-
-void save_program (void) {
-	// TODO: Find file spec (path, name, ext)
-	char *file_spec = "test/test.000";
-
-	FILE *pf = fopen (file_spec, "w");
-	for(int i = 0; i < editor_last_line; i ++) {
-		fprintf (pf, "%s\r\n", editor_lines [i]);
-	}
-	fclose (pf);
-}
-
-void load_program (void) {
-	// TODO: Find file spec (path, name, ext)
-	char *file_spec = "test/test.000";
-
-	lines_free_all ();
-	FILE *pf = fopen (file_spec, "r");
-	lines_read_from_file (pf);
-	fclose (pf);
-
-	program_loaded = 1;
 }
 
 void main (char argc, char *argv []) {
