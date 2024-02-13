@@ -41,6 +41,7 @@ int editor_n_lines; 		// Total number of lines allocated
 int editor_current_line;	// Line being edited
 int editor_last_line; 		// Last line in program
 
+int program_loaded; 		// Program in memory
 int needs_saving;			// Altered loaded program
 int last_option = 0;
 int first_line_to_display;
@@ -180,17 +181,25 @@ void lines_read_from_file (FILE *file) {
 	char line_buffer [LINE_BUFFER_SIZE];
 	int lines_read = 0;	
 
-	lines_free_all ();
-
 	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
-		lines_read ++;
-		if (lines_read > editor_n_lines) {
-			char *line_pointer = lines_add_new ();
-			line_pointer = strdup (line_buffer);
+		lines_add_new ();
+
+		// This allocates a bit more mem than needed
+		// But who cares?
+		char *clean_line = malloc (strlen (line_buffer)); 
+		char *ptr = clean_line;
+		for (int i = 0; i < strlen (line_buffer); i ++) {
+			char c = line_buffer [i];
+			if (c >= ' ') *ptr ++ = c;
 		}
+		*ptr = 0;
+
+		editor_lines [lines_read] = clean_line;
+		editor_last_line = lines_read;
+		lines_read ++;
 	}
 
-	editor_current_line = editor_n_lines;
+	editor_current_line = editor_last_line;
 	needs_saving = 0;
 	first_line_to_display = 0;
 }
@@ -520,11 +529,26 @@ int dialog_program_present_sure (void) {
 }
 
 void save_program (void) {
+	// TODO: Find file spec (path, name, ext)
+	char *file_spec = "test/test.000";
 
+	FILE *pf = fopen (file_spec, "w");
+	for(int i = 0; i < editor_last_line; i ++) {
+		fprintf (pf, "%s\r\n", editor_lines [i]);
+	}
+	fclose (pf);
 }
 
 void load_program (void) {
+	// TODO: Find file spec (path, name, ext)
+	char *file_spec = "test/test.000";
 
+	lines_free_all ();
+	FILE *pf = fopen (file_spec, "r");
+	lines_read_from_file (pf);
+	fclose (pf);
+
+	program_loaded = 1;
 }
 
 void main (char argc, char *argv []) {
@@ -548,13 +572,13 @@ void main (char argc, char *argv []) {
 
 			case OPTION_LOAD:
 				if (!needs_saving || dialog_program_present_sure ()) {
-
+					load_program ();
 				}
 				break;
 
 			case OPTION_SAVE:
-				if (needs_saving) {
-
+				if (needs_saving || program_loaded) {
+					save_program ();
 				} else {
 					dialog_program_not_present ();
 				}
@@ -562,8 +586,7 @@ void main (char argc, char *argv []) {
 
 
 			case OPTION_RUN:
-				if (needs_saving) {
-					save_program ();
+				if (needs_saving || program_loaded) {
 				} else {
 					dialog_program_not_present ();
 				}
