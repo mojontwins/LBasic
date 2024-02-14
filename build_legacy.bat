@@ -1,1 +1,1 @@
-tcc\tcc dev\lbasic6.c dos-like\source\dos.c dev\interpreter.c dev\lstokens.c dev\lstextmode.c dev\doslike_backend.c dev\tui.c dev\keys.c dev\sys_utils.c   -DDISABLE_SCREEN_FRAME -DDISABLE_AWE32_ROM -DDOSLIKE
+tcc\tcc dev\lbasic6.c dos-like\source\dos.c dev\interpreter.c dev\conversion.c dev\lstokens.c dev\lstextmode.c dev\doslike_backend.c dev\tui.c dev\keys.c dev\sys_utils.c dev\file_browser.c  -DDISABLE_SCREEN_FRAME -DDISABLE_AWE32_ROM -DDOSLIKE

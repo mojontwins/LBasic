@@ -214,8 +214,10 @@ void _buf_print (char *s, int scroll) {
 			buf [idx + 1] = attrib;
 
 			buf_x ++; if (buf_x == scr_w) {
-				buf_x = 0;
-				buf_y ++;
+				if (scroll) {
+					buf_x = 0;
+					buf_y ++;
+				} else break;
 			}
 		}
 	} else {
@@ -242,9 +244,11 @@ void _buf_print (char *s, int scroll) {
 			outtextxy (x1, y1, substr);
 
 			x1 += 8; buf_x ++; if (buf_x == scr_w) {
-				buf_x = x1 = 0;
-				buf_y ++;
-				y1 += 8;
+				if (scroll) {
+					buf_x = x1 = 0;
+					buf_y ++;
+					y1 += 8;
+				} else break;
 			}
 		}
 	}

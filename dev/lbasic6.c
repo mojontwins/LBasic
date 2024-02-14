@@ -11,6 +11,8 @@
 #include "conversion.h"
 #include "tui.h"
 #include "keys.h"
+#include "conversion.h"
+#include "file_browser.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -152,14 +154,9 @@ void debuff_keys (void) {
 	} while (any);
 }
 
-char *get_file_spec (void) {
-	
-}
-
-char *lines_add_new (void) {
+void lines_add_new (void) {
 	editor_n_lines ++;
 	editor_lines = (char **) realloc (editor_lines, editor_n_lines * sizeof (char *));
-	return editor_lines [editor_n_lines - 1];
 }
 
 void lines_free_all (void) {
@@ -170,6 +167,7 @@ void lines_free_all (void) {
 
 		free (editor_lines);
 	}
+	editor_lines = NULL;
 
 	editor_current_line = -1;
 	editor_last_line = -1;
@@ -179,30 +177,34 @@ void lines_free_all (void) {
 	first_line_to_display = 0;
 }
 
-
 void save_program (void) {
-	// TODO: Find file spec (path, name, ext)
-	char *file_spec = "test/test.000";
+	char *file_spec = NULL;
+	
+	get_file_spec (file_spec);
 
 	FILE *pf = fopen (file_spec, "w");
 	for(int i = 0; i < editor_last_line; i ++) {
 		fprintf (pf, "%s\r\n", editor_lines [i]);
 	}
 	fclose (pf);
+
+	free (file_spec);
 }
 
 void load_program (void) {
-	// TODO: Find file spec (path, name, ext)
-	char *file_spec = "test/test.000";
+	char *file_spec = NULL;
 	char line_buffer [LINE_BUFFER_SIZE];
 	int lines_read = 0;	
-	
+
+	get_file_spec (file_spec);
+
 	lines_free_all ();
+
 	FILE *pf = fopen (file_spec, "r");
 
 	while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
 		lines_add_new ();
-setpal (0, 0, 0xaa, 0); waitvbl ();
+
 		// This allocates a bit more mem than needed
 		// But who cares?
 		char *clean_line = malloc (strlen (line_buffer)); 
@@ -225,6 +227,8 @@ setpal (0, 0, 0xaa, 0); waitvbl ();
 	first_line_to_display = 0;
 
 	program_loaded = 1;
+
+	free (file_spec);
 }
 
 int find_color (char *s) {
@@ -295,20 +299,6 @@ void syntax_hightlight (int bkg, char *s) {
 	temp_buffer [temp_index] = '\0';
 	buf_color (state == 1 ? find_color(temp_buffer) : 7, bkg);
 	buf_print_abs(temp_buffer);
-}
-
-unsigned char get_character_input (unsigned char const* chars, enum keycode_t *keys) {
-	unsigned long long key;
-	while (key = *keys ++) {
-	}
-
-	char c;
-	while (c = *chars ++) {
-		// Translate to CP 437
-		if (c < 0) return iso_ext_to_cp437 [128 + c];
-
-		return c;
-	}
 }
 
 void display_editor_lines (int cursor) {
@@ -458,7 +448,7 @@ int editor (void) {
 		//keys_read (); int keys_this_frame = keys_get_this_frame ();
 
 		// Characters
-		c = get_character_input (chars, keys);
+		c = get_character_input (chars);
 
 		if (c >= ' ') {
 			// Insert a new character (end / middle)
