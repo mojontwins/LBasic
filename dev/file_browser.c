@@ -32,29 +32,50 @@ int get_cwd (char *pBuf, size_t len) {
 	
 	// Now trim the last part (i.e. keep only directory)
 	if (ptr) {
-		ptr [1] = 0;
+		ptr [0] = 0;
 	}
 
 	return bytes;
 } 
 
-void *get_file_spec (char *file_spec) {
+int get_file_spec (char *file_spec) {
 	tinydir_dir dir;
 
+	int res = 1;
 	int done = 0;
+	int cursor = 0;
 	int new_path = 1;
 	int first_line_to_display;
 
-	char cwd [256];
+	char cwd [512];
 	char **file_list;
 	int file_count = 0;
 	int must_close = 0;	// This is a bit lame, think of a better way
 	int selected_file = 0;
+	unsigned char user_input [512];
 
 	char debug[256];
 
-	char c;
-	get_cwd (cwd, sizeof(cwd));
+	unsigned char c;
+	user_input [0] = 0;
+	int editing = 0;
+
+	if (file_spec != NULL) {
+		get_cwd (cwd, sizeof(cwd));
+	} else {
+		// Get cwd & user_input from file_spec!
+		unsigned char *ptr;
+		strcpy (cwd, file_spec);
+		#ifdef _WIN32
+			ptr = strrchr (cwd, '\\');
+		#else
+			ptr = strrchr (cwd, '/');
+		#endif
+		strcpy (user_input, ptr + 1);
+		ptr [0] = 0;
+	}
+
+	curson ();
 
 	while (!done && !buf_heartbeat()) {
 		if (new_path) {
@@ -118,6 +139,15 @@ void *get_file_spec (char *file_spec) {
 			idx ++;
 			y ++;
 		}
+		// Input line
+		buf_setxy (0, 22);
+		buf_color (7, 1);
+		buf_print_abs ("\xC4\xB4 Enter file name \xC3\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4");
+
+		gotoxy (cursor, 23);
+		buf_setxy (0, 23);
+		buf_color (15, 0);
+		buf_print_abs (user_input);
 
 		// Get input
 		unsigned char const* chars = (unsigned char*) readchars ();
@@ -127,15 +157,29 @@ void *get_file_spec (char *file_spec) {
 		c = get_character_input (chars);
 
 		if (c >= ' ') {
+			if (cursor < 79) {
+				user_input [cursor ++] = c;
+				user_input [cursor] = 0;
 
+				editing = 1;
+			}
 		} else {
 			switch (c) {
 				case 8:
 					// Delete
+					if (cursor > 0) {
+						cursor --;
+						user_input [cursor] = 0;
+
+						editing = 1;
+					}
 					break;
 
 				case 27:
 					// Exit
+					file_spec = NULL;
+					done = 1;
+					res = 0;
 					break;
 			}
 		}
@@ -146,17 +190,31 @@ void *get_file_spec (char *file_spec) {
 
 			if (key == KEY_UP) {
 				if (selected_file > 0) selected_file --;
+				tinydir_file file;
+				tinydir_readfile_n (&dir, &file, selected_file);
+				if (!file.is_dir) {
+					strcpy (user_input, file.name);
+					cursor = strlen (user_input);
+				}
+				editing = 0;
 			}
 
 			if (key == KEY_DOWN) {
 				if (selected_file < dir.n_files - 1) selected_file ++;
+				tinydir_file file;
+				tinydir_readfile_n (&dir, &file, selected_file);
+				if (!file.is_dir) {
+					strcpy (user_input, file.name);
+					cursor = strlen (user_input);
+				}
+				editing = 0;
 			}
 
 			if (key == KEY_RETURN) {
 				tinydir_file file;
 				tinydir_readfile_n (&dir, &file, selected_file);
 
-				if (file.is_dir) {
+				if (file.is_dir && !editing) {
 					// Change dir
 					if (strcmp (file.name, ".") == 0) {
 						// NO OP
@@ -168,22 +226,31 @@ void *get_file_spec (char *file_spec) {
 							ptr = strrchr (cwd, '/');
 						#endif
 						if (ptr) {
-							ptr [1] = 0;
+							ptr [0] = 0;
 						}
 					} else {
 						if (strlen (file.name) + strlen (cwd) < 256) {
-							/*
 							#ifdef _WIN32
 								strcat (cwd, "\\");
 							#else
 								strcat (cwd, "/");
 							#endif
-							*/
 							strcat (cwd, file.name);
 						}
 					}
 					
 					new_path = 1;
+				} else {
+					free (file_spec);
+					file_spec = malloc (strlen (cwd) + 1 + strlen (user_input) + 1);
+					strcpy (file_spec, cwd);
+					#ifdef _WIN32
+						strcat (file_spec, "\\");
+					#else
+						strcat (file_spec, "/");
+					#endif
+					strcat (file_spec, user_input);
+					done = 1;
 				}
 			}
 
@@ -192,7 +259,8 @@ void *get_file_spec (char *file_spec) {
 
 	}
 
-	buf_pause ();
+	cursoff ();
 	if (must_close) tinydir_close (&dir);
-	file_spec = strdup ("test/test.000"); // DUMMY
+
+	return res;
 }

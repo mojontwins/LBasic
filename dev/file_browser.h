@@ -1,1 +1,1 @@
-void *get_file_spec (char *file_spec);
+int get_file_spec (char *file_spec);

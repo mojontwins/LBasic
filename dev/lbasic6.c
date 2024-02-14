@@ -48,7 +48,14 @@ int needs_saving;			// Altered loaded program
 int last_option = 0;
 int first_line_to_display;
 
+char *file_spec = NULL;
+
 #define LINE_BUFFER_SIZE 2048
+
+void clear_file_spec (void) {
+	free (file_spec);
+	file_spec = NULL;
+}
 
 void splash_screen_1 (void) {
 	buf_color (7, 0);
@@ -67,6 +74,12 @@ void splash_screen_1 (void) {
 	buf_clscroll ();
 }
 
+void menu_show (void) {
+	buf_setxy (0, 0);
+	buf_color (7, 1);
+	buf_print_abs (" Editar \xB3 Cargar \xB3 Grabar \xB3 Ejecutar \xB3 Borrar       (C) LBasic Legacy 1994-2024 ");
+}
+
 int menu (void) {
 	int menu_on = 1;
 	int option = last_option;
@@ -77,10 +90,7 @@ int menu (void) {
 
 	buf_color (7, 1);
 	buf_setxy (0, 24);
-	buf_print_abs ("                                                                                ");
-
-	buf_setxy (0, 0);
-	buf_print_abs (" Editar \xB3 Cargar \xB3 Grabar \xB3 Ejecutar \xB3 Borrar       (C) LBasic Legacy 1994-2024 ");
+	buf_print_abs ("                                                                                ");	
 
 	int old_key = 0;
 	while (!buf_heartbeat () && menu_on) {
@@ -178,57 +188,49 @@ void lines_free_all (void) {
 }
 
 void save_program (void) {
-	char *file_spec = NULL;
-	
-	get_file_spec (file_spec);
-
-	FILE *pf = fopen (file_spec, "w");
-	for(int i = 0; i < editor_last_line; i ++) {
-		fprintf (pf, "%s\r\n", editor_lines [i]);
+	if (get_file_spec (file_spec)) {
+		FILE *pf = fopen (file_spec, "w");
+		for(int i = 0; i < editor_last_line; i ++) {
+			fprintf (pf, "%s\r\n", editor_lines [i]);
+		}
+		fclose (pf);
 	}
-	fclose (pf);
-
-	free (file_spec);
 }
 
 void load_program (void) {
-	char *file_spec = NULL;
 	char line_buffer [LINE_BUFFER_SIZE];
 	int lines_read = 0;	
 
-	get_file_spec (file_spec);
+	if (get_file_spec (file_spec)) {
+		lines_free_all ();
 
-	lines_free_all ();
+		FILE *pf = fopen (file_spec, "r");
+		while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
+			lines_add_new ();
 
-	FILE *pf = fopen (file_spec, "r");
+			// This allocates a bit more mem than needed
+			// But who cares?
+			char *clean_line = malloc (strlen (line_buffer)); 
+			char *ptr = clean_line;
+			for (int i = 0; i < strlen (line_buffer); i ++) {
+				char c = line_buffer [i];
+				if (c >= ' ') *ptr ++ = c;
+			}
+			*ptr = 0;
 
-	while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
-		lines_add_new ();
-
-		// This allocates a bit more mem than needed
-		// But who cares?
-		char *clean_line = malloc (strlen (line_buffer)); 
-		char *ptr = clean_line;
-		for (int i = 0; i < strlen (line_buffer); i ++) {
-			char c = line_buffer [i];
-			if (c >= ' ') *ptr ++ = c;
+			editor_lines [lines_read] = clean_line;
+			editor_last_line = lines_read;
+			lines_read ++;
 		}
-		*ptr = 0;
 
-		editor_lines [lines_read] = clean_line;
-		editor_last_line = lines_read;
-		lines_read ++;
+		fclose (pf);
+		
+		editor_current_line = editor_last_line;
+		needs_saving = 0;
+		first_line_to_display = 0;
+
+		program_loaded = 1;
 	}
-
-	fclose (pf);
-	
-	editor_current_line = editor_last_line;
-	needs_saving = 0;
-	first_line_to_display = 0;
-
-	program_loaded = 1;
-
-	free (file_spec);
 }
 
 int find_color (char *s) {
@@ -542,16 +544,17 @@ int dialog_program_present_sure (void) {
 }
 
 void main (char argc, char *argv []) {
+	cursoff ();
 	buf_setmode (LS_MODE_TEXT);
-
 	setpal (6, 0xaa, 0xaa, 0);
 
 	buf_setviewport (1, 23);
 	splash_screen_1 ();
 
 	lines_free_all ();
-	cursoff ();
+	clear_file_spec ();
 
+	menu_show ();
 	int option;
 	while ((option = menu ()) != 0xff) {
 
@@ -574,9 +577,9 @@ void main (char argc, char *argv []) {
 				}
 				break;
 
-
 			case OPTION_RUN:
 				if (needs_saving || program_loaded) {
+					menu_show ();
 				} else {
 					dialog_program_not_present ();
 				}
@@ -585,16 +588,13 @@ void main (char argc, char *argv []) {
 			case OPTION_DEL:
 				if (!needs_saving || dialog_program_present_sure ()) {
 					lines_free_all ();
+					clear_file_spec ();
 				}
 				break;
 		}
 
 		setpal (0, 0, 0, 0); waitvbl ();
 		display_editor_lines (-1);
-		/*
-		buf_color (7, 0);
-		buf_clscroll ();
-		*/
 	}
 
 }
