@@ -310,7 +310,29 @@ void display_editor_lines (int cursor) {
 	int y = 1;
 	int i = 0;
 	int cur_line_rendered = 0;
+	int lastline = 23;
 	
+	// do a 1st pass to make sure current line is on display
+	while (1) {
+		int line_no = first_line_to_display + i;
+		if (line_no > editor_last_line) break;
+		if (line_no == editor_current_line) {
+			int ycursor = y + cursor / 80;
+			if (ycursor <= lastline) cur_line_rendered = 1;
+		}
+
+		y += 1 + strlen (editor_lines [line_no]) / 80;
+		if (y > lastline) {
+			if (cur_line_rendered) break;
+			first_line_to_display ++;
+			y = 1; i = 0;
+		}
+
+		i ++;
+	}
+
+	y = 1; i= 0; cur_line_rendered = 0;
+
 	buf_color (7, 0);
 	buf_clscroll ();
 
@@ -329,30 +351,24 @@ void display_editor_lines (int cursor) {
 		syntax_hightlight (bkg, editor_lines [line_no]);
 
 		// Draw cursor?
-		if (cursor >= 0 && line_no == editor_current_line) {
+		if (line_no == editor_current_line) {
 			int ycursor = y + cursor / 80;
 
-			if (ycursor < 24) {
+			if (ycursor <= lastline) {
 				cur_line_rendered = 1;
 
-				char c = line_pointer [cursor]; if (c == 0) c = ' ';
-				buf_setxy (cursor % 80, ycursor);
-				buf_color (0, 14);
-				//buf_char (c);
+				if (cursor >= 0) {
+					char c = line_pointer [cursor]; if (c == 0) c = ' ';
+					buf_setxy (cursor % 80, ycursor);
+					buf_color (0, 14);
+					buf_char (c);
+				}
 			}
 		}
 
 		y += 1 + strlen (editor_lines [line_no]) / 80;
 
-		if (y > 23) {
-			if (cur_line_rendered) break;
-
-			// Scroll down
-			buf_color (7, 0);
-			buf_clscroll ();
-			first_line_to_display ++;
-			y = 1; i = 0;
-		}
+		if (y > lastline) break;
 
 		i ++;
 	}
@@ -539,6 +555,7 @@ int editor (void) {
 
 		waitvbl ();
 	}
+
 }
 
 void dialog_program_not_present (void) {
@@ -599,6 +616,7 @@ void main (char argc, char *argv []) {
 				break;
 		}
 
+		debuff_keys ();
 		display_editor_lines (-1);
 	}
 

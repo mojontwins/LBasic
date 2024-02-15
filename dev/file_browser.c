@@ -84,6 +84,7 @@ int select_file_spec (void) {
 		#endif
 		strcpy (user_input, ptr + 1);
 		ptr [0] = 0;
+		cursor = strlen (user_input);
 	}
 
 	curson ();
@@ -188,7 +189,6 @@ int select_file_spec (void) {
 
 				case 27:
 					// Exit
-					file_spec = NULL;
 					done = 1;
 					res = 0;
 					break;
