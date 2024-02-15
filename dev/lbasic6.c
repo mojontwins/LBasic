@@ -210,7 +210,7 @@ void load_program_do (char *filename) {
 		unsigned char *clean_line = malloc (strlen (line_buffer)); 
 		unsigned char *ptr = clean_line;
 		for (int i = 0; i < strlen (line_buffer); i ++) {
-			char c = line_buffer [i];
+			unsigned char c = line_buffer [i];
 			if (c >= ' ') *ptr ++ = c;
 		}
 		*ptr = 0;
