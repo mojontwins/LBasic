@@ -22,7 +22,7 @@ int get_cwd (char *pBuf, size_t len) {
 	#ifdef _WIN32
 		bytes = GetModuleFileName (NULL, pBuf, len);
 		bytes = bytes ? bytes : -1;
-		ptr = strrchr (pBuf, '\\');
+		ptr = strrchr (pBuf, '/');
 	#else
 		bytes = MIN (readlink ("/proc/self/exe", pBuf, len), len - 1);
 		if (bytes >= 0)
@@ -68,7 +68,7 @@ int get_file_spec (char *file_spec) {
 		unsigned char *ptr;
 		strcpy (cwd, file_spec);
 		#ifdef _WIN32
-			ptr = strrchr (cwd, '\\');
+			ptr = strrchr (cwd, '/');
 		#else
 			ptr = strrchr (cwd, '/');
 		#endif
@@ -222,7 +222,7 @@ int get_file_spec (char *file_spec) {
 					} else if (strcmp (file.name, "..") == 0) {
 						char *ptr;
 						#ifdef _WIN32
-							ptr = strrchr (cwd, '\\');
+							ptr = strrchr (cwd, '/');
 						#else
 							ptr = strrchr (cwd, '/');
 						#endif
@@ -232,7 +232,7 @@ int get_file_spec (char *file_spec) {
 					} else {
 						if (strlen (file.name) + strlen (cwd) < 256) {
 							#ifdef _WIN32
-								strcat (cwd, "\\");
+								strcat (cwd, "/");
 							#else
 								strcat (cwd, "/");
 							#endif
@@ -246,7 +246,7 @@ int get_file_spec (char *file_spec) {
 					file_spec = malloc (strlen (cwd) + 1 + strlen (user_input) + 1);
 					strcpy (file_spec, cwd);
 					#ifdef _WIN32
-						strcat (file_spec, "\\");
+						strcat (file_spec, "/");
 					#else
 						strcat (file_spec, "/");
 					#endif
