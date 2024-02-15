@@ -193,7 +193,7 @@ void buf_char (char c) {
 	}
 }
 
-void _buf_print (char *s, int scroll) {
+void _buf_print (char *s, int scroll, int no_break) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
 		char c;
@@ -217,7 +217,7 @@ void _buf_print (char *s, int scroll) {
 				if (scroll) {
 					buf_x = 0;
 					buf_y ++;
-				} else break;
+				} else if (no_break) break;
 			}
 		}
 	} else {
@@ -248,7 +248,7 @@ void _buf_print (char *s, int scroll) {
 					buf_x = x1 = 0;
 					buf_y ++;
 					y1 += 8;
-				} else break;
+				} else if (no_break) break;
 			}
 		}
 	}
@@ -270,10 +270,10 @@ void buf_wordwrap (char *s) {
 				buf_x = buf_col1;
 			}
 
-			_buf_print ("word", 1);
+			_buf_print ("word", 1, 0);
 
 			if (buf_x <= buf_col2) {
-				_buf_print (" ", 1);
+				_buf_print (" ", 1, 0);
 			}
 
 			wp = word;
@@ -290,11 +290,15 @@ void buf_wordwrap (char *s) {
 }
 
 void buf_print_abs (char *s) {
-	_buf_print (s, 0);
+	_buf_print (s, 0, 0);
 }
 
 void buf_print (char *s) {
-	_buf_print (s, 1);
+	_buf_print (s, 1, 0);
+}
+
+void buf_print_trim (char *s) {
+	_buf_print (s, 0, 1);
 }
 
 void buf_print_ln (char *s) {

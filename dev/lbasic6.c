@@ -48,14 +48,8 @@ int needs_saving;			// Altered loaded program
 int last_option = 0;
 int first_line_to_display;
 
-char *file_spec = NULL;
 
 #define LINE_BUFFER_SIZE 2048
-
-void clear_file_spec (void) {
-	free (file_spec);
-	file_spec = NULL;
-}
 
 void splash_screen_1 (void) {
 	buf_color (7, 0);
@@ -187,49 +181,58 @@ void lines_free_all (void) {
 	first_line_to_display = 0;
 }
 
+void save_program_do (char *filename) {
+	FILE *pf = fopen (filename, "w");
+	for(int i = 0; i < editor_last_line; i ++) {
+		fprintf (pf, "%s\r\n", editor_lines [i]);
+	}
+	fclose (pf);
+}
+
 void save_program (void) {
-	if (get_file_spec (file_spec)) {
-		FILE *pf = fopen (file_spec, "w");
-		for(int i = 0; i < editor_last_line; i ++) {
-			fprintf (pf, "%s\r\n", editor_lines [i]);
-		}
-		fclose (pf);
+	if (select_file_spec ()) {
+		save_program_do (get_file_spec ());
 	}
 }
 
-void load_program (void) {
-	char line_buffer [LINE_BUFFER_SIZE];
-	int lines_read = 0;	
+void load_program_do (char *filename) {
+	unsigned char line_buffer [LINE_BUFFER_SIZE];
+	int lines_read = 0;
 
-	if (get_file_spec (file_spec)) {
-		lines_free_all ();
+	lines_free_all ();
 
-		FILE *pf = fopen (file_spec, "r");
-		while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
-			lines_add_new ();
+	FILE *pf = fopen (filename, "r");
+	while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
+		lines_add_new ();
 
-			// This allocates a bit more mem than needed
-			// But who cares?
-			char *clean_line = malloc (strlen (line_buffer)); 
-			char *ptr = clean_line;
-			for (int i = 0; i < strlen (line_buffer); i ++) {
-				char c = line_buffer [i];
-				if (c >= ' ') *ptr ++ = c;
-			}
-			*ptr = 0;
-
-			editor_lines [lines_read] = clean_line;
-			editor_last_line = lines_read;
-			lines_read ++;
+		// This allocates a bit more mem than needed
+		// But who cares?
+		unsigned char *clean_line = malloc (strlen (line_buffer)); 
+		unsigned char *ptr = clean_line;
+		for (int i = 0; i < strlen (line_buffer); i ++) {
+			char c = line_buffer [i];
+			if (c >= ' ') *ptr ++ = c;
 		}
+		*ptr = 0;
 
-		fclose (pf);
-		
-		editor_current_line = editor_last_line;
-		needs_saving = 0;
-		first_line_to_display = 0;
+		editor_lines [lines_read] = clean_line;
+		editor_last_line = lines_read;
+		lines_read ++;
+	}
 
-		program_loaded = 1;
+	fclose (pf);
+	
+	editor_current_line = editor_last_line;
+	needs_saving = 0;
+	first_line_to_display = 0;
+
+	program_loaded = 1;
+}
+
+void load_program (void) {
+
+	if (select_file_spec ()) {
+		load_program_do (get_file_spec ());
 	}
 }
 
@@ -597,4 +600,5 @@ void main (char argc, char *argv []) {
 		display_editor_lines (-1);
 	}
 
+	clear_file_spec ();
 }

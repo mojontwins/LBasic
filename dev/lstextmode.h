@@ -20,6 +20,7 @@ int buf_get_attrib (void);
 void buf_char (char c);
 void buf_scroll_up (int from, int to);
 void buf_print_abs (char *s);
+void buf_print_trim (char *s);
 void buf_print (char *s);
 void buf_print_ln (char *s);
 void buf_wordwrap (char *s);
