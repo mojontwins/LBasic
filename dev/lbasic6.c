@@ -279,7 +279,7 @@ void syntax_hightlight (int bkg, char *s) {
 				state = 1;
 
 				buf_color (7, bkg);
-				buf_print_abs (temp_buffer);
+				buf_print_abs_clip_to_scroll (temp_buffer);
 			}
 		}
 
@@ -292,7 +292,7 @@ void syntax_hightlight (int bkg, char *s) {
 				state = 2;
 
 				buf_color (find_color (temp_buffer), bkg);
-				buf_print_abs (temp_buffer);
+				buf_print_abs_clip_to_scroll (temp_buffer);
 			}
 		}
 
@@ -303,7 +303,7 @@ void syntax_hightlight (int bkg, char *s) {
 
 	temp_buffer [temp_index] = '\0';
 	buf_color (state == 1 ? find_color(temp_buffer) : 7, bkg);
-	buf_print_abs(temp_buffer);
+	buf_print_abs_clip_to_scroll (temp_buffer);
 }
 
 void display_editor_lines (int cursor) {
@@ -338,16 +338,20 @@ void display_editor_lines (int cursor) {
 				char c = line_pointer [cursor]; if (c == 0) c = ' ';
 				buf_setxy (cursor % 80, ycursor);
 				buf_color (0, 14);
-				buf_char (c);
+				//buf_char (c);
 			}
 		}
 
 		y += 1 + strlen (editor_lines [line_no]) / 80;
 
 		if (y > 23) {
-			if (!cur_line_rendered) first_line_to_display ++;
+			if (cur_line_rendered) break;
 
-			break;
+			// Scroll down
+			buf_color (7, 0);
+			buf_clscroll ();
+			first_line_to_display ++;
+			y = 1; i = 0;
 		}
 
 		i ++;
@@ -418,7 +422,6 @@ int editor (void) {
 			// Scroll down is more tricky ... done elsehwere?
 
 			editor_current_line = editor_next_line;
-
 
 			line_change = 0;
 		}
@@ -596,7 +599,6 @@ void main (char argc, char *argv []) {
 				break;
 		}
 
-		setpal (0, 0, 0, 0); waitvbl ();
 		display_editor_lines (-1);
 	}
 

@@ -193,7 +193,7 @@ void buf_char (char c) {
 	}
 }
 
-void _buf_print (char *s, int scroll, int no_break) {
+void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
 		char c;
@@ -203,6 +203,8 @@ void _buf_print (char *s, int scroll, int no_break) {
 		int attrib = buf_get_attrib ();
 
 		while (c = *s ++) {
+			if (clip_to_scroll && (buf_y < viewport_y1 || buf_y > viewport_y2)) break;
+
 			if (scroll) {
 				buf_scroll_up_if_needed ();
 			} else {
@@ -214,10 +216,10 @@ void _buf_print (char *s, int scroll, int no_break) {
 			buf [idx + 1] = attrib;
 
 			buf_x ++; if (buf_x == scr_w) {
-				if (scroll) {
-					buf_x = 0;
-					buf_y ++;
-				} else if (no_break) break;
+				if (no_break) break;
+				
+				buf_x = 0;
+				buf_y ++;
 			}
 		}
 	} else {
@@ -230,6 +232,8 @@ void _buf_print (char *s, int scroll, int no_break) {
 		int scr_w = screenwidth () / 8;
 
 		while (c = * s ++) {
+			if (clip_to_scroll && (buf_y < viewport_y1 || buf_y > viewport_y2)) break;
+
 			if (scroll) {
 				buf_scroll_up_if_needed ();
 				y1 = 8 * buf_y;
@@ -244,11 +248,11 @@ void _buf_print (char *s, int scroll, int no_break) {
 			outtextxy (x1, y1, substr);
 
 			x1 += 8; buf_x ++; if (buf_x == scr_w) {
-				if (scroll) {
-					buf_x = x1 = 0;
-					buf_y ++;
-					y1 += 8;
-				} else if (no_break) break;
+				if (no_break) break;
+				
+				buf_x = x1 = 0;
+				buf_y ++;
+				y1 += 8;
 			}
 		}
 	}
@@ -270,10 +274,10 @@ void buf_wordwrap (char *s) {
 				buf_x = buf_col1;
 			}
 
-			_buf_print ("word", 1, 0);
+			_buf_print ("word", 1, 0, 0);
 
 			if (buf_x <= buf_col2) {
-				_buf_print (" ", 1, 0);
+				_buf_print (" ", 1, 0, 0);
 			}
 
 			wp = word;
@@ -290,15 +294,19 @@ void buf_wordwrap (char *s) {
 }
 
 void buf_print_abs (char *s) {
-	_buf_print (s, 0, 0);
+	_buf_print (s, 0, 0, 0);
+}
+
+void buf_print_abs_clip_to_scroll (char *s) {
+	_buf_print (s, 0, 0, 1);
 }
 
 void buf_print (char *s) {
-	_buf_print (s, 1, 0);
+	_buf_print (s, 1, 0, 0);
 }
 
 void buf_print_trim (char *s) {
-	_buf_print (s, 0, 1);
+	_buf_print (s, 0, 1, 0);
 }
 
 void buf_print_ln (char *s) {
