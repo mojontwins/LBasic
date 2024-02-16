@@ -14,6 +14,7 @@ char str_divider_line [] = "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4
 
 char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *action) {
 	int cursor;
+	int max_chars = 80 * max_lines - 1;
 	int done = 0;
 	unsigned char c;
 	char *res;
@@ -70,7 +71,7 @@ char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *act
 		c = get_character_input (chars);
 
 		if (c >= ' ') {
-			if (cursor < 79) {
+			if (cursor < max_chars) {
 				text_area [cursor ++] = c;
 				text_area [cursor] = 0;
 			}
