@@ -550,7 +550,7 @@ int editor (void) {
 				// If "between quotes" get from-to, copy to new string, pass it, 
 				// Don't forget to free, or use an all-purpose container array.
 
-				char *new_text = tui_textbox (7, "Enter text to insert", 0, action);
+				char *new_text = tui_textbox (7, "Enter text to insert", 0, 6, &action);
 				if (new_text) {
 					line_pointer = editor_lines [editor_current_line];
 					line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));

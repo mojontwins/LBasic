@@ -7,6 +7,8 @@
 #include "../dos-like/source/dos.h"
 #include "lstextmode.h"
 
+#include "ega14.h"
+
 int buf_x, buf_y;
 int buf_c1, buf_c2;
 int buf_col1, buf_col2;
@@ -15,6 +17,8 @@ int viewport_y2 = 23;
 int buf_mode = LS_MODE_TEXT;
 int buf_mouse_x = 0;
 int buf_mouse_y = 0;
+
+int font_ega14;
 
 void debuff_keys (void) {
 	int any = 0;
@@ -407,6 +411,8 @@ void buf_setmode(int mode) {
 			break;
 		case LS_MODE_GFX_HIRES:
 			setvideomode (videomode_640x350);
+			font_ega14 = installuserfont_array (ega14_fnt);
+			settextstyle (font_ega14, 0, 0, 0);
 			break;
 		case LS_MODE_GFX_MED:
 			setvideomode (videomode_640x200);

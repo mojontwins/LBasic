@@ -94,7 +94,7 @@ enum {
 
 void settextstyle( int font, int bold, int italic, int underline );
 int installuserfont( char const* filename ); 
-
+int installuserfont_array ( char const *data );
 
 enum {
     DEFAULT_SOUNDBANK_AWE32 = 1,
@@ -842,6 +842,13 @@ int installuserfont( char const* filename ) {
     fread( data, 1, sz, fp );
     fclose( fp );
     
+    internals->graphics.fonts[ internals->graphics.fonts_count ] = (pixelfont_t*) data;
+
+    return internals->graphics.fonts_count++;
+}
+
+
+int installuserfont_array ( char const *data ) {
     internals->graphics.fonts[ internals->graphics.fonts_count ] = (pixelfont_t*) data;
 
     return internals->graphics.fonts_count++;
