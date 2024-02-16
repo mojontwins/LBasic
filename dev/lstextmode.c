@@ -18,6 +18,7 @@ int buf_mode = LS_MODE_TEXT;
 int buf_mouse_x = 0;
 int buf_mouse_y = 0;
 
+int buf_char_height = 8;
 int font_ega14;
 
 void debuff_keys (void) {
@@ -182,18 +183,18 @@ void buf_scroll_up (int from, int to) {
 	} else {
 		// Get from 8 * from to 8 * to + 7 
 		int scr_w = screenwidth ();
-		int byte_size = (to - from + 1) * 8 * scr_w;
+		int byte_size = (to - from + 1) * buf_char_height * scr_w;
 		char *temp_buf = malloc (byte_size);
 		unsigned char *buf = screenbuffer ();
 
-		memcpy (temp_buf, buf + from * 8 * scr_w, byte_size);
+		memcpy (temp_buf, buf + from * buf_char_height * scr_w, byte_size);
 
 		// Put at 8 * from - 8
-		memcpy (buf + (from - 1) * 8 * scr_w, temp_buf, byte_size);
+		memcpy (buf + (from - 1) * buf_char_height * scr_w, temp_buf, byte_size);
 
 		// Clear 8 * to to 8 * to + 7
 		setcolor (buf_c2);
-		bar (0, to * 8, scr_w, 8);
+		bar (0, to * buf_char_height, scr_w, buf_char_height);
 
 		free (temp_buf);
 	}
@@ -221,6 +222,8 @@ void buf_char (char c) {
 			buf_x = 0;
 			buf_y ++;
 		}
+	} else {
+		// TODO
 	}
 }
 
@@ -255,9 +258,8 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 		}
 	} else {
 		int x1 = 8 * buf_x;
-		int y1 = 8 * buf_y;
-		int w = 8 * strlen(s);
-		int h = 8;
+		int y1 = buf_char_height * buf_y;
+		
 		char c;
 		char *substr = " ";
 		int scr_w = screenwidth () / 8;
@@ -267,13 +269,13 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 
 			if (scroll) {
 				buf_scroll_up_if_needed ();
-				y1 = 8 * buf_y;
+				y1 = buf_char_height * buf_y;
 			} else {
 				if (buf_y >= screenheight ()) break;
 			}
 
 			setcolor (buf_c2);
-			if (buf_c2 < 256) bar (x1, y1, 8, 8);
+			if (buf_c2 < 256) bar (x1, y1, 8, buf_char_height);
 			substr [0] = c;
 			setcolor (buf_c1);
 			outtextxy (x1, y1, substr);
@@ -283,7 +285,7 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 				
 				buf_x = x1 = 0;
 				buf_y ++;
-				y1 += 8;
+				y1 += buf_char_height;
 			}
 		}
 	}
@@ -381,7 +383,7 @@ void buf_clscroll (void) {
 		}
 	} else {
 		setcolor (buf_c2);
-		bar (0, 8 * viewport_y1, screenwidth (), 8 * (viewport_y2 - viewport_y1 + 1));
+		bar (0, buf_char_height * viewport_y1, screenwidth (), buf_char_height * (viewport_y2 - viewport_y1 + 1));
 	}
 
 	buf_x = 0; buf_y = viewport_y1;
@@ -402,6 +404,7 @@ void buf_put_string_xy (int x, int y, int c1, int c2, char *s) {
 
 void buf_setmode(int mode) {
 	buf_mode = mode;
+	buf_char_height = 8;
 	switch (buf_mode) {
 		case LS_MODE_GFX:
 			setvideomode (videomode_320x200);
@@ -413,6 +416,7 @@ void buf_setmode(int mode) {
 			setvideomode (videomode_640x350);
 			font_ega14 = installuserfont_array (ega14_fnt);
 			settextstyle (font_ega14, 0, 0, 0);
+			buf_char_height = 14;
 			break;
 		case LS_MODE_GFX_MED:
 			setvideomode (videomode_640x200);
@@ -427,7 +431,7 @@ void buf_setmode(int mode) {
 		buf_setmargins (0, screenwidth () - 1);
 		buf_clscroll ();
 	} else {
-		buf_setviewport (1, screenheight () / 8);
+		buf_setviewport (1, screenheight () / buf_char_height);
 		buf_setmargins (0, screenwidth () / 8 - 1);
 		buf_cls ();
 	}
