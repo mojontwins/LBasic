@@ -508,24 +508,59 @@ int editor (void) {
 			if (key == KEY_LEFT) {
 				if (cursor > 0) cursor --;
 			}
+
 			if (key == KEY_RIGHT) {
 				if (cursor < strlen (line_pointer)) cursor ++;
 			}
+
 			if (key == KEY_UP) {
 				if (editor_current_line > 0) {
 					editor_next_line = editor_current_line - 1;
 					line_change = 1;
 				}
 			}
+
 			if (key == KEY_DOWN) {
 				if (editor_current_line < editor_last_line) {
 					editor_next_line = editor_current_line + 1;
 					line_change = 1;
 				}
 			}
+
 			if (key == KEY_RETURN) {
 				editor_next_line = editor_current_line + 1;
 				new_line = 1;
+			}
+
+			if (key == KEY_PRIOR) {
+				// Up until current line disappears, or line 0, then set
+			}
+
+			if (key == KEY_NEXT) {
+				// Down until current line disappears, or last line, then set
+			}
+
+			if (key == KEY_F4) {
+				// Insert text from a text area
+				int action = 0;
+
+				// TODO: Parse line so if F4 is pressed in the middle of the string->edit string
+				// Which may be tricky!
+				// From start of the line to cursor, turn on / off "between_quotes", 
+				// If "between quotes" get from-to, copy to new string, pass it, 
+				// Don't forget to free, or use an all-purpose container array.
+
+				char *new_text = tui_textbox (7, "Enter text to insert", 0, action);
+				if (new_text) {
+					line_pointer = editor_lines [editor_current_line];
+					line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));
+					
+					strcat (line_pointer, "\x34");
+					strcat (line_pointer, new_text);
+					strcat (line_pointer, "\x34");
+
+					editor_lines [editor_current_line] = line_pointer;
+				}
 			}
 
 			++keys;
