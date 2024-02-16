@@ -103,7 +103,7 @@ void backend_beep (void) {
 
 void backend_cls (void) {
 	buf_clscroll ();
-	buf_reset_xy ();
+	buf_resetxy ();
 }
 
 void backend_draw (char *string) {

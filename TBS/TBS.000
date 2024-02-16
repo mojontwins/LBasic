@@ -1,4 +1,5 @@
 # Al ejecutar todas las flags valen 0
+go :run
 eq $255 1 :run
 
 # presentación
@@ -32,9 +33,13 @@ pic "tbs14.gif" 2
 let 255 1
 
 :run
-mode text
+mode gfx_hi
+statusbar off
+pic "testbg.gif" 0
+viewport 12 24
+
 center " THE BLACK SMURFF (TBS), BY PHAKHOU & ARZUR "
-color 10 00
+color 63 00
 pause
 cls
 print "Estas son las aventuras de TBS cuando a£n estas en la aldea. Para salir de ella necesitar s algunos objetos. ­Te espera la gran ciudad!. "

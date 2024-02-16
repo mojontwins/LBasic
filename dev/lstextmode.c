@@ -82,7 +82,7 @@ void buf_setxy (int x, int y) {
 	buf_x = x; buf_y = y;
 }
 
-void buf_setxy (void) {
+void buf_resetxy (void) {
 	buf_x = 0; buf_y = viewport_y1;
 }
 
@@ -301,7 +301,9 @@ void buf_wordwrap (char *s) {
 	char word [256]; char *wp = word;
 	char c;
 
-	while (c = *s ++) {
+	while (1) {
+		c = *s ++;
+
 		// Obtain a whole word
 		if (c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == 0) {
 			*wp = 0;		// End string
@@ -311,7 +313,7 @@ void buf_wordwrap (char *s) {
 				buf_x = buf_col1;
 			}
 
-			_buf_print ("word", 1, 0, 0);
+			_buf_print (word, 1, 0, 0);
 
 			if (buf_x <= buf_col2) {
 				_buf_print (" ", 1, 0, 0);
