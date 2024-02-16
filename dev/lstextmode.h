@@ -4,7 +4,10 @@
 #define LS_MODE_GFX_HIRES	3
 #define LS_MODE_GFX_MED		4
 
+void debuff_keys (void);
 void buf_setviewport (int y1, int y2);
+int buf_getviewport_y1 (void);
+int buf_getviewport_y2 (void);
 void buf_setmargins (int col1, int col2);
 void buf_setxy (int x, int y);
 void buf_setx (int x);

@@ -1,7 +1,138 @@
 #include <string.h>
 
+#include "tui.h"
 #include "keys.h"
 #include "lstextmode.h"
+#include "conversion.h"
+
+#include "../dos-like/source/dos.h"
+
+// A pointer to this array will be returned but it should be
+// memcopied / strcpy'ed to elsewhere!
+unsigned char text_area [512];
+char str_divider_line [] = "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4";
+
+char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *action) {
+	int cursor;
+	int done = 0;
+	unsigned char c;
+	char *res;
+
+	if (org_text) {
+		strcpy (text_area, org_text);
+		cursor = strlen (org_text);
+	} else {
+		text_area [0] = 0;
+		cursor = 0;
+	}
+
+	buf_setxy (0, y);
+	buf_color (7, 1);
+	buf_print_abs (str_divider_line);
+	buf_setxy (1, y);
+	buf_print_abs ("\xB4 ");
+	buf_print_abs (caption);
+	buf_print_abs (" \xC3");
+
+	buf_setxy (0, y + max_lines + 1);
+	buf_print_abs (str_divider_line);
+	buf_setxy (1, y);
+	buf_print_abs ("\xB4 ENTER: Insertar \xB3 ESC: Cancelar \xC3");
+
+	while (!done && !buf_heartbeat ()) {
+		// Display
+		
+		// Fast clear
+		buf_color (7, 0);
+
+		int y1 = buf_getviewport_y1 ();
+		int y2 = buf_getviewport_y2 ();
+		buf_setviewport (y + 1, y + max_lines);
+		buf_clscroll ();
+		buf_setviewport (y1, y2);
+
+		buf_setxy (0, y + 1);
+		buf_print_abs (text_area);
+
+		int ycursor = y + 1 + cursor / 80;
+		int xcursor = cursor % 80;
+
+		buf_setxy (xcursor, ycursor);
+		buf_color (0, 14);
+		c = text_area [cursor] ? text_area [cursor] : 32;
+		buf_char (c);
+
+		// Get input
+		unsigned char const* chars = (unsigned char*) readchars ();
+		enum keycode_t* keys = readkeys ();
+
+		// Characters
+		c = get_character_input (chars);
+
+		if (c >= ' ') {
+			if (cursor < 79) {
+				text_area [cursor ++] = c;
+				text_area [cursor] = 0;
+			}
+		} else {
+			switch (c) {
+				case 8:
+					// Delete
+					if (cursor > 0) {
+						cursor --;
+						text_area [cursor] = 0;
+					}
+					break;
+
+				case 27:
+					// Exit
+					done = 1;
+					res = NULL;
+					*action = TUI_ACTION_ESC;
+					break;
+			}
+		}
+
+		// Special keys
+		while (*keys) {
+			unsigned long long key = (unsigned long long) *keys;
+
+			if (key == KEY_UP) {
+				cursor -= 80;
+			}
+
+			if (key == KEY_DOWN) {
+				cursor += 80; 
+			}
+
+			if (key == KEY_LEFT) {
+				cursor --;
+			}
+
+			if (key == KEY_RIGHT) {
+				cursor ++;
+			}
+
+			if (key == KEY_RETURN) {
+				res = text_area;
+				done = 1;
+				*action = TUI_ACTION_ENTER;
+				break;
+			}
+
+			keys ++;
+		}
+
+		if (cursor < 0) {
+			cursor = 0;
+		} else if (cursor > strlen (text_area)) {
+			cursor = strlen (text_area);
+		}
+	}
+
+	debuff_keys ();
+	return res;
+}
 
 void tui_general_box (char *message, char *alt, char symbol) {
 	buf_color (7, 1);

@@ -139,25 +139,6 @@ int menu (void) {
 	return option;
 }
 
-void debuff_keys (void) {
-	int any = 0;
-	do {
-		
-		unsigned char const* chars = (unsigned char*) readchars ();
-		enum keycode_t* keys = readkeys ();
-
-		char c;
-		while (c = *chars ++) {
-			any = 1;
-		}		
-
-		unsigned long long key;
-		while (key = (unsigned long long) *keys ++) {
-			any = 1;
-		}
-	} while (any);
-}
-
 void lines_add_new (void) {
 	editor_n_lines ++;
 	editor_lines = (char **) realloc (editor_lines, editor_n_lines * sizeof (char *));

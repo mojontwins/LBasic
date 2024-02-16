@@ -16,6 +16,25 @@ int buf_mode = LS_MODE_TEXT;
 int buf_mouse_x = 0;
 int buf_mouse_y = 0;
 
+void debuff_keys (void) {
+	int any = 0;
+	do {
+		
+		unsigned char const* chars = (unsigned char*) readchars ();
+		enum keycode_t* keys = readkeys ();
+
+		char c;
+		while (c = *chars ++) {
+			any = 1;
+		}		
+
+		unsigned long long key;
+		while (key = (unsigned long long) *keys ++) {
+			any = 1;
+		}
+	} while (any);
+}
+
 int buf_get_mouse_x (void) {
 	buf_mouse_x = mousex ();
 	if (buf_mouse_x < 0) buf_mouse_x = 0;
@@ -39,6 +58,14 @@ int buf_get_mouse_b (int button) {
 void buf_setviewport (int y1, int y2) {
 	viewport_y1 = y1;
 	viewport_y2 = y2;
+}
+
+int buf_getviewport_y1 (void) {
+	return viewport_y1;
+}
+
+int buf_getviewport_y2 (void) {
+	return viewport_y2;
 }
 
 void buf_setmargins (int col1, int col2) {
