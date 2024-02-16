@@ -12,6 +12,7 @@ void buf_setmargins (int col1, int col2);
 void buf_setxy (int x, int y);
 void buf_setx (int x);
 void buf_sety (int y);
+void buf_setxy (void);
 int buf_getx (void);
 int buf_gety (void);
 int buf_getscrw (void);

@@ -82,6 +82,10 @@ void buf_setxy (int x, int y) {
 	buf_x = x; buf_y = y;
 }
 
+void buf_setxy (void) {
+	buf_x = 0; buf_y = viewport_y1;
+}
+
 void buf_setx (int x) {
 	buf_x = x;
 }
