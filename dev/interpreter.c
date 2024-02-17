@@ -56,13 +56,16 @@ void init_strings (void) {
 void update_path_spec (char *fullpath) {
 	char *last_slash = strrchr (fullpath, '/');
 
-	if (last_slash != NULL) {
+	if (last_slash == NULL) {
+		last_slash = strrchr (fullpath, '\\');
+	}
+	
+	if (last_slash == NULL) {
+		main_path_spec [0] = 0;
+	} else {
 		int parentLen = strlen(fullpath) - strlen(last_slash + 1);
 		strncpy(main_path_spec, fullpath, parentLen);
-	} else {
-		main_path_spec [0] = 0;
 	}
-
 }
 
 int get_clr_statusbar1 (void) {
@@ -100,6 +103,7 @@ int lbasi_run_file (FILE *file) {
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
 		// Tokenize line_buffer
+	backend_print_ln (line_buffer);	
 		parse_to_tokens (line_buffer);
 		if (get_num_tokens () == 0) continue;
 
@@ -419,12 +423,27 @@ void lbasi_read_labels (FILE *file) {
 int lbasi_run_tmp (char *tmp, char *spec) {
 	int res;
 
-	if (spec != NULL) update_path_spec (spec);
+	if (spec != NULL) {
+		update_path_spec (spec);
+		sprintf (str_status_top, "LBASIC: %s", spec);
+	} else {
+		strcpy (str_status_top, "LBASIC: ?");
+	}
 
 	FILE *file;
 	if ((file = fopen (tmp, "r")) != NULL) {
+		backend_init ();
+		backend_color (7, 0);
+		backend_cls ();
+
 		lbasi_read_labels (file);
+
+		backend_set_viewport (1, 23);
+		backend_set_show_status (1);
+		backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
+
 		res = lbasi_run_file (file);
+		
 		fclose (file);
 	}
 

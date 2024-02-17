@@ -1,8 +1,7 @@
 # Al ejecutar todas las flags valen 0
-go :run
 eq $255 1 :run
 
-# presentación
+# presentaci¢n
 mode gfx
 pic "tbs1.gif" 2
 pic "tbs2.gif" 0.5
@@ -115,3 +114,4 @@ print "1.- Ir de una vez a casa de Pitufina "
 print "2.- Ir a la Estaci¢n "
 choice 2 2 "Entras y no estaba. Te ha dejado y ahora se folla al alcalde." "Te montas en el tren correcto. CONTINUA EN EL BLOQUE 1"
 pause
+cls
