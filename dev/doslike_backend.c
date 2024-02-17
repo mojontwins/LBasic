@@ -166,7 +166,7 @@ unsigned char backend_choice (int num_choices, int correct, char **choices) {
 
 	while (!backend_heartbeat ()) {
 		input = backend_read_option (num_choices);
-		if (input <= num_choices) backend_print (choices [input + 2]);
+		if (input <= num_choices) backend_print_ln (choices [input + 2]);
 		return input == correct;
 	}
 }
@@ -181,7 +181,7 @@ unsigned char backend_read_option (int num_choices) {
 	int res = 0;
 	int len = 0;
 	int x = buf_getx ();
-	int y = buf_gety ();
+
 	char input [INPUT_LENGTH + 1];
 	memset (input, 0, INPUT_LENGTH + 1);
 
@@ -193,7 +193,7 @@ unsigned char backend_read_option (int num_choices) {
 	while (1) {
 		int c = *readchars ();
 		while (!backend_heartbeat () && c != '\r' && len + 1 < INPUT_LENGTH) {
-			buf_setxy (x, y);
+			buf_setx (x);
 			buf_print (">");
 			buf_print (input);
 			buf_print ("_ ");
@@ -228,14 +228,14 @@ unsigned char backend_read_option (int num_choices) {
 		}
 
 		if (num_choices == 0 || (input_i >= 1 && input_i <= num_choices)) {
-			buf_setxy (x, y);
+			buf_setx (x);
 			buf_print (">");
 			buf_print (input);
 			buf_print_ln (" ");
 
 			return input_i;
 		} else {
-			buf_setxy (x, y);
+			buf_setx (x);
 			buf_print (">");
 			for (int i = 0; i < strlen (input) + 1; i ++) {
 				buf_print (" ");

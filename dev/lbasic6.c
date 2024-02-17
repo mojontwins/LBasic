@@ -13,6 +13,7 @@
 #include "keys.h"
 #include "conversion.h"
 #include "file_browser.h"
+#include "backend.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -162,9 +163,9 @@ void lines_free_all (void) {
 	first_line_to_display = 0;
 }
 
-void save_program_do (char *filename) {
+void save_program_do (int from, char *filename) {
 	FILE *pf = fopen (filename, "w");
-	for(int i = 0; i < editor_last_line; i ++) {
+	for(int i = from; i < editor_last_line; i ++) {
 		fprintf (pf, "%s\r\n", editor_lines [i]);
 	}
 	fclose (pf);
@@ -172,7 +173,7 @@ void save_program_do (char *filename) {
 
 void save_program (void) {
 	if (select_file_spec ()) {
-		save_program_do (get_file_spec ());
+		save_program_do (0, get_file_spec ());
 	}
 }
 
@@ -582,12 +583,35 @@ int dialog_program_present_sure (void) {
 	return tui_yes_or_no ("\xA8" "Seguro?", "Hay cambios sin grabar");
 }
 
-void main (char argc, char *argv []) {
-	cursoff ();
+void reset_screen (void) {
 	buf_setmode (LS_MODE_TEXT);
 	setpal (6, 0xaa, 0xaa, 0);
-
+	buf_cls ();
 	buf_setviewport (1, 23);
+	
+}
+
+void run_from (int from) {
+	save_program_do (from, "temp.tmp");
+	
+	FILE *file = fopen ("temp.tmp", "r");
+	lbasi_run_file (file);
+	fclose (file);
+	
+	remove ("temp.tmp");
+	
+	backend_print ("[Programa terminado]");
+	backend_pause ();
+	debuff_keys ();
+
+	reset_screen ();
+	menu_show ();
+}
+
+void main (char argc, char *argv []) {
+	cursoff ();
+	
+	reset_screen ();
 	splash_screen_1 ();
 
 	lines_free_all ();
@@ -618,7 +642,7 @@ void main (char argc, char *argv []) {
 
 			case OPTION_RUN:
 				if (needs_saving || program_loaded) {
-					menu_show ();
+					run_from (0);
 				} else {
 					dialog_program_not_present ();
 				}

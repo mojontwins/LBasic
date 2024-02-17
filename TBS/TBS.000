@@ -33,13 +33,15 @@ pic "tbs14.gif" 2
 let 255 1
 
 :run
-mode gfx_hi
-statusbar off
-pic "testbg.gif" 0
-viewport 12 24
+mode text
+# mode gfx_hi
+# statusbar off
+# pic "testbg.gif" 0
+# viewport 12 24
 
 center " THE BLACK SMURFF (TBS), BY PHAKHOU & ARZUR "
-color 63 00
+# color 63 00
+color 10 0
 pause
 cls
 print "Estas son las aventuras de TBS cuando a£n estas en la aldea. Para salir de ella necesitar s algunos objetos. ­Te espera la gran ciudad!. "

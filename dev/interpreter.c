@@ -474,6 +474,8 @@ int lbasi_run (char *spec, int autoboot) {
 					backend_print_ln (str_restart);
 					backend_print_ln (str_exit);
 
+					attempts = DEFAULT_ATTEMPTS;
+
 					switch (backend_read_option (3)) {
 						case 1:
 							// Do nothing, will reload the same block
