@@ -22,7 +22,5 @@
 Run: 
 
  - Salvamos a un archivo temporal y lanzamos el intérprete?
- - Sacar la lectura de lineas del intérprete a un backend
-   para que pueda ejecutar desde memoria cambiando el backend?
 
-   Voy a investigar esto último.
+Cuando se ejecuta un archivo hay que tener en cuenta el cwd. Si hay file name (o sea, se está ejecutando tras cargar) debe actualizarse el cwd en el intérprete!

@@ -22,9 +22,10 @@ int buf_char_height = 8;
 int font_ega14;
 
 void debuff_keys (void) {
-	int any = 0;
+	int any;
 	do {
-		
+		any = 0;
+
 		unsigned char const* chars = (unsigned char*) readchars ();
 		enum keycode_t* keys = readkeys ();
 

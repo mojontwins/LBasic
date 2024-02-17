@@ -14,6 +14,7 @@
 #include "conversion.h"
 #include "file_browser.h"
 #include "backend.h"
+#include "sys_utils.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -81,13 +82,13 @@ int menu (void) {
 	int option_old = 0xff;
 	int key_enter = 1;
 
-	while (!buf_heartbeat () && keystate (KEY_RETURN));
 
 	buf_color (7, 1);
 	buf_setxy (0, 24);
 	buf_print_abs ("                                                                                ");	
 
 	int old_key = 0;
+	keys_read ();
 	while (!buf_heartbeat () && menu_on) {
 		if (option_old != option) {
 			if (option_old != 0xff) {
@@ -289,11 +290,16 @@ void syntax_hightlight (int bkg, char *s) {
 }
 
 void display_editor_lines (int cursor) {
+	buf_color (7, 0);
+	buf_clscroll ();
+
+	if (editor_lines == NULL) return;
+
 	int y = 1;
 	int i = 0;
 	int cur_line_rendered = 0;
 	int lastline = 23;
-	
+
 	// do a 1st pass to make sure current line is on display
 	while (1) {
 		int line_no = first_line_to_display + i;
@@ -314,9 +320,6 @@ void display_editor_lines (int cursor) {
 	}
 
 	y = 1; i= 0; cur_line_rendered = 0;
-
-	buf_color (7, 0);
-	buf_clscroll ();
 
 	if (editor_current_line < 0) return;
 	char *line_pointer = editor_lines [editor_current_line];
@@ -593,11 +596,7 @@ void reset_screen (void) {
 
 void run_from (int from) {
 	save_program_do (from, "temp.tmp");
-	
-	FILE *file = fopen ("temp.tmp", "r");
-	lbasi_run_file (file);
-	fclose (file);
-	
+	lbasi_run_tmp ("temp.tmp", get_file_spec ());
 	remove ("temp.tmp");
 	
 	backend_print ("[Programa terminado]");

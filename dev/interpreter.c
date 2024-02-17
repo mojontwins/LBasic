@@ -416,6 +416,21 @@ void lbasi_read_labels (FILE *file) {
 	fseek (file, 0, SEEK_SET);
 }
 
+int lbasi_run_tmp (char *tmp, char *spec) {
+	int res;
+
+	if (spec != NULL) update_path_spec (spec);
+
+	FILE *file;
+	if ((file = fopen (tmp, "r")) != NULL) {
+		lbasi_read_labels (file);
+		res = lbasi_run_file (file);
+		fclose (file);
+	}
+
+	return res;
+}
+
 int lbasi_run (char *spec, int autoboot) {
 	int res = autoboot ? 2 : 1;
 	int cur_block = 0;
