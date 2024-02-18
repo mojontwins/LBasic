@@ -87,6 +87,25 @@ void lbasi_goto (FILE *file, char *label) {
 	fseek (file, label_filepos, SEEK_SET);
 }
 
+void lbasi_read_labels (FILE *file) {
+	char line_buffer [LINE_BUFFER_SIZE];
+	
+	labels_clear ();
+
+	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
+
+		if (line_buffer [0] == ':') {
+			parse_to_tokens (line_buffer);			
+			if (labels_add (ftell (file), get_token (0)) == 0) {
+				backend_print_ln ("Warning! label too long:");
+				backend_print_ln (line_buffer);
+			}
+		}
+	}
+
+	fseek (file, 0, SEEK_SET);
+}
+
 int lbasi_run_file (FILE *file) {
 	int res = 0;
 	int choice_res;
@@ -99,11 +118,10 @@ int lbasi_run_file (FILE *file) {
 	char *command_token;
 
 	lstokens_init ();
-	init_strings ();
+	lbasi_read_labels (file);
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
 		// Tokenize line_buffer
-	backend_print_ln (line_buffer);	
 		parse_to_tokens (line_buffer);
 		if (get_num_tokens () == 0) continue;
 
@@ -404,22 +422,6 @@ int lbasi_run_file (FILE *file) {
 	return res;
 }
 
-void lbasi_read_labels (FILE *file) {
-	char line_buffer [LINE_BUFFER_SIZE];
-	
-	while (fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
-		if (line_buffer [0] == ':') {
-			parse_to_tokens (line_buffer);			
-			if (labels_add (ftell (file), get_token (0)) == 0) {
-				backend_print_ln ("Warning! label too long:");
-				backend_print_ln (line_buffer);
-			}
-		}
-	}
-
-	fseek (file, 0, SEEK_SET);
-}
-
 int lbasi_run_tmp (char *tmp, char *spec) {
 	int res;
 
@@ -430,13 +432,16 @@ int lbasi_run_tmp (char *tmp, char *spec) {
 		strcpy (str_status_top, "LBASIC: ?");
 	}
 
+	init_strings ();
+
+	flags_clear ();
+	attempts = DEFAULT_ATTEMPTS;
+
 	FILE *file;
 	if ((file = fopen (tmp, "r")) != NULL) {
 		backend_init ();
 		backend_color (7, 0);
 		backend_cls ();
-
-		lbasi_read_labels (file);
 
 		backend_set_viewport (1, 23);
 		backend_set_show_status (1);
@@ -461,6 +466,8 @@ int lbasi_run (char *spec, int autoboot) {
 
 	FILE *file;
 
+	init_strings ();
+	
 	flags_clear ();
 	attempts = DEFAULT_ATTEMPTS;
 
@@ -481,10 +488,6 @@ int lbasi_run (char *spec, int autoboot) {
 				backend_init ();
 				backend_on = 1;
 			}
-
-			// First find & store all labels
-
-			lbasi_read_labels (file);
 
 			// Now let's parse.
 

@@ -180,6 +180,7 @@ void save_program (void) {
 
 void load_program_do (char *filename) {
 	unsigned char line_buffer [LINE_BUFFER_SIZE];
+	unsigned char clean_buffer [LINE_BUFFER_SIZE];
 	int lines_read = 0;
 
 	lines_free_all ();
@@ -188,17 +189,14 @@ void load_program_do (char *filename) {
 	while (fgets (line_buffer, LINE_BUFFER_SIZE, pf) != NULL) {
 		lines_add_new ();
 
-		// This allocates a bit more mem than needed
-		// But who cares?
-		unsigned char *clean_line = malloc (strlen (line_buffer)); 
-		unsigned char *ptr = clean_line;
+		unsigned char *ptr = clean_buffer;
 		for (int i = 0; i < strlen (line_buffer); i ++) {
 			unsigned char c = line_buffer [i];
-			if (c >= ' ') *ptr ++ = c;
+			if (c >= 32) *ptr ++ = c;
 		}
 		*ptr = 0;
 
-		editor_lines [lines_read] = clean_line;
+		editor_lines [lines_read] = strdup (clean_buffer);
 		editor_last_line = lines_read;
 		lines_read ++;
 	}
@@ -287,6 +285,10 @@ void syntax_hightlight (int bkg, char *s) {
 	temp_buffer [temp_index] = '\0';
 	buf_color (state == 1 ? find_color(temp_buffer) : 7, bkg);
 	buf_print_abs_clip_to_scroll (temp_buffer);
+
+	int x = buf_getx (); while (x < 80) {
+		buf_char (' '); x ++;
+	}
 }
 
 void display_editor_lines (int cursor) {
@@ -589,6 +591,7 @@ int dialog_program_present_sure (void) {
 void reset_screen (void) {
 	buf_setmode (LS_MODE_TEXT);
 	setpal (6, 0xaa, 0xaa, 0);
+	setpal (8, 8, 8, 8);
 	buf_cls ();
 	buf_setviewport (1, 23);
 	

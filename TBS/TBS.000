@@ -1,117 +1,116 @@
-# Al ejecutar todas las flags valen 0
-eq $255 1 :run
-
-# presentaci¢n
-mode gfx
-pic "tbs1.gif" 2
-pic "tbs2.gif" 0.5
-pic "tbs1.gif" 1
-pic "tbs2.gif" 0.5
-pic "tbs1.gif" 1
-pic "tbs3.gif" 1
-pic "tbs4.gif" 2
-
-let 0 0
-:anim1
-pic "tbs5.gif" 0.8
-pic "tbs6.gif" 0.3
-pic "tbs7.gif" 0.5
-pic "tbs6.gif" 0.3
-inc 0
-lt $0 5 :anim1
-
-pic "tbs7.gif" 1
-pic "tbs8.gif" 0.5
-pic "tbs9.gif" 0.5
-pic "tbs10.gif" 0.5
-pic "tbs11.gif" 1
-pic "tbs12.gif" 0.3
-pic "tbs13.gif" 0.3
-pic "tbs14.gif" 2
-
-let 255 1
-
-:run
-mode text
-# mode gfx_hi
-# statusbar off
-# pic "testbg.gif" 0
-# viewport 12 24
-
-center " THE BLACK SMURFF (TBS), BY PHAKHOU & ARZUR "
-# color 63 00
-color 10 0
-pause
-cls
-print "Estas son las aventuras de TBS cuando a£n estas en la aldea. Para salir de ella necesitar†s algunos objetos. ≠Te espera la gran ciudad!. "
-pause
-cls
-print "Vas por un camino polvoriento (donde follan todos) y de pronto ves a lo lejos   tres siluetas. Son tres casas. La primera es la de Pitufina la puta, la segunda es el Puticlub y la tercera, del pap† pitufo el alcalde. "
-print "OPCIONES "
-print "1.- Entrar en la casa de Pitufina "
-print "2.- Entrar en el Puticlub "
-print "3.- Entrar en casa del alcalde "
-choice 3 3 "Pitufina no est† en casa TODAVIA." "En esos momentos estaba dentro LORENA BOBBIT y te la corta." "Muy bien. Te adentras en la casa del culto Pap† pitufito. "
-pause
-cls
-print "Te asombras al examinar la habitaci¢n de entrada donde se encuentra un  billete . êste es un ticket para el tren que le llevar°a a la gran Ciudad, a    menos   que lo cogieses para ti. "
-print "En ese momento aparece pap† pitufo. "
-beep
-print "OPCIONES "
-print "1.- Preguntarle que para quÇ quiere ese billete de viaje "
-print "2.- Distraes al alcalde y coges con tu poya el ticket. "
-print "3.- Pegarle una pi§a y robarle el billete "
-choice 3 1 "Te cuenta que es para un viaje que ten°a pensado hace tiempo. Ahora que tiene   demasiado trabajo para realizar ese viaje de negocios, no puede ir a una confe- rencia muy importante que se dar† en la gran ciudad. Te ofrece que vayas por Çl." "El ticket estaba bajo seguridad. Los rayos laser desintegran tu preciosa poya,  adem†s... ®c¢mo pensabas cogerla con la poya?, si lo consiguieses estar°a dis-  puesto a contratarte en mi circo junto con los otros payasos enanitos." "El es mucho m†s fuerte que t£ y el te hace un AYUKEN y te mata."
-pause
-cls
-print "Tu aceptas y coges el billete en un abrir y cerrar de ojos. Sales de la casa    del alcalde. Te quedan dos casas en las que investigar. "
-print "OPCIONES "
-print "1.- Ir a casa de Pitufina "
-print "2.- Ir al Puticlub  "
-print "3.- Salvar la partida "
-choice 3 2 "Todav°a no estaba. Sale su mast°n guardi†n y te da por el culo. De la humilla-  ci¢n, te suicidas." "®Estas farto?. La puta jefe te mustra dos OPCIONES" "®Pero que te crees que es esto?. Esto no es m†s que un simple juego PORRNO y no ninguna aventura gr†fica de Sierra o Lucas!."
-pause
-cls
-print "OPCIONES: "
-print "1.- Entrar en puerta 1 "
-print "2.- Entrar en puerta 2 "
-choice 2 1 "Es la habitaci¢n de la puta Candy. Es famosa en el mundo entero por hablar a la hora de follar." "Es el servicio. Entre la oscuridad cagante del cuarto y el olor a mesma te mue- res de asco."
-pause
-cls
-print "La puta Candy te pregunta ®quÇ quieres? "
-print "OPCIONES "
-print "1.- Follar "
-print "2.- Que te la mame "
-print "3.- Hablar con ella de lo insensata que es al haberse metido a puta. "
-choice 3 1 "Te dice que OK. De pronto, en pleno Strip tease te pregunta que si tienes cond¢ny tu le dices que no. Ella se niega a pijar sin protecci¢n. Por mucho que le    juras de que no tienes el SIDA no se lo cree. Te dice que incluso lo har°a con  un condon usado" "Te la muerde sin querer y te rompe el tomate. Tu vida ya no tiene sentido." "Se cabrea y te obliga a follar con ella sadomasoquistamente. Mueres."
-pause
-cls
-print "Sales del Puticlub en busca del preciado cond¢n. Antes de despedirte de Pitufina yendo a su casa, prefieres ir a ver en el camino POLVORIENTO  a ver lo que hay "
-print "Te encuentras tres objetos. OPCIONES: "
-print "1.- Coger el bol°grafo "
-print "2.- Coger el bote de mesma "
-print "3.- Coger cond¢n usado lleno de semen y arena. "
-choice 3 3 "El bol°grafo era asesino. RIP" "Lo abres por curiosidad y te mueres de la peste" "Lo utilizar†s con Candy. Quiz†s te pueda informar. Lo limpias tirando un gapo   dentro."
-pause
-cls
-print "Vuelves al Puticlub y en la entrada hay 2 puertas "
-print "OPCIONES  "
-print "1.- ir al servicio apestoso "
-print "2.- ir a follarte a Candy "
-choice 2 1 "Bien!!!. Lo limpiaron y est† todo de maravilla. En el armario te encuentras UNA CAJA DE CONDONES NUEVOS ENERYANSE. Lo coges. Te haces diez pajas con el poster  de Samantha Fox y sales." "La coges mientras se est† follando a otro CON CONDON. Te corta la cabeza por    cortarle el orgasmo... ®pero que cabeza te ha cortado?...RIP"
-pause
-cls
-print "Vuelves a la habitaci¢n de Candy y te dispones a follar. "
-print "OPCIONES: "
-print "1.- Usar cond¢n usado lleno mierda "
-print "2.- Usar condones nuevos!! "
-choice 2 1 "Le da mucho gucho y te dice que en la ciudad, los sitios m†s importantes son el museo del sexo, los sem†foros, el circo y otros sitios que no pudiste entender  pues lleg¢ al orgasmo y no se le entend°a nada con el  oh!  oh!" "Te dice ®de donde has sacado eso? ®lo has robado? Te lleva a juicio y te llevan a la c†mara de gas."
-pause
-cls
-print "Sales del puticlub "
-print "OPCIONES "
-print "1.- Ir de una vez a casa de Pitufina "
-print "2.- Ir a la Estaci¢n "
-choice 2 2 "Entras y no estaba. Te ha dejado y ahora se folla al alcalde." "Te montas en el tren correcto. CONTINUA EN EL BLOQUE 1"
-pause
-cls
+# Al ejecutar todas las flags valen 0
+eq $255 1 :run
+
+# presentaci¢n
+mode gfx
+pic "tbs1.gif" 2
+pic "tbs2.gif" 0.5
+pic "tbs1.gif" 1
+pic "tbs2.gif" 0.5
+pic "tbs1.gif" 1
+pic "tbs3.gif" 1
+pic "tbs4.gif" 2
+
+let 0 0
+:anim1
+pic "tbs5.gif" 0.8
+pic "tbs6.gif" 0.3
+pic "tbs7.gif" 0.5
+pic "tbs6.gif" 0.3
+inc 0
+lt $0 5 :anim1
+
+pic "tbs7.gif" 1
+pic "tbs8.gif" 0.5
+pic "tbs9.gif" 0.5
+pic "tbs10.gif" 0.5
+pic "tbs11.gif" 1
+pic "tbs12.gif" 0.3
+pic "tbs13.gif" 0.3
+pic "tbs14.gif" 2
+
+let 255 1
+
+:run
+mode text
+# mode gfx_hi
+# statusbar off
+# pic "testbg.gif" 0
+# viewport 12 24
+
+center " THE BLACK SMURFF (TBS), BY PHAKHOU & ARZUR "
+# color 63 00
+color 10 0
+pause
+cls
+print "Estas son las aventuras de TBS cuando a£n estas en la aldea. Para salir de ella necesitar†s algunos objetos. ≠Te espera la gran ciudad!. "
+pause
+cls
+print "Vas por un camino polvoriento (donde follan todos) y de pronto ves a lo lejos   tres siluetas. Son tres casas. La primera es la de Pitufina la puta, la segunda es el Puticlub y la tercera, del pap† pitufo el alcalde. "
+print "OPCIONES "
+print "1.- Entrar en la casa de Pitufina "
+print "2.- Entrar en el Puticlub "
+print "3.- Entrar en casa del alcalde "
+choice 3 3 "Pitufina no est† en casa TODAVIA." "En esos momentos estaba dentro LORENA BOBBIT y te la corta." "Muy bien. Te adentras en la casa del culto Pap† pitufito. "
+pause
+cls
+print "Te asombras al examinar la habitaci¢n de entrada donde se encuentra un  billete . êste es un ticket para el tren que le llevar°a a la gran Ciudad, a    menos   que lo cogieses para ti. "
+print "En ese momento aparece pap† pitufo. "
+beep
+print "OPCIONES "
+print "1.- Preguntarle que para quÇ quiere ese billete de viaje "
+print "2.- Distraes al alcalde y coges con tu poya el ticket. "
+print "3.- Pegarle una pi§a y robarle el billete "
+choice 3 1 "Te cuenta que es para un viaje que ten°a pensado hace tiempo. Ahora que tiene   demasiado trabajo para realizar ese viaje de negocios, no puede ir a una confe- rencia muy importante que se dar† en la gran ciudad. Te ofrece que vayas por Çl." "El ticket estaba bajo seguridad. Los rayos laser desintegran tu preciosa poya,  adem†s... ®c¢mo pensabas cogerla con la poya?, si lo consiguieses estar°a dis-  puesto a contratarte en mi circo junto con los otros payasos enanitos." "El es mucho m†s fuerte que t£ y el te hace un AYUKEN y te mata."
+pause
+cls
+print "Tu aceptas y coges el billete en un abrir y cerrar de ojos. Sales de la casa    del alcalde. Te quedan dos casas en las que investigar. "
+print "OPCIONES "
+print "1.- Ir a casa de Pitufina "
+print "2.- Ir al Puticlub  "
+print "3.- Salvar la partida "
+choice 3 2 "Todav°a no estaba. Sale su mast°n guardi†n y te da por el culo. De la humilla-  ci¢n, te suicidas." "®Estas farto?. La puta jefe te mustra dos OPCIONES" "®Pero que te crees que es esto?. Esto no es m†s que un simple juego PORRNO y no ninguna aventura gr†fica de Sierra o Lucas!."
+pause
+cls
+print "OPCIONES: "
+print "1.- Entrar en puerta 1 "
+print "2.- Entrar en puerta 2 "
+choice 2 1 "Es la habitaci¢n de la puta Candy. Es famosa en el mundo entero por hablar a la hora de follar." "Es el servicio. Entre la oscuridad cagante del cuarto y el olor a mesma te mue- res de asco."
+pause
+cls
+print "La puta Candy te pregunta ®quÇ quieres? "
+print "OPCIONES "
+print "1.- Follar "
+print "2.- Que te la mame "
+print "3.- Hablar con ella de lo insensata que es al haberse metido a puta. "
+choice 3 1 "Te dice que OK. De pronto, en pleno Strip tease te pregunta que si tienes cond¢ny tu le dices que no. Ella se niega a pijar sin protecci¢n. Por mucho que le    juras de que no tienes el SIDA no se lo cree. Te dice que incluso lo har°a con  un condon usado" "Te la muerde sin querer y te rompe el tomate. Tu vida ya no tiene sentido." "Se cabrea y te obliga a follar con ella sadomasoquistamente. Mueres."
+pause
+cls
+print "Sales del Puticlub en busca del preciado cond¢n. Antes de despedirte de Pitufina yendo a su casa, prefieres ir a ver en el camino POLVORIENTO  a ver lo que hay "
+print "Te encuentras tres objetos. OPCIONES: "
+print "1.- Coger el bol°grafo "
+print "2.- Coger el bote de mesma "
+print "3.- Coger cond¢n usado lleno de semen y arena. "
+choice 3 3 "El bol°grafo era asesino. RIP" "Lo abres por curiosidad y te mueres de la peste" "Lo utilizar†s con Candy. Quiz†s te pueda informar. Lo limpias tirando un gapo   dentro."
+pause
+cls
+print "Vuelves al Puticlub y en la entrada hay 2 puertas "
+print "OPCIONES  "
+print "1.- ir al servicio apestoso "
+print "2.- ir a follarte a Candy "
+choice 2 1 "Bien!!!. Lo limpiaron y est† todo de maravilla. En el armario te encuentras UNA CAJA DE CONDONES NUEVOS ENERYANSE. Lo coges. Te haces diez pajas con el poster  de Samantha Fox y sales." "La coges mientras se est† follando a otro CON CONDON. Te corta la cabeza por    cortarle el orgasmo... ®pero que cabeza te ha cortado?...RIP"
+pause
+cls
+print "Vuelves a la habitaci¢n de Candy y te dispones a follar. "
+print "OPCIONES: "
+print "1.- Usar cond¢n usado lleno mierda "
+print "2.- Usar condones nuevos!! "
+choice 2 1 "Le da mucho gucho y te dice que en la ciudad, los sitios m†s importantes son el museo del sexo, los sem†foros, el circo y otros sitios que no pudiste entender  pues lleg¢ al orgasmo y no se le entend°a nada con el  oh!  oh!" "Te dice ®de donde has sacado eso? ®lo has robado? Te lleva a juicio y te llevan a la c†mara de gas."
+pause
+cls
+print "Sales del puticlub "
+print "OPCIONES "
+print "1.- Ir de una vez a casa de Pitufina "
+print "2.- Ir a la Estaci¢n "
+choice 2 2 "Entras y no estaba. Te ha dejado y ahora se folla al alcalde." "Te montas en el tren correcto. CONTINUA EN EL BLOQUE 1"
+pause

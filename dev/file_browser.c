@@ -85,6 +85,9 @@ int select_file_spec (void) {
 		strcpy (user_input, ptr + 1);
 		ptr [0] = 0;
 		cursor = strlen (user_input);
+
+		// This is done so ENTER just works right away
+		editing = 1;
 	}
 
 	curson ();
