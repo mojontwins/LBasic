@@ -16,11 +16,6 @@
 	[ ] Go 
 	[X] Print 
 	[ ] Color wizards
-[ ] RUN / RUN FROM / NEW
+[X] RUN / RUN FROM / NEW
 [ ] Editor DRAW
 
-Run: 
-
- - Salvamos a un archivo temporal y lanzamos el intérprete?
-
-Cuando se ejecuta un archivo hay que tener en cuenta el cwd. Si hay file name (o sea, se está ejecutando tras cargar) debe actualizarse el cwd en el intérprete!

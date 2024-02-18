@@ -50,6 +50,7 @@ int needs_saving;			// Altered loaded program
 int last_option = 0;
 int first_line_to_display;
 
+void run_from (int from);
 
 #define LINE_BUFFER_SIZE 2048
 
@@ -81,7 +82,6 @@ int menu (void) {
 	int option = last_option;
 	int option_old = 0xff;
 	int key_enter = 1;
-
 
 	buf_color (7, 1);
 	buf_setxy (0, 24);
@@ -361,9 +361,82 @@ void display_editor_lines (int cursor) {
 	}
 }
 
+void wizard_text_insert (int cursor) {
+	unsigned char *line_pointer;
+	int action = 0;
+
+	// TODO: Parse line so if F4 is pressed in the middle of the string->edit string
+	// Which may be tricky!
+	// From start of the line to cursor, turn on / off "between_quotes", 
+	// If "between quotes" get from-to, copy to new string, pass it, 
+	// Don't forget to free, or use an all-purpose container array.
+
+	// asdasd "sadasdk*asasd" "asodpsod"
+	//         A       C   B
+	// editable_text = A-B,
+	// line = 0-A, editable_text, B-fin
+
+	int edit = 0;
+	int edit_ini = 0xff;
+	int edit_fin = 0xff;
+	int last_opening_quotes = 0xff;
+	int quotes = 0;
+	unsigned char c;
+
+	line_pointer = editor_lines [editor_current_line];
+
+	for (int i = 0; i < strlen (line_pointer); i ++) {
+		c = line_pointer [i];
+		if (c == '\"') {
+			if (quotes == 0) {
+				last_opening_quotes = i;
+			} else {
+				last_opening_quotes = 0xff;
+			}
+		}
+
+		if (i == cursor) {
+			if (quotes) {
+				// Find closing quote, trim string, call,
+				// etc
+			} else {
+				// Break, this is not an edition!
+			}
+		}
+	}
+
+	// Orig / Insertion code:
+
+	char *new_text = tui_textbox (7, "Enter text to insert", 0, 6, &action);
+	if (new_text) {
+		line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));
+		
+		strcat (line_pointer, "\"");
+		strcat (line_pointer, new_text);
+		strcat (line_pointer, "\"");
+
+		editor_lines [editor_current_line] = line_pointer;
+	}
+}
+
+void editor_top () {
+	menu_show ();
+	buf_color (9, 7);
+	buf_setxy (menu_x [0], 0);
+	buf_print_abs (menu_opt [0]);
+}
+
+void editor_bottom () {
+	buf_setxy (0, 24);
+	buf_color (7, 1);
+
+	buf_print_abs (" F3 CHOICE \xB3 F4 TEXT \xB3 F5 RUN \xB3 F6 RUN FROM \xB3 F10 MENU \xB3                        ");
+	
+	debuff_keys ();	
+}
+
 int editor (void) {
 	// File is already loaded.
-
 	int new_line = 1;
 	int line_change = 0;
 	int delete_line = 0;
@@ -376,12 +449,7 @@ int editor (void) {
 
 	int editor_next_line = editor_n_lines;
 
-	buf_setxy (0, 24);
-	buf_color (7, 1);
-
-	buf_print_abs (" F3 CHOICE \xB3 F4 TEXT \xB3 F5 RUN \xB3 F6 RUN FROM \xB3 F10 MENU \xB3                        ");
-	
-	debuff_keys ();
+	editor_bottom ();
 
 	int editing = 1;
 	while (editing) {
@@ -548,25 +616,19 @@ int editor (void) {
 
 			if (key == KEY_F4) {
 				// Insert text from a text area
-				int action = 0;
+				wizard_text_insert (cursor);
+			}
 
-				// TODO: Parse line so if F4 is pressed in the middle of the string->edit string
-				// Which may be tricky!
-				// From start of the line to cursor, turn on / off "between_quotes", 
-				// If "between quotes" get from-to, copy to new string, pass it, 
-				// Don't forget to free, or use an all-purpose container array.
+			if (key == KEY_F5) {
+				run_from (0);
+				editor_top ();
+				editor_bottom ();
+			}
 
-				char *new_text = tui_textbox (7, "Enter text to insert", 0, 6, &action);
-				if (new_text) {
-					line_pointer = editor_lines [editor_current_line];
-					line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));
-					
-					strcat (line_pointer, "\"");
-					strcat (line_pointer, new_text);
-					strcat (line_pointer, "\"");
-
-					editor_lines [editor_current_line] = line_pointer;
-				}
+			if (key == KEY_F6) {
+				run_from (editor_current_line);
+				editor_top ();
+				editor_bottom ();
 			}
 
 			++keys;
