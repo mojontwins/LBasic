@@ -1,6 +1,9 @@
 print "Menu test"
 
 menu limpia
+
+menu config 10 10 20 14 1
+
 menu pon "Opcion 1"
 menu pon "Otro pie"
 menu pon "Finalmente"

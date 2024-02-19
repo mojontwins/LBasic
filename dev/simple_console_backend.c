@@ -204,7 +204,11 @@ void backend_set_mode (char *mode) {
 	// NO OP
 }
 
-void backend_menu_config (int x, int y, int c1, int c2) {
+void backend_menu_config (int x, int y, int w, int c1, int c2) {
+	// NO OP
+}
+
+void backend_menu_set_selected (int selected) {
 	// NO OP
 }
 

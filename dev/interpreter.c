@@ -318,6 +318,7 @@ int lbasi_run_file (FILE *file) {
 
 			if (strcmp (menu_command, "reset") == 0 || strcmp (menu_command, "limpia") == 0) {
 				menu_reset ();
+				backend_menu_set_selected (0);
 
 			} else if (strcmp (menu_command, "add") == 0 || strcmp (menu_command, "pon") == 0) {
 				if (menu_get_options () < MAX_MENU_ITEMS) menu_add_item (get_token (2));
@@ -331,17 +332,18 @@ int lbasi_run_file (FILE *file) {
 					atoi (get_token (2)), 
 					atoi (get_token (3)), 
 					atoi (get_token (4)), 
-					atoi (get_token (5))
+					atoi (get_token (5)),
+					atoi (get_token (6))
 				);
 
 			} else if (strcmp (menu_command, "run") == 0) {
-				int selected = backend_menu_run ();
+				int selected = backend_menu_run ();				
 
 				if (selected >= 0) {
 					strcpy (temp_buffer, get_token (2));
 					strcat (temp_buffer, "_");
 					strcat (temp_buffer, menu_get_option (selected));
-//printf ("Selected %d [%s]", selected, temp_buffer);
+
 					lbasi_goto (file, temp_buffer);
 				}
 			}

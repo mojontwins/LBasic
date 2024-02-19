@@ -9,6 +9,7 @@
 #include "lstextmode.h"
 #include "../dos-like/source/dos.h"
 #include "sys_utils.h"
+#include "keys.h"
 
 #define INPUT_LENGTH 10
 
@@ -20,6 +21,8 @@ int menu_x = 0;
 int menu_y = 0;
 int menu_c1 = 15;
 int menu_c2 = 1;
+int menu_w = 16;
+int menu_selected = 0;
 
 void backend_init (void) {
 	lstextmode_init ();
@@ -309,21 +312,69 @@ void backend_shutdown (void) {
 	
 }
 
-void backend_menu_config (int x, int y, int c1, int c2) {
+void backend_menu_config (int x, int y, int w, int c1, int c2) {
 	menu_x = x;
 	menu_y = y;
+	menu_w = w;
 	menu_c1 = c1;
 	menu_c2 = c2;
 }
 
+void backend_menu_set_selected (int selected) {
+	menu_selected = selected;
+}
+
 int backend_menu_run (void) {
-	// TODO :: CHANGE FOR REAL MENU
-	// Very simple implementation
-	for (int i = 0; i < menu_get_options (); i ++) {
-		printf ("%d. %s", i + 1, menu_get_option (i));		
+	int done = 0;
+	int menu_options = menu_get_options ();
+	if (menu_selected >= menu_options) menu_selected = menu_options - 1;
+
+	// Paint box
+	buf_color (menu_c1, menu_c2);
+	buf_box (menu_x, menu_y, menu_x + menu_w - 1, menu_y + 1 + menu_options);
+
+	keys_read ();
+	while (!done && !buf_heartbeat ()) {
+		// Paint options (w/selected)
+		for (int i = 0; i < menu_options; i ++) {
+			buf_setxy (menu_x + 1, menu_y + 1 + i);
+			if (i == menu_selected) {
+				buf_color (menu_c2, menu_c1);
+			} else {
+				buf_color (menu_c1, menu_c2);
+			}
+			
+			unsigned char *option = menu_get_option (i);
+			int l = strlen (option);
+			for (int j = 0; j < menu_w - 2; j ++) {
+				buf_char (j < l ? option [j] : ' ');
+			}
+		}
+
+		// Read keys
+		keys_read ();
+		int pad_this_frame = keys_get_this_frame ();
+
+		if (pad_this_frame & MT_KEY_UP) {
+			if (menu_selected > 0) menu_selected --;
+		}
+
+		if (pad_this_frame & MT_KEY_DOWN) {
+			if (menu_selected < menu_options - 1) menu_selected ++;
+		}
+
+		if (pad_this_frame & MT_KEY_ENTER) {
+			done = 1;
+		}
+
+		if (pad_this_frame & MT_KEY_ESC) {
+			done = 1;
+			menu_selected = -1;
+		}
+
 	}
 
-	int res = backend_read_option (10);
-	if (res == 99) return -1;
-	return res - 1;
+	debuff_keys ();
+
+	return menu_selected;
 }

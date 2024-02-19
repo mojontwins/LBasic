@@ -24,6 +24,7 @@ void backend_set_mode (char *mode);
 void backend_ansibin (char *pathspec, char *filename);
 int backend_get_break (void);
 void backend_shutdown (void); 
-void backend_menu_config (int x, int y, int c1, int c2);
+void backend_menu_config (int x, int y, int w, int c1, int c2);
+void backend_menu_set_selected (int selected);
 int backend_menu_run (void);
 
