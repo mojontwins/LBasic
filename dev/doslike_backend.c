@@ -8,12 +8,18 @@
 #include "backend.h"
 #include "lstextmode.h"
 #include "../dos-like/source/dos.h"
+#include "sys_utils.h"
 
 #define INPUT_LENGTH 10
 
 char *full_line = "                                                                                ";
 int show_status = 1;
 int forced_break = 0;
+
+int menu_x = 0;
+int menu_y = 0;
+int menu_c1 = 15;
+int menu_c2 = 1;
 
 void backend_init (void) {
 	lstextmode_init ();
@@ -301,4 +307,23 @@ void backend_ansibin (char *pathspec, char *filename) {
 
 void backend_shutdown (void) {
 	
+}
+
+void backend_menu_config (int x, int y, int c1, int c2) {
+	menu_x = x;
+	menu_y = y;
+	menu_c1 = c1;
+	menu_c2 = c2;
+}
+
+int backend_menu_run (void) {
+	// TODO :: CHANGE FOR REAL MENU
+	// Very simple implementation
+	for (int i = 0; i < menu_get_options (); i ++) {
+		printf ("%d. %s", i + 1, menu_get_option (i));		
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
 }

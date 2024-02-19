@@ -31,6 +31,7 @@
 - pic "pic.gif" seconds|kbd
 - cut "cut.gif" x y
 - sleep seconds
+- menu
 
 ## print
 
@@ -283,3 +284,44 @@ Es equivalente a "CUT" de PRESENTS.EXE (Dr. Genius).
 Detiene la ejecución `seconds` segundos (puede ser un valor decimal) o hasta que se pulse una tecla.
 
 ## Valores y flags
+
+## Menu
+
+Estos son los comandos que controlan los menús de opciones con GOTO automático.
+
+```
+	menu reset|limpia
+```
+
+Borra todas las opciones del menú.
+
+```
+	menu add|pon "item"
+```
+
+Añade al menú el item de texto "item"
+
+```
+	menu remove|quita "item"
+```
+
+Quita del menú el item de texto "item"
+
+```
+	menu config x y c1 c2
+```
+
+Configura el menú para que aparezca en (x, y) con los colores (c1, c2).
+
+```
+	menu run :label
+```
+
+Muestra el menú y deja al usuario elegir una opción, y luego:
+
+- Si el usuario interrumpió el menú (ESC / 99 / etc) no hace nada! 
+- Si el usuario eligió una opción, saltará a la etiqueta :label_opcion (*) (**) 
+- ¡Ojo! si la etiqueta no existe, no hará nada.
+
+(*) Se sustituirá los espacios por `_`, así una opción `COGER CAJA` saltará a `:label_coger_caja`
+(**) en las etiquetas no importa mayúsculas o minúsculas. Mejor no poner acentos (por ahora)

@@ -31,3 +31,17 @@ void labels_clear (void);
 int labels_add (int file_pos, char *label);
 int labels_find (char *label);
 int labels_get_filepos (int index);
+
+/*
+ * MENUS
+ */
+
+#define MAX_MENU_ITEMS 10
+#define MENU_ITEM_MAX_LENGTH 40
+
+void menu_reset (void);
+void menu_add_item (unsigned char *item);
+void menu_reorganize (void);
+void menu_delete_item (unsigned char *item);
+int menu_get_options (void);
+unsigned char *menu_get_option (int index);

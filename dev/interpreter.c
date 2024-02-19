@@ -82,9 +82,12 @@ char *get_str_try_again (void) {
 
 void lbasi_goto (FILE *file, char *label) {
 	int label_index = labels_find (label);
-	int label_filepos = labels_get_filepos (label_index);
 
-	fseek (file, label_filepos, SEEK_SET);
+	if (label_index >= 0) {
+		int label_filepos = labels_get_filepos (label_index);
+
+		fseek (file, label_filepos, SEEK_SET);
+	}
 }
 
 void lbasi_read_labels (FILE *file) {
@@ -308,6 +311,42 @@ int lbasi_run_file (FILE *file) {
 
 		}
 
+		// *** MENU ***
+		else if (strcmp (command_token, "menu") == 0) {
+			char *menu_command = get_token (1);
+			utils_tolower (menu_command);
+
+			if (strcmp (menu_command, "reset") == 0 || strcmp (menu_command, "limpia") == 0) {
+				menu_reset ();
+
+			} else if (strcmp (menu_command, "add") == 0 || strcmp (menu_command, "pon") == 0) {
+				if (menu_get_options () < MAX_MENU_ITEMS) menu_add_item (get_token (2));
+
+			} else if (strcmp (menu_command, "remove") == 0 || strcmp (menu_command, "quita") == 0) {
+				menu_delete_item (get_token (2));
+				menu_reorganize ();
+
+			} else if (strcmp (menu_command, "config") == 0) {
+				backend_menu_config (
+					atoi (get_token (2)), 
+					atoi (get_token (3)), 
+					atoi (get_token (4)), 
+					atoi (get_token (5))
+				);
+
+			} else if (strcmp (menu_command, "run") == 0) {
+				int selected = backend_menu_run ();
+
+				if (selected >= 0) {
+					strcpy (temp_buffer, get_token (2));
+					strcat (temp_buffer, "_");
+					strcat (temp_buffer, menu_get_option (selected));
+//printf ("Selected %d [%s]", selected, temp_buffer);
+					lbasi_goto (file, temp_buffer);
+				}
+			}
+		}
+
 		// *** LEGACY ***
 
 		else if (strcmp (command_token, "<fin>") == 0) {
@@ -435,6 +474,7 @@ int lbasi_run_tmp (char *tmp, char *spec) {
 	init_strings ();
 
 	flags_clear ();
+	menu_reset ();
 	attempts = DEFAULT_ATTEMPTS;
 
 	FILE *file;
@@ -469,6 +509,7 @@ int lbasi_run (char *spec, int autoboot) {
 	init_strings ();
 	
 	flags_clear ();
+	menu_reset ();
 	attempts = DEFAULT_ATTEMPTS;
 
 	while (playing) {

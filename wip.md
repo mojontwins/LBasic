@@ -6,6 +6,7 @@
 [ ] GOSUB
 [ ] AUTOGOTO :label [:back] -> (jumps to :label_X, with X = the input); BACK = GO :back
 [ ] Pensar en un inventario sencillo
+[ ] Bulma "draw" support (LIN)
 
 # Editor
 
@@ -18,4 +19,4 @@
 	[ ] Color wizards
 [X] RUN / RUN FROM / NEW
 [ ] Editor DRAW
-
+[ ] Editor bulma draw (LIN)

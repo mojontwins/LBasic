@@ -19,7 +19,7 @@ char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *act
 	unsigned char c;
 	char *res;
 
-	if (org_text) {
+	if (org_text && org_text [0] != 0) {
 		strcpy (text_area, org_text);
 		cursor = strlen (org_text);
 	} else {

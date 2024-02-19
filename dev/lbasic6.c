@@ -380,8 +380,12 @@ void wizard_text_insert (int cursor) {
 	int edit_ini = 0xff;
 	int edit_fin = 0xff;
 	int last_opening_quotes = 0xff;
+	int crop_from = 0xff;
+	int crop_to = 0xff;
 	int quotes = 0;
 	unsigned char c;
+	
+	unsigned char edit_buffer [1024]; edit_buffer [0] = 0;
 
 	line_pointer = editor_lines [editor_current_line];
 
@@ -399,9 +403,33 @@ void wizard_text_insert (int cursor) {
 			if (quotes) {
 				// Find closing quote, trim string, call,
 				// etc
+				int idx_buffer = 0;
+				int idx_line = last_opening_quotes + 1;
+				crop_from = idx_line;
+				while (idx_line < strlen (line_pointer)) {
+					c = line_pointer [idx_line];
+					if (c == '\"') break;
+					edit_buffer [idx_buffer] = c;
+
+					idx_line ++;
+					idx_buffer ++;
+				}
+				edit_buffer [idx_buffer] = 0;
+				crop_to = idx_line;
+
+				edit = 1;
+				break;
 			} else {
 				// Break, this is not an edition!
+				break;
 			}
+		}
+	}
+
+	if (edit) {
+		if (strlen (edit_buffer) >= 6*80) {
+			tui_alert ("\xAD" "Imposible!", "El texto es muy largo");
+			return;			
 		}
 	}
 
@@ -409,11 +437,27 @@ void wizard_text_insert (int cursor) {
 
 	char *new_text = tui_textbox (7, "Enter text to insert", 0, 6, &action);
 	if (new_text) {
-		line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));
-		
-		strcat (line_pointer, "\"");
-		strcat (line_pointer, new_text);
-		strcat (line_pointer, "\"");
+
+		if (edit) {
+			// Insert text in the right spot
+			
+			line_pointer [crop_from] = 0; 						// Terminate 1st part of the input string.
+			unsigned char *trail = line_pointer + crop_to;		// Trail part of the input string.
+
+			unsigned char *new_line = malloc (strlen (line_pointer) + strlen (new_text) + strlen (trail) + 2);
+			strcpy (new_line, line_pointer);
+			strcat (new_line, new_text);
+			strcat (new_line, trail);
+
+			free (line_pointer); 								// Free original line
+			line_pointer = new_line; 							// Point to new line
+		} else {
+			line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));
+			
+			strcat (line_pointer, "\"");
+			strcat (line_pointer, new_text);
+			strcat (line_pointer, "\"");
+		}
 
 		editor_lines [editor_current_line] = line_pointer;
 	}

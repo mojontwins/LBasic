@@ -1,0 +1,24 @@
+print "Menu test"
+
+menu limpia
+menu pon "Opcion 1"
+menu pon "Otro pie"
+menu pon "Finalmente"
+menu pon "Esta no va"
+menu run :prueba
+
+go :fin
+
+:prueba_opcion_1
+	print "Esta es la Opcion 1"
+	go :fin
+
+:prueba_otro_pie
+	print "Otro pie!!"
+	go :fin
+
+:prueba_finalmente
+	print "Finalmente..."
+
+:fin
+	print "FIN!"

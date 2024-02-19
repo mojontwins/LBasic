@@ -6,6 +6,7 @@
 
 #include "lbasi.h"
 #include "backend.h"
+#include "sys_utils.h"
 
 int forced_break = 0;
 
@@ -201,4 +202,19 @@ void backend_ansibin (char *pathspec, char *filename) {
 
 void backend_set_mode (char *mode) {
 	// NO OP
+}
+
+void backend_menu_config (int x, int y, int c1, int c2) {
+	// NO OP
+}
+
+int backend_menu_run (void) {
+	// Very simple implementation
+	for (int i = 0; i < menu_get_options (); i ++) {
+		printf ("%d. %s\n", i + 1, menu_get_option (i));		
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
 }
