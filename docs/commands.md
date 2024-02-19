@@ -325,3 +325,7 @@ Muestra el menú y deja al usuario elegir una opción, y luego:
 
 (*) Se sustituirá los espacios por `_`, así una opción `COGER CAJA` saltará a `:label_coger_caja`
 (**) en las etiquetas no importa mayúsculas o minúsculas. Mejor no poner acentos (por ahora)
+
+Ejemplo con rayitas de colores:
+
+![Ejemplo menus](https://github.com/mojontwins/LBasic/blob/master/docs/lbasic_menu.png?raw=true)
