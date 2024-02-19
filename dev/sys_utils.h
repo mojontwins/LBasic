@@ -22,11 +22,6 @@ int flags_parse_value (char *s);
 #define MAX_LABELS 256
 #define LABEL_LEN 64
 
-typedef struct LABEL {
-	int file_pos;
-	char text [LABEL_LEN + 1];
-} LABEL;
-
 void labels_clear (void);
 int labels_add (int file_pos, char *label);
 int labels_find (char *label);

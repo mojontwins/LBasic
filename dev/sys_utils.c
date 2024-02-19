@@ -67,6 +67,11 @@ int flags_parse_value (char *s) {
  * LABELS
  */ 
 
+typedef struct LABEL {
+	int file_pos;
+	char text [LABEL_LEN + 1];
+} LABEL;
+
 LABEL labels [MAX_LABELS];
 int cur_label = 0;
 

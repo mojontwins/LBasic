@@ -361,7 +361,7 @@ void display_editor_lines (int cursor) {
 	}
 }
 
-void wizard_text_insert (int cursor) {
+void wizard_text_insert (int *cursor) {
 	unsigned char *line_pointer;
 	int action = 0;
 
@@ -376,16 +376,17 @@ void wizard_text_insert (int cursor) {
 	// editable_text = A-B,
 	// line = 0-A, editable_text, B-fin
 
+	
 	int edit = 0;
-	int edit_ini = 0xff;
-	int edit_fin = 0xff;
-	int last_opening_quotes = 0xff;
-	int crop_from = 0xff;
-	int crop_to = 0xff;
+
+	int last_opening_quotes;
+	int crop_from;
+	int crop_to;
+	
 	int quotes = 0;
-	unsigned char c;
 	
 	unsigned char edit_buffer [1024]; edit_buffer [0] = 0;
+	unsigned char c;
 
 	line_pointer = editor_lines [editor_current_line];
 
@@ -394,19 +395,20 @@ void wizard_text_insert (int cursor) {
 		if (c == '\"') {
 			if (quotes == 0) {
 				last_opening_quotes = i;
+				quotes = 1;
 			} else {
-				last_opening_quotes = 0xff;
+				quotes = 0;
 			}
 		}
 
-		if (i == cursor) {
+		if (i == *cursor) {
 			if (quotes) {
 				// Find closing quote, trim string, call,
 				// etc
 				int idx_buffer = 0;
 				int idx_line = last_opening_quotes + 1;
 				crop_from = idx_line;
-				while (idx_line < strlen (line_pointer)) {
+				while (idx_line <= strlen (line_pointer)) {
 					c = line_pointer [idx_line];
 					if (c == '\"') break;
 					edit_buffer [idx_buffer] = c;
@@ -435,7 +437,7 @@ void wizard_text_insert (int cursor) {
 
 	// Orig / Insertion code:
 
-	char *new_text = tui_textbox (7, "Enter text to insert", 0, 6, &action);
+	char *new_text = tui_textbox (7, "Enter text to insert", edit_buffer, 6, &action);
 	if (new_text) {
 
 		if (edit) {
@@ -451,6 +453,7 @@ void wizard_text_insert (int cursor) {
 
 			free (line_pointer); 								// Free original line
 			line_pointer = new_line; 							// Point to new line
+
 		} else {
 			line_pointer = realloc (line_pointer, (strlen (line_pointer) + strlen (new_text) + 4) * sizeof (char));
 			
@@ -459,6 +462,7 @@ void wizard_text_insert (int cursor) {
 			strcat (line_pointer, "\"");
 		}
 
+		*cursor += strlen (new_text) + 2;
 		editor_lines [editor_current_line] = line_pointer;
 	}
 }
@@ -660,7 +664,7 @@ int editor (void) {
 
 			if (key == KEY_F4) {
 				// Insert text from a text area
-				wizard_text_insert (cursor);
+				wizard_text_insert (&cursor);
 			}
 
 			if (key == KEY_F5) {
