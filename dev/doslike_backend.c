@@ -88,6 +88,10 @@ void backend_print (char *string) {
 	buf_print (string);
 }
 
+void backend_setxy (int x, int y) {
+	buf_setxy (x, y);
+}
+
 void backend_center (char *string) {
 	buf_setx (buf_getscrw () / 2 - strlen (string) / 2);
 	buf_print_ln (string);
@@ -197,10 +201,7 @@ unsigned char backend_read_option (int num_choices) {
 	char input [INPUT_LENGTH + 1];
 	memset (input, 0, INPUT_LENGTH + 1);
 
-	while (!backend_heartbeat ()) {
-		int c = *readchars ();
-		if (c == 0) break;
-	}
+	debuff_keys ();
 
 	while (1) {
 		int c = *readchars ();
@@ -269,6 +270,16 @@ void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal) {
 
 	if (buf_getmode () != LS_MODE_TEXT) {
 		buf_gif_at (fullpath, x, y, load_pal);
+	}
+
+	free (fullpath);
+}
+
+void backend_bulma_lin (char *pathspec, char *lin) {
+	char *fullpath = compute_full_path (pathspec, lin);
+
+	if (buf_getmode () != LS_MODE_TEXT) {
+		buf_bulma_lin (fullpath);
 	}
 
 	free (fullpath);

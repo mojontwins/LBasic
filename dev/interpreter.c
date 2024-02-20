@@ -132,7 +132,10 @@ int lbasi_run_file (FILE *file) {
 		command_token = get_token (0);
 		utils_tolower (command_token);
 
-		if (strcmp(command_token, "print") == 0) {
+		if (strcmp (command_token, "cursor") == 0 || strcmp (command_token, "setxy") == 0) {
+			backend_setxy (atoi (get_token (1)), atoi (get_token (2)));
+
+		} else if (strcmp (command_token, "print") == 0) {
 			backend_print_ln (get_token (1));
 
 		} else if (strcmp(command_token, "write") == 0) {
@@ -309,6 +312,11 @@ int lbasi_run_file (FILE *file) {
 			// Wait 60 * seconds frames (can be float)
 			backend_wait_frames (60 * atof (get_token (1)));
 
+		}
+
+		// *** BULMA ***
+		else if (strcmp (command_token, "lin") == 0) {
+			backend_bulma_lin (main_path_spec, get_token (1));
 		}
 
 		// *** MENU ***

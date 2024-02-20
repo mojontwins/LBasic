@@ -1,5 +1,6 @@
 # LBasic Commands
 
+- cursor|setxy x y
 - print "what"
 - write "what"
 - center "what"
@@ -30,8 +31,17 @@
 - mode text|gfx|gfx_sq|gfx_med|gfx_hi
 - pic "pic.gif" seconds|kbd
 - cut "cut.gif" x y
+- lin "pic.lin"
 - sleep seconds
 - menu
+
+## cursor|setxy x y
+
+```
+	cursor|setxy x y
+```
+
+Establece la posición de escritura en x, y
 
 ## print
 
@@ -274,6 +284,14 @@ Es equivalente a "PIC" de PRESENTS.EXE (Dr. Genius).
 Carga la imagen `pic.gif` en las coordenadas x, y.
 
 Es equivalente a "CUT" de PRESENTS.EXE (Dr. Genius).
+
+## lin
+
+```
+	lin "pic.lin"
+```
+
+Carga una imagen vectorial de pantalla completa en formato Bulma Lin.
 
 ## sleep
 

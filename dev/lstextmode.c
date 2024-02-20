@@ -546,9 +546,43 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 void buf_textmode_pic (char *pic) {
 	if (buf_mode == LS_MODE_TEXT) {
 		char *buf = screenbuffer ();
-		FILE *pf = fopen (pic, "rb");
-		fread (buf, sizeof (char), 80*25*2, pf);
-		fclose (pf);
+		FILE *pf;
+		if (pf = fopen (pic, "rb")) {
+			fread (buf, sizeof (char), 80*25*2, pf);
+			fclose (pf);
+		}
+	}
+}
+
+void buf_bulma_lin (char *pic) {
+	// Read 11 byte chunks, build by hand (safer), draw using dos-like.
+	FILE *file;
+
+	if (file = fopen (pic, "rb")) {
+		while (!feof (file)) {
+			char cmd = (char) fgetc (file);
+			int v1 = fgetc (file) + 256 * fgetc (file);
+			int v2 = fgetc (file) + 256 * fgetc (file);
+			int v3 = fgetc (file) + 256 * fgetc (file);
+			int v4 = fgetc (file) + 256 * fgetc (file);
+			int v5 = fgetc (file) + 256 * fgetc (file);
+
+			switch (cmd) {
+				case 'L':
+					setcolor (v5);
+					line (v1, v2, v3, v4);
+					break;
+				case 'P':
+					setcolor (v3);
+					floodfill (v1, v2);
+					break;
+				case 'C':
+					setcolor (v4);
+					circle (v1, v2, v3);
+					break;
+			}
+		}
+		fclose (file);
 	}
 }
 

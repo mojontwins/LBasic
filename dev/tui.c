@@ -9,8 +9,181 @@
 
 // A pointer to this array will be returned but it should be
 // memcopied / strcpy'ed to elsewhere!
-unsigned char text_area [512];
+unsigned char text_area [2048];
 char str_divider_line [] = "\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4";
+char blank [] = "                                                                                ";
+
+int find_draw_cursor (int x, int y) {
+	int xx = 0;
+	int yy = 0;
+
+	unsigned char c;
+
+	for (int i = 0; i < strlen (text_area); i ++) {
+		if (x == xx && y == yy) return i;
+
+		c = text_area [i];
+		if ((c >= '0' && c <= '7') || 
+			c == '!' || c == '\"' || c == '\xFA' || c == '$' ||
+			c == '%' || c == '&' || c == '/' || c == '='
+		) {
+			// Do not count
+		} else {
+			xx ++; if (xx == 80) { xx = 0; yy ++; }			
+		}
+	}
+}
+
+char *tui_drawbox (char *org_text, int *action) {
+	int cursor; 
+	int done = 0;
+	char *res;
+	unsigned char c;
+
+	if (org_text && org_text [0] != 0) {
+		strcpy (text_area, org_text);
+		cursor = strlen (org_text);
+	} else {
+		text_area [0] = 0;
+		cursor = 0;
+	}
+
+	buf_setxy (0, 1);
+	buf_color (7, 1);
+	buf_print_abs (str_divider_line);
+	buf_setxy (1, 1);
+	buf_print_abs ("\xB4 ");
+	buf_print_abs ("Editor Draw");
+	buf_print_abs (" \xC3");
+
+	buf_setxy (0, 20);
+	buf_print_abs (str_divider_line);
+	buf_setxy (1, 20);
+	buf_print_abs ("\xB4 ENTER: Insertar \xB3 ESC: Cancelar \xC3");	
+	buf_setxy (0, 21);	
+	buf_print_abs ("       \xDA q  \xC4 w  \xBF e   \xC9 r  \xCD t  \xBB y     \xB0 u  \xB1 i  \xB2 o  \xDB p      \xDC l  \xDF \xA4       ");
+	buf_print_abs ("       \xB3 a             \xBA s        1-7 y 0 1er plano, SHIFT + 1-7 y 0 fondo      ");
+	buf_print_abs ("       \xC0 z       \xD9 x   \xC8 c       \xBC v     \xC3V \xB4b \xC1n \xC2m \xC5d \xCCf \xB9g \xCAh \xCBj \xCEk          ");
+
+	curson ();
+
+	while (!done && !buf_heartbeat ()) {
+		int cursor_x;
+		int cursor_y;
+
+		// Display & find x, y
+		int x = 0;
+		int y = 0;
+		int c1 = 7; 
+		int c2 = 0;
+		int j;
+
+		buf_color (7, 0);
+		for (int i = 2; i < 20; i ++) {
+			buf_setxy (0, i);
+			buf_print_abs (blank);
+		}
+
+		for (int i = 0; i < strlen (text_area); i ++) {
+			c = text_area [i];
+			j = key_to_color_1 (c); if (j > 0) {
+				c1 = j; buf_color (c1, -1);
+			} else {
+				j = key_to_color_2 (c); if (j > 0) {
+					c2 = j; buf_color (-1, c2);
+				} else {
+
+					if (i == cursor) {
+						cursor_x = x;
+						cursor_y = y;
+						gotoxy (cursor_x, 2 + cursor_y);
+					}
+
+					x ++; if (x == 80) {
+						x = 0; y ++;
+					}
+				}
+			}
+		}
+
+		// Get input
+		unsigned char const* chars = (unsigned char*) readchars ();
+		enum keycode_t* keys = readkeys ();
+
+		// Characters
+		c = get_character_input (chars);
+		c = key_to_draw_char (c);
+
+		if (c >= ' ') {
+			if (cursor_y < 19 || cursor_x < 79) {
+				text_area [cursor ++] = c;
+				text_area [cursor] = 0;
+			}
+		} else {
+			switch (c) {
+				case 8:
+					// Delete
+					if (cursor > 0) {
+						cursor --;
+						text_area [cursor] = 0;
+					}
+					break;
+
+				case 27:
+					// Exit
+					done = 1;
+					res = NULL;
+					*action = TUI_ACTION_ESC;
+					break;
+			}
+		}
+
+		// Special keys
+		while (*keys) {
+			unsigned long long key = (unsigned long long) *keys;
+
+			if (key == KEY_UP) {
+				if (cursor_y > 0) {
+					cursor_y --;
+					cursor = find_draw_cursor (cursor_x, cursor_y);
+				}
+			}
+
+			if (key == KEY_DOWN) {
+				if (cursor_y < 18) {
+					cursor_y ++;
+					cursor = find_draw_cursor (cursor_x, cursor_y);
+				}
+			}
+
+			if (key == KEY_LEFT) {
+				if (cursor > 0) cursor --;
+			}
+
+			if (key == KEY_RIGHT) {
+				if (cursor < strlen (text_area) - 1) cursor ++;
+			}
+
+			if (key == KEY_RETURN) {
+				res = text_area;
+				done = 1;
+				*action = TUI_ACTION_ENTER;
+				break;
+			}
+
+			keys ++;
+		}
+
+		if (cursor < 0) {
+			cursor = 0;
+		} else if (cursor > strlen (text_area)) {
+			cursor = strlen (text_area);
+		}
+	}
+
+	debuff_keys ();
+	return res;	
+}
 
 char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *action) {
 	int cursor;

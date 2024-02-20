@@ -46,3 +46,4 @@ int buf_get_mouse_y (void);
 int buf_get_mouse_b (int button);
 int buf_get_keystate (int keys);
 int buf_heartbeat (void);
+void buf_bulma_lin (char *pic);

@@ -1,0 +1,6 @@
+mode gfx
+lin "PISCINA.LIN"
+cursor 0 0
+color 14 1
+print "HOLA"
+pause

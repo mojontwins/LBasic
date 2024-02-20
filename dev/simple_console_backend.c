@@ -44,6 +44,10 @@ void backend_print (char *string) {
 	printf (string);
 }
 
+void backend_setxy (int x, int y) {
+	// NO OP
+}
+
 void backend_center (char *string) {
 	#ifdef DEBUG
 		printf ("[%s]\n", string);
@@ -221,4 +225,8 @@ int backend_menu_run (void) {
 	int res = backend_read_option (10);
 	if (res == 99) return -1;
 	return res - 1;
+}
+
+void backend_bulma_lin (char *pathspec, char *lin) {
+	//NO OP
 }

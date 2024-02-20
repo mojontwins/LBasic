@@ -361,7 +361,7 @@ void display_editor_lines (int cursor) {
 	}
 }
 
-void wizard_text_insert (int *cursor) {
+void wizard_text_insert (int *cursor, int draw) {
 	unsigned char *line_pointer;
 	int action = 0;
 
@@ -437,7 +437,13 @@ void wizard_text_insert (int *cursor) {
 
 	// Orig / Insertion code:
 
-	char *new_text = tui_textbox (7, "Enter text to insert", edit_buffer, 6, &action);
+	char *new_text;
+	if (draw) {
+		new_text = tui_textbox (7, "Enter text to insert", edit_buffer, 6, &action);
+	} else {
+		new_text = tui_drawbox (edit_buffer, &action);
+	}
+
 	if (new_text) {
 
 		if (edit) {
@@ -478,7 +484,7 @@ void editor_bottom () {
 	buf_setxy (0, 24);
 	buf_color (7, 1);
 
-	buf_print_abs (" F3 CHOICE \xB3 F4 TEXT \xB3 F5 RUN \xB3 F6 RUN FROM \xB3 F10 MENU \xB3                        ");
+	buf_print_abs (" F3 CHOICE \xB3 F4 TEXT \xB3 F5 RUN \xB3 F6 RUN FROM \xB3 F7 DRAW \xB3                        ");
 	
 	debuff_keys ();	
 }
@@ -664,7 +670,7 @@ int editor (void) {
 
 			if (key == KEY_F4) {
 				// Insert text from a text area
-				wizard_text_insert (&cursor);
+				wizard_text_insert (&cursor, 0);
 			}
 
 			if (key == KEY_F5) {
@@ -677,6 +683,11 @@ int editor (void) {
 				run_from (editor_current_line);
 				editor_top ();
 				editor_bottom ();
+			}
+
+			if (key == KEY_F7) {
+				// Insert draw from a draw area
+				wizard_text_insert (&cursor, 1);
 			}
 
 			++keys;

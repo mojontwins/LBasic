@@ -22,6 +22,11 @@ LOCATE 1, 1
 COLOR 7, 1
 PRINT "  Compilador Lokosoft LBasic versi¢n 6.03. (C)opyright 1994 by Loko Soft        "
 COLOR 7, 0
+	PRINT
+	PRINT "Pulsa ESC cuando hayas terminado. BORRAR para borrar "
+	PRINT "Ú q  Ä w  ¿ e   É r  Í t  » y     ° u  ± i  ² o  Û p      Ü l  ß ¤ "
+	PRINT "³ a             º s        1-7 y 0 1er plano, SHIFT + 1-7 y 0 fondo"
+	PRINT "À z       Ù x   È c       ¼ v     ÃV ´b Án Âm Åd Ìf ¹g Êh Ëj Îk    "
 LOCATE 3, 1
 PRINT "*";
 
