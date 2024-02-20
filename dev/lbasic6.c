@@ -439,9 +439,9 @@ void wizard_text_insert (int *cursor, int draw) {
 
 	char *new_text;
 	if (draw) {
-		new_text = tui_textbox (7, "Enter text to insert", edit_buffer, 6, &action);
-	} else {
 		new_text = tui_drawbox (edit_buffer, &action);
+	} else {
+		new_text = tui_textbox (7, "Enter text to insert", edit_buffer, 6, &action);
 	}
 
 	if (new_text) {

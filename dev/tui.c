@@ -61,9 +61,10 @@ char *tui_drawbox (char *org_text, int *action) {
 	buf_setxy (1, 20);
 	buf_print_abs ("\xB4 ENTER: Insertar \xB3 ESC: Cancelar \xC3");	
 	buf_setxy (0, 21);	
+	buf_color (15, 1);
 	buf_print_abs ("       \xDA q  \xC4 w  \xBF e   \xC9 r  \xCD t  \xBB y     \xB0 u  \xB1 i  \xB2 o  \xDB p      \xDC l  \xDF \xA4       ");
 	buf_print_abs ("       \xB3 a             \xBA s        1-7 y 0 1er plano, SHIFT + 1-7 y 0 fondo      ");
-	buf_print_abs ("       \xC0 z       \xD9 x   \xC8 c       \xBC v     \xC3V \xB4b \xC1n \xC2m \xC5d \xCCf \xB9g \xCAh \xCBj \xCEk          ");
+	buf_print_abs ("       \xC0 z       \xD9 x   \xC8 c       \xBC v     \xC3V \xB4b \xC1n \xC2m \xC5d \xCCf \xB9g \xCAh \xCBj \xCEk             ");
 
 	curson ();
 
@@ -84,6 +85,7 @@ char *tui_drawbox (char *org_text, int *action) {
 			buf_print_abs (blank);
 		}
 
+		// TODO:: Fix this
 		for (int i = 0; i < strlen (text_area); i ++) {
 			c = text_area [i];
 			j = key_to_color_1 (c); if (j > 0) {
@@ -92,6 +94,8 @@ char *tui_drawbox (char *org_text, int *action) {
 				j = key_to_color_2 (c); if (j > 0) {
 					c2 = j; buf_color (-1, c2);
 				} else {
+					buf_setxy (x, y);
+					buf_char (c);
 
 					if (i == cursor) {
 						cursor_x = x;
