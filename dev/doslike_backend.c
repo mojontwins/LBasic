@@ -285,8 +285,12 @@ void backend_set_margins (int col1, int col2) {
 	buf_setmargins (col1, col2);
 }
 
-void backend_wordwrap (char *s) {
-	buf_wordwrap (s);
+void backend_wordwrap (char *s, int char_by_char) {
+	if (char_by_char) {
+		buf_wordwrap_char_by_char (s);
+	} else {
+		buf_wordwrap (s);
+	}
 }
 
 void backend_set_mode (char *mode) {

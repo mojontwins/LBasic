@@ -200,7 +200,7 @@ int lbasi_run_file (FILE *file) {
 			);
 			
 		} else if (strcmp (command_token, "ww") == 0 || strcmp (command_token, "wordwrap") == 0) {
-			backend_wordwrap (get_token (1));
+			backend_wordwrap (get_token (1), (strcmp (get_token (2), "cbc") == 0));
 
 		} else if (strcmp (command_token, "ansibin") == 0) {
 			backend_ansibin (main_path_spec, get_token (1));

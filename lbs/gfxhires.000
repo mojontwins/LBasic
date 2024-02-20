@@ -4,5 +4,8 @@ viewport 0 24
 pic "bg1.gif" 0
 viewport 12 24
 cls
-ww "Esta casa tiene goteras y un poco de olor a pies. En el s¢tano hay un caballito rosa cojo con una amiga especial. El tejado tiene goteras y t£ no te enteras. Las cebollas son de color verde. Hay moho en el pollo."
+ww "Esta casa tiene goteras y un poco de olor a pies. En el s¢tano hay un caballito rosa cojo con una amiga especial. El tejado tiene goteras y t£ no te enteras. Las cebollas son de color verde. Hay moho en el pollo." cbc
+
+ww "Esto es otra cadena otra cadena otra cadena." cbc
+
 pause 

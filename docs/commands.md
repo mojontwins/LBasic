@@ -13,7 +13,7 @@
 - attempts n
 - statusbar on|off
 - margins c1 c2
-- ww "what"
+- ww "what" [cbc]
 - ansibin "pic.bin"
 - let f v
 - input f
@@ -146,10 +146,10 @@ Establece el margen izquierdo y derecho para la impresión tipo "word wrap" (ver
 ## ww
 
 ```
-	ww "texto"
+	ww "texto" [cbc]
 ```
 
-Escribe un texto con "word wrapping" y pasa a la linea siguiente. Este método ajusta las palabras del texto entre las columnas definidas en margins, de modo que si una palabra no cabe en una linea pasará a la siguiente. Es imporante emplear espacios tras la puntuación para que funcione de forma óptima.
+Escribe un texto con "word wrapping" y pasa a la linea siguiente. Este método ajusta las palabras del texto entre las columnas definidas en margins, de modo que si una palabra no cabe en una linea pasará a la siguiente. Es imporante emplear espacios tras la puntuación para que funcione de forma óptima. Si se añade `cbc` el texto se muestra caracter a caracter con un delay (interrumpible al pulsar una tecla).
 
 ## ansibin
 

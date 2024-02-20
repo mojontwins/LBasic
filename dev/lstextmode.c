@@ -6,6 +6,7 @@
 
 #include "../dos-like/source/dos.h"
 #include "lstextmode.h"
+#include "keys.h"
 
 #include "ega14.h"
 
@@ -20,6 +21,9 @@ int buf_mouse_y = 0;
 
 int buf_char_height = 8;
 int font_ega14;
+
+int buf_char_delay = 4;
+int buf_do_delay;
 
 void debuff_keys (void) {
 	int any;
@@ -39,6 +43,18 @@ void debuff_keys (void) {
 			any = 1;
 		}
 	} while (any);
+}
+
+void buf_char_by_char_delay (void) {
+	if (buf_do_delay) {
+		keys_read ();
+		int keys_this_frame = keys_get_this_frame ();
+		if (keys_this_frame & (MT_KEY_ENTER | MT_KEY_ESC)) {
+			buf_do_delay = 0;
+		} else {
+			for (int i = 0; i < buf_char_delay && !buf_heartbeat (); i ++);
+		}
+	}
 }
 
 int buf_get_mouse_x (void) {
@@ -245,7 +261,7 @@ void buf_char (char c) {
 	}
 }
 
-void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
+void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll, int char_by_char) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
 		char c;
@@ -266,6 +282,8 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 			idx = (buf_x + buf_y * scr_w) * 2;
 			buf [idx] = c;
 			buf [idx + 1] = attrib;
+
+			if (char_by_char) buf_char_by_char_delay ();
 
 			buf_x ++; if (buf_x == scr_w) {
 				if (no_break) break;
@@ -298,6 +316,8 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 			setcolor (buf_c1);
 			outtextxy (x1, y1, substr);
 
+			if (char_by_char) buf_char_by_char_delay ();
+
 			x1 += 8; buf_x ++; if (buf_x == scr_w) {
 				if (no_break) break;
 				
@@ -309,7 +329,7 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll) {
 	}
 }
 
-void buf_wordwrap (char *s) {
+void _buf_wordwrap (char *s, int char_by_char) {
 	// col1, col2 are INCLUSIVE i.e. 0 79 for full width
 
 	char word [256]; char *wp = word;
@@ -327,10 +347,10 @@ void buf_wordwrap (char *s) {
 				buf_x = buf_col1;
 			}
 
-			_buf_print (word, 1, 0, 0);
+			_buf_print (word, 1, 0, 0, char_by_char);
 
 			if (buf_x <= buf_col2) {
-				_buf_print (" ", 1, 0, 0);
+				_buf_print (" ", 1, 0, 0, char_by_char);
 			}
 
 			wp = word;
@@ -346,20 +366,24 @@ void buf_wordwrap (char *s) {
 	buf_scroll_up_if_needed ();
 }
 
+void buf_wordwrap (char *s) {
+	_buf_wordwrap (s, 0);
+}
+
 void buf_print_abs (char *s) {
-	_buf_print (s, 0, 0, 0);
+	_buf_print (s, 0, 0, 0, 0);
 }
 
 void buf_print_abs_clip_to_scroll (char *s) {
-	_buf_print (s, 0, 0, 1);
+	_buf_print (s, 0, 0, 1, 0);
 }
 
 void buf_print (char *s) {
-	_buf_print (s, 1, 0, 0);
+	_buf_print (s, 1, 0, 0, 0);
 }
 
 void buf_print_trim (char *s) {
-	_buf_print (s, 0, 1, 0);
+	_buf_print (s, 0, 1, 0, 0);
 }
 
 void buf_print_ln (char *s) {
@@ -369,6 +393,18 @@ void buf_print_ln (char *s) {
 		buf_x = 0;
 		// buf_scroll_up_if_needed ();
 	}
+}
+
+void buf_wordwrap_char_by_char (char *s) {
+	buf_do_delay = 1;
+	keys_read ();
+	_buf_wordwrap (s, 1);
+}
+
+void buf_print_char_by_char (char *s) {
+	buf_do_delay = 1;
+	keys_read ();
+	_buf_print (s, 1, 0, 0, 1);
 }
 
 void buf_cls (void) {

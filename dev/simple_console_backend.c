@@ -153,7 +153,7 @@ void backend_set_margins (int col1, int col2) {
 	// NO OP
 }
 
-void backend_wordwrap (char *s) {
+void backend_wordwrap (char *s, int meh) {
 	// ALMOST NO OP
 	backend_print_ln (s);
 }
