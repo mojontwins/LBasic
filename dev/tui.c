@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 #include "tui.h"
 #include "keys.h"
@@ -40,6 +41,8 @@ char *tui_drawbox (char *org_text, int *action) {
 	char *res;
 	unsigned char c;
 
+	char info_buf [16];
+
 	if (org_text && org_text [0] != 0) {
 		strcpy (text_area, org_text);
 		cursor = strlen (org_text);
@@ -66,11 +69,9 @@ char *tui_drawbox (char *org_text, int *action) {
 	buf_print_abs ("       \xB3 a             \xBA s        1-7 y 0 1er plano, SHIFT + 1-7 y 0 fondo      ");
 	buf_print_abs ("       \xC0 z       \xD9 x   \xC8 c       \xBC v     \xC3V \xB4b \xC1n \xC2m \xC5d \xCCf \xB9g \xCAh \xCBj \xCEk             ");
 
-	curson ();
-
 	while (!done && !buf_heartbeat ()) {
-		int cursor_x;
-		int cursor_y;
+		int cursor_x = 0;
+		int cursor_y = 0;
 
 		// Display & find x, y
 		int x = 0;
@@ -86,29 +87,35 @@ char *tui_drawbox (char *org_text, int *action) {
 		}
 
 		// TODO:: Fix this
-		for (int i = 0; i < strlen (text_area); i ++) {
-			c = text_area [i];
-			j = key_to_color_1 (c); if (j > 0) {
-				c1 = j; buf_color (c1, -1);
-			} else {
-				j = key_to_color_2 (c); if (j > 0) {
-					c2 = j; buf_color (-1, c2);
+		buf_setxy (0, 2);
+		for (int i = 0; i <= strlen (text_area); i ++) {			
+			if (c = text_area [i]) {
+				j = key_to_color_1 (c); if (j > 0) {
+					c1 = j; buf_color (c1, -1);
 				} else {
-					buf_setxy (x, y);
-					buf_char (c);
-
-					if (i == cursor) {
-						cursor_x = x;
-						cursor_y = y;
-						gotoxy (cursor_x, 2 + cursor_y);
-					}
-
-					x ++; if (x == 80) {
-						x = 0; y ++;
+					j = key_to_color_2 (c); if (j > 0) {
+						c2 = j; buf_color (-1, c2);
+					} else {
+						buf_char (c);
 					}
 				}
 			}
+			
+			if (i == cursor) {
+				cursor_x = buf_getx ();
+				cursor_y = buf_gety ();
+				sprintf (info_buf, "  %02d-%02d", cursor_x, cursor_y);				
+			}
 		}
+
+		buf_setxy (cursor_x, cursor_y);
+		buf_color (0, 14);
+		c = text_area [cursor] ? text_area [cursor] : 32;
+		buf_char (c);
+
+		buf_setxy (73, 24);
+		buf_color (4, 7);
+		buf_print_abs (info_buf);
 
 		// Get input
 		unsigned char const* chars = (unsigned char*) readchars ();
@@ -232,10 +239,10 @@ char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *act
 		buf_setxy (0, y + 1);
 		buf_print_abs (text_area);
 
-		int ycursor = y + 1 + cursor / 80;
-		int xcursor = cursor % 80;
+		int cursor_y = y + 1 + cursor / 80;
+		int cursor_x = cursor % 80;
 
-		buf_setxy (xcursor, ycursor);
+		buf_setxy (cursor_x, cursor_y);
 		buf_color (0, 14);
 		c = text_area [cursor] ? text_area [cursor] : 32;
 		buf_char (c);

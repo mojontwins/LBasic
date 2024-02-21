@@ -65,12 +65,12 @@ unsigned char key_to_draw_char (unsigned char c) {
 	return c;
 }
 
-unsigned char key_to_color_1 (unsigned char c) {
+int key_to_color_1 (unsigned char c) {
 	if (c >= '0' && c <= '7') return c - '0';
 	return -1;
 }
 
-unsigned char key_to_color_2 (unsigned char c) {
+int key_to_color_2 (unsigned char c) {
 	switch (c) {
 		case '=': return 0;
 		case '!': return 1;
