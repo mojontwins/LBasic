@@ -43,6 +43,8 @@ char *tui_drawbox (char *org_text, int *action) {
 
 	char info_buf [16];
 
+	memset (text_area, 0, 2048);
+
 	if (org_text && org_text [0] != 0) {
 		strcpy (text_area, org_text);
 		cursor = strlen (org_text);
@@ -89,6 +91,12 @@ char *tui_drawbox (char *org_text, int *action) {
 		// TODO:: Fix this
 		buf_setxy (0, 2);
 		for (int i = 0; i <= strlen (text_area); i ++) {			
+			if (i == cursor) {
+				cursor_x = buf_getx ();
+				cursor_y = buf_gety ();
+				sprintf (info_buf, "  %02d-%02d", cursor_x, cursor_y);				
+			}
+			
 			if (c = text_area [i]) {
 				j = key_to_color_1 (c); if (j > 0) {
 					c1 = j; buf_color (c1, -1);
@@ -101,11 +109,6 @@ char *tui_drawbox (char *org_text, int *action) {
 				}
 			}
 			
-			if (i == cursor) {
-				cursor_x = buf_getx ();
-				cursor_y = buf_gety ();
-				sprintf (info_buf, "  %02d-%02d", cursor_x, cursor_y);				
-			}
 		}
 
 		buf_setxy (cursor_x, cursor_y);
@@ -128,15 +131,15 @@ char *tui_drawbox (char *org_text, int *action) {
 		if (c >= ' ') {
 			if (cursor_y < 19 || cursor_x < 79) {
 				text_area [cursor ++] = c;
-				text_area [cursor] = 0;
 			}
 		} else {
 			switch (c) {
 				case 8:
-					// Delete
-					if (cursor > 0) {
-						cursor --;
-						text_area [cursor] = 0;
+					// Delete character to the left of the cursor.
+					
+					cursor --;
+					for (int i = cursor; i < strlen (text_area); i ++) {
+						text_area [i] = text_area [i + 1];
 					}
 					break;
 
@@ -255,22 +258,29 @@ char *tui_textbox (int y, char *caption, char *org_text, int max_lines, int *act
 		c = get_character_input (chars);
 
 		if (c >= ' ') {
+			// Insert a new character (end / middle)
+
 			if (cursor < max_chars) {
+				int line_length = strlen (text_area);
+				for (int i = line_length; i >= cursor; i --) {
+					text_area [i + 1] = text_area [i];
+				}
 				text_area [cursor ++] = c;
-				text_area [cursor] = 0;
 			}
 		} else {
 			switch (c) {
 				case 8:
-					// Delete
-					if (cursor > 0) {
-						cursor --;
-						text_area [cursor] = 0;
+					// Delete character to the left of the cursor.
+					
+					cursor --;
+					for (int i = cursor; i < strlen (text_area); i ++) {
+						text_area [i] = text_area [i + 1];
 					}
 					break;
 
 				case 27:
 					// Exit
+
 					done = 1;
 					res = NULL;
 					*action = TUI_ACTION_ESC;
