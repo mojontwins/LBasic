@@ -781,6 +781,7 @@ void run_from (int from) {
 }
 
 void main (char argc, char *argv []) {
+	lstextmode_init ();
 	cursoff ();
 	
 	reset_screen ();
@@ -834,4 +835,5 @@ void main (char argc, char *argv []) {
 
 	clear_file_spec ();
 	lstokens_free ();
+	lstextmode_shutdown ();
 }

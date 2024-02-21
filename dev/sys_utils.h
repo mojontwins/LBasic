@@ -40,3 +40,19 @@ void menu_reorganize (void);
 void menu_delete_item (unsigned char *item);
 int menu_get_options (void);
 unsigned char *menu_get_option (int index);
+
+/*
+ * INVENTORY
+ */
+
+#define MAX_INVENTORY_ITEMS 256
+#define INVENTORY_ITEM_MAX_LENGTH 40
+
+void inventory_reset (void);
+void inventory_set_max_items (int max_items);
+int inventory_add_item (unsigned char *item);
+void inventory_delete_item (unsigned char *item);
+int inventory_get_options (void);
+unsigned char *inventory_get_option (int index);
+int inventory_has_item (unsigned char *item);
+int inventory_find_index (unsigned char *item);

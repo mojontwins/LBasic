@@ -25,6 +25,13 @@ int font_ega14;
 int buf_char_delay = 4;
 int buf_do_delay;
 
+char *buf_copy;
+int buf_size;
+
+void lstextmode_init (void) {
+	buf_setmode (LS_MODE_TEXT);
+}
+
 void debuff_keys (void) {
 	int any;
 	do {
@@ -191,6 +198,7 @@ void buf_box (int x1, int y1, int x2, int y2) {
 	}
 }
 
+// TODO - Do it properly, use buf_col1, buf_col2. 
 void buf_scroll_up (int from, int to) {
 	if (buf_mode == LS_MODE_TEXT) {
 		unsigned char *buf = screenbuffer ();
@@ -486,12 +494,24 @@ void buf_setmode(int mode) {
 		buf_setviewport (1, screenheight () - 2);
 		buf_setmargins (0, screenwidth () - 1);
 		buf_clscroll ();
+		buf_size = screenwidth () * screenheight () * 2;
 	} else {
 		buf_setviewport (1, screenheight () / buf_char_height);
 		buf_setmargins (0, screenwidth () / 8 - 1);
 		buf_cls ();
+		buf_size = screenwidth () * screenheight ();
 	}
 
+	free (buf_copy);
+	buf_copy = malloc (buf_size);
+}
+
+void buf_sve (void) {
+	memcpy (buf_copy, screenbuffer (), buf_size);
+}
+
+void buf_rec (void) {
+	memcpy (screenbuffer (), buf_copy, buf_size);
 }
 
 int buf_getmode (void) {
@@ -586,6 +606,6 @@ void buf_bulma_lin (char *pic) {
 	}
 }
 
-void lstextmode_init (void) {
-	buf_setmode (LS_MODE_TEXT);
+void lstextmode_shutdown (void) {
+	free (buf_copy);
 }

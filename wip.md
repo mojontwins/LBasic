@@ -1,22 +1,26 @@
+# Backend
+
+[ ] Scroll bien hecho (teniendo en cuenta los margenes) -> necesito implementar blit de buffer a buffer (en modo gráfico) y complicar un poco la copia en modo texto.
+
 # Intérprete
 
 [X] Legacy Lbasic 6
 [ ] Legacy Lbasic 7
 [/] Legacy Lbasic 8
 [ ] GOSUB
-[/] AUTOGOTO :label [:back] -> (jumps to :label_X, with X = the input); BACK = GO :back
-[ ] Pensar en un inventario sencillo
+[X] Autogo
+[ ] Inventario sencillo ~ parecido a menús, añadiendo Tokens a una lista
 [X] Bulma "draw" support (LIN)
 
 # Editor
 
 [X] Save / Load
-[ ] 
+[ ] wizards
 	[ ] Choice 
 	[ ] Choigo 
 	[ ] Go 
 	[X] Print 
-	[ ] Color wizards
+	[ ] Color 
 [X] RUN / RUN FROM / NEW
 [X] Editor DRAW
 [ ] Editor bulma draw (LIN)

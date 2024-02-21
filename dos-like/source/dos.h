@@ -57,6 +57,7 @@ void cursoff( void );
 unsigned char* loadgif( char const* filename, int* width, int* height, int* palcount, unsigned char palette[ 768 ] );
 
 void blit( int x, int y, unsigned char* source, int width, int height, int srcx, int srcy, int srcw, int srch );
+void blitdst( unsigned char *dest, int x, int y, unsigned char* source, int width, int height, int srcx, int srcy, int srcw, int srch );
 void maskblit( int x, int y, unsigned char* source, int width, int height, int srcx, int srcy, int srcw, int srch, 
     int colorkey );
 
@@ -1015,6 +1016,21 @@ void blit( int x, int y, unsigned char* source, int width, int height, int srcx,
     }
 
     uint8_t* dst = internals->draw.buffer + x + y * internals->draw.width;
+    uint8_t* src = source + srcx + srcy * width;
+    for( int iy = 0; iy < srch; ++iy ) {
+        memcpy( dst, src, srcw );
+        src += width;
+        dst += internals->draw.width;
+    }
+}
+
+void blitdest( unsigned char* dest, int x, int y, unsigned char* source, int width, int height, int srcx, int srcy, int srcw, int srch ) {
+    if( internals->screen.font ) return;
+    if( !blitclip( &x, &y, width, height, &srcx, &srcy, &srcw, &srch ) ) {
+        return;
+    }
+
+    uint8_t* dst = dest + x + y * internals->draw.width;
     uint8_t* src = source + srcx + srcy * width;
     for( int iy = 0; iy < srch; ++iy ) {
         memcpy( dst, src, srcw );

@@ -4,6 +4,7 @@
 #define LS_MODE_GFX_HIRES	3
 #define LS_MODE_GFX_MED		4
 
+void lstextmode_init (void);
 void debuff_keys (void);
 void buf_setviewport (int y1, int y2);
 int buf_getviewport_y1 (void);
@@ -34,7 +35,6 @@ void buf_wordwrap_char_by_char (char *s);
 void buf_cls (void);
 void buf_clscroll (void);
 void buf_put_string_xy (int x, int y, int c1, int c2, char *s);
-void lstextmode_init (void);
 void buf_setmode (int mode);
 int buf_getmode (void);
 void buf_pause (void);
@@ -47,3 +47,6 @@ int buf_get_mouse_b (int button);
 int buf_get_keystate (int keys);
 int buf_heartbeat (void);
 void buf_bulma_lin (char *pic);
+void buf_sve (void);
+void buf_rec (void);
+void lstextmode_shutdown (void);

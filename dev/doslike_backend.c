@@ -326,10 +326,6 @@ void backend_ansibin (char *pathspec, char *filename) {
 	free (fullpath);
 }
 
-void backend_shutdown (void) {
-	
-}
-
 void backend_menu_config (int x, int y, int w, int c1, int c2) {
 	backend_menu_x = x;
 	backend_menu_y = y;
@@ -343,6 +339,12 @@ void backend_menu_set_selected (int selected) {
 }
 
 int backend_menu_run (void) {
+	int prev_x = buf_getx ();
+	int prev_y = buf_gety (); 
+	int prev_c1 = buf_getc1 ();
+	int prev_c2 = buf_getc2 ();
+	buf_sve ();
+
 	int done = 0;
 	int backend_menu_options = menu_get_options ();
 	if (backend_menu_selected >= backend_menu_options) backend_menu_selected = backend_menu_options - 1;
@@ -394,5 +396,13 @@ int backend_menu_run (void) {
 
 	debuff_keys ();
 
+	buf_rec ();
+	buf_setxy (prev_x, prev_y);
+	buf_color (prev_c1, prev_c2);
+
 	return backend_menu_selected;
+}
+
+void backend_shutdown (void) {
+	lstextmode_shutdown ();
 }

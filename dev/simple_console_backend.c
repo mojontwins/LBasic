@@ -228,5 +228,5 @@ int backend_menu_run (void) {
 }
 
 void backend_bulma_lin (char *pathspec, char *lin) {
-	//NO OP
+	// NO OP
 }

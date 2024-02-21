@@ -163,3 +163,76 @@ int menu_get_options (void) {
 unsigned char *menu_get_option (int index) {
 	return menu_items [index];
 }
+
+/*
+ * INVENTORY
+ */
+
+unsigned char inventory_items [MAX_INVENTORY_ITEMS][INVENTORY_ITEM_MAX_LENGTH];
+int inventory_index = 0;
+int inventory_max_items = MAX_INVENTORY_ITEMS;
+
+void inventory_reset (void) {
+	inventory_index = 0;
+	for (int i = 0; i < MAX_INVENTORY_ITEMS; i ++) {
+		inventory_items [inventory_index][0] = 0;
+	}
+}
+
+void inventory_set_max_items (int max_items) {
+	inventory_max_items = max_items;
+}
+
+int inventory_add_item (unsigned char *item) {
+	if (inventory_index < inventory_max_items - 1) {
+		strcpy (inventory_items [inventory_index ++], item);
+		return 1;
+	}
+
+	return 0;
+}
+
+void inventory_reorganize (void) {
+	// Clear gaps in the menu
+
+	for (int i = inventory_index - 2; i >= 0; i --) {
+		if (inventory_items [i][0] == 0) {
+			for (int j = i; j < inventory_index - 1; j ++) {
+				strcpy (inventory_items [j], inventory_items [j + 1]);
+				inventory_index --;
+			}
+		}
+	}
+}
+
+void inventory_delete_item (unsigned char *item) {
+	for (int i = 0; i < inventory_index; i ++) {
+		if (strcmp (item, inventory_items [i]) == 0) inventory_items [i][0] = 0;
+	}
+
+	inventory_reorganize ();
+}
+
+int inventory_get_options (void) {
+	return inventory_index;
+}
+
+unsigned char *inventory_get_option (int index) {
+	return inventory_items [index];
+}
+
+int inventory_has_item (unsigned char *item) {
+	for (int i = 0; i < inventory_index; i ++) {
+		if (strcmp (item, inventory_items [i]) == 0) return 1;
+	}
+
+	return 0;
+}
+
+int inventory_find_index (unsigned char *item) {
+	for (int i = 0; i < inventory_index; i ++) {
+		if (strcmp (item, inventory_items [i]) == 0) return i;
+	}
+
+	return -1;
+}
