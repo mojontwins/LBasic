@@ -15,6 +15,7 @@
 #include "file_browser.h"
 #include "backend.h"
 #include "sys_utils.h"
+#include "lstokens.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -49,6 +50,29 @@ int program_loaded; 		// Program in memory
 int needs_saving;			// Altered loaded program
 int last_option = 0;
 int first_line_to_display;
+
+char *keywords [] = {
+	"cursor", "setxy", "print", "write", "center", "color", "pause", "beep",
+	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins",
+	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", 
+	NULL
+};
+
+char *flags_keywords [] = {
+	 "let", "input", "tell", "inc", "dec", "add", "sub", 
+	NULL
+};
+
+char *branching_keywords [] = {
+	"go", "eq", "neq", "ge", "lt", "menu", "autogo",
+	NULL
+};
+
+char *modifier_keywords [] = {
+	"cbc", "on", "off", "text", "gfx", "gfx_sq", "gfx_med", "gfx_hi",
+	"kbd", "reset", "limpia", "add", "pon", "remove", "quita", "config", "run", 
+	NULL
+};
 
 void run_from (int from);
 
@@ -217,25 +241,49 @@ void load_program (void) {
 	}
 }
 
-int find_color (char *s) {
-	if (strlen (s) == 0) return;
+int find_color (unsigned char *s) {
+	// Cut early
+	if (strlen (s) == 0) return 7;
+	if (s[0] == '\t' || s[0] == 32 || s[0] == 34) return 7;
+
+	// And then:
 
 	if (s[0] == ':') return 10;
 
-	if (
-		strcmp (s, "print") == 0 ||
-		strcmp (s, "choice") == 0 ||
-		strcmp (s, "color") == 0 ||
-		strcmp (s, "centra") == 0 ||
-		strcmp (s, "pause") == 0 ||
-		strcmp (s, "beep") == 0
-	) return 12;
+	if (s[0] == '$') return 15;
+
+	for (int i = 0; keywords [i] != NULL; i ++) {
+		if (strcmp (s, keywords [i]) == 0) return 12;
+	}
+
+	for (int i = 0; flags_keywords [i] != NULL; i ++) {
+		if (strcmp (s, flags_keywords [i]) == 0) return 11;
+	}
+
+	for (int i = 0; branching_keywords [i] != NULL; i ++) {
+		if (strcmp (s, branching_keywords [i]) == 0) return 14;
+	}
+
+	for (int i = 0; modifier_keywords [i] != NULL; i ++) {
+		if (strcmp (s, modifier_keywords [i]) == 0) return 13;
+	}
 
 	return 7;
 }
 
-void syntax_hightlight (int bkg, char *s) {
+void syntax_hightlight (int bkg, unsigned char *s) {
 	// Generates several buf_print_ab if nice stuff detected.
+	// Rewriten in a much smarter way
+	parse_to_tokens_whitespace (s);
+
+	int num_tokens = get_num_tokens ();	
+	for (int i = 0; i < num_tokens; i ++) {
+		unsigned char *token = get_token (i);
+		buf_color (find_color (token), bkg);
+		buf_print_abs_clip_to_scroll (token);
+	}
+
+	/*
 	int n_tokens;
 	int found_keyword = 0;
 
@@ -289,6 +337,7 @@ void syntax_hightlight (int bkg, char *s) {
 	int x = buf_getx (); while (x < 80) {
 		buf_char (' '); x ++;
 	}
+	*/
 }
 
 void display_editor_lines (int cursor) {
@@ -784,4 +833,5 @@ void main (char argc, char *argv []) {
 	}
 
 	clear_file_spec ();
+	lstokens_free ();
 }

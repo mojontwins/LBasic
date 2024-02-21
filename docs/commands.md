@@ -28,6 +28,7 @@
 - neq v1 v2 :label
 - ge v1 v2 :label
 - lt v1 v2 :label
+- autogo f :label
 - mode text|gfx|gfx_sq|gfx_med|gfx_hi
 - pic "pic.gif" seconds|kbd
 - cut "cut.gif" x y
@@ -245,6 +246,31 @@ Continua la ejecución a partir de la linea con `:etiqueta`.
 ```
 
 Continuan la ejecución a partir de la linea con `:etiqueta` si `v1 = v2`, `v1 <> v2`, `v1 >= v2` y `v1 < v2`, respectivamente. Ver la sección sobre flags.
+
+## autogo
+
+``` 
+	autogo flag :label
+```
+
+Salta a la etiqueta `:label_F`, con `F` el valor de `flag`. Por ejemplo, puede usarse después de `input`. Recordemos además que si `:label_F` no existe, esta orden no hace nada.:
+
+```
+	print "Introduce 1 o 2"
+
+	input 2
+	autogo 2 :etiqueta
+	go :fin
+
+	:etiqueta_1
+	print "El usuario introdujo 1"
+	go :fin
+
+	:etiqueta_2
+	print "El usuario introdujo 2"
+
+	:fin 
+```
 
 ## mode
 

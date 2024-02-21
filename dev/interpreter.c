@@ -116,11 +116,11 @@ int lbasi_run_file (FILE *file) {
 
 	char line_buffer [LINE_BUFFER_SIZE];
 	char temp_buffer [256];
+	char string_convert_buffer [256];
 	char legacy_buffer [LEGACY_BUFFER_SIZE];
 	char draw_buffer [2048];
 	char *command_token;
 
-	lstokens_init ();
 	lbasi_read_labels (file);
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
@@ -219,15 +219,15 @@ int lbasi_run_file (FILE *file) {
 			flags_set (flag, value);
 		} else if (strcmp (command_token, "input") == 0) {
 			int flag = flags_parse_value (get_token (1));			
-			itoa (backend_read_option (0), temp_buffer, 10);
-			int value = flags_parse_value (temp_buffer);
+			itoa (backend_read_option (0), string_convert_buffer, 10);
+			int value = flags_parse_value (string_convert_buffer);
 
 			flags_set (flag, value);
 
 		} else if (strcmp (command_token, "tell") == 0) {
 			int flag = flags_parse_value (get_token (1));
-			itoa (flag, temp_buffer, 10);
-			backend_print (temp_buffer);
+			itoa (flag, string_convert_buffer, 10);
+			backend_print (string_convert_buffer);
 
 		} else if (strcmp (command_token, "inc") == 0) {
 			int flag = flags_parse_value (get_token (1));
@@ -274,6 +274,16 @@ int lbasi_run_file (FILE *file) {
 			int val2 = flags_parse_value (get_token (2));
 
 			if (val1 < val2) lbasi_goto (file, get_token (3));
+
+		} else if (strcmp (command_token, "autogo") == 0) {
+			int flag = flags_get (flags_parse_value (get_token (1)));
+			itoa (flag, string_convert_buffer, 10);
+
+			strcpy (temp_buffer, get_token (2));
+			strcat (temp_buffer, "_");
+			strcat (temp_buffer, string_convert_buffer);
+
+			lbasi_goto (file, temp_buffer);
 		}
 
 		// *** GFX MODE ***

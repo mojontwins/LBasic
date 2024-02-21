@@ -1,17 +1,17 @@
-print "1. Michis"
-print "2. Puchis"
-input 1
-eq $1 1 :label1
-eq $1 2 :label2
-go :end
-
-:label1
-print "Hola michis"
-go :end
-
-:label2
-print "Hola puchis"
-go :end
-
-:end 
-print "Final"
+print "1. Michis"
+print "2. Puchis"
+input 1
+
+autogo 1 :label
+go :end
+
+:label_1
+print "Hola michis"
+go :end
+
+:label_2
+print "Hola puchis"
+go :end
+
+:end 
+print "Final"
