@@ -349,11 +349,11 @@ int lbasi_run_file (FILE *file) {
 
 			} else if (strcmp (menu_command, "config") == 0) {
 				backend_menu_config (
-					atoi (get_token (2)), 
-					atoi (get_token (3)), 
-					atoi (get_token (4)), 
-					atoi (get_token (5)),
-					atoi (get_token (6))
+					flags_parse_value (get_token (2)), 
+					flags_parse_value (get_token (3)), 
+					flags_parse_value (get_token (4)), 
+					flags_parse_value (get_token (5)),
+					flags_parse_value (get_token (6))
 				);
 
 			} else if (strcmp (menu_command, "run") == 0) {
@@ -398,6 +398,26 @@ int lbasi_run_file (FILE *file) {
 					lbasi_goto (file, get_token (3));
 				}
 
+			}
+		}
+
+		// *** TALK ***
+
+		else if (strcmp (command_token, "talk") == 0) {
+			strcpy (string_convert_buffer, get_token (1));
+			char *talk_command = string_convert_buffer;
+			utils_tolower (talk_command);
+
+			if (strcmp (talk_command, "config") == 0) {
+				backend_talk_config (
+					flags_parse_value (get_token (2)), 
+					flags_parse_value (get_token (3)), 
+					flags_parse_value (get_token (4)), 
+					flags_parse_value (get_token (5)),
+					flags_parse_value (get_token (6))
+				);
+			} else {
+				backend_talk (get_token (1));
 			}
 		}
 

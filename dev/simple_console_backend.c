@@ -44,6 +44,11 @@ void backend_print (char *string) {
 	printf (string);
 }
 
+void backend_print_ghost (int x, int y, int w, int c1, int c2, char *string) {
+	// Almost NO OP
+	backend_print (string);
+}
+
 void backend_setxy (int x, int y) {
 	// NO OP
 }
@@ -225,6 +230,14 @@ int backend_menu_run (void) {
 	int res = backend_read_option (10);
 	if (res == 99) return -1;
 	return res - 1;
+}
+
+void backend_talk_config (int x, int y, int w, int c1, int c2) {
+	// NO OP
+}
+
+void backend_talk (char *s) {
+	backend_print (s);
 }
 
 void backend_bulma_lin (char *pathspec, char *lin) {

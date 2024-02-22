@@ -36,6 +36,7 @@
 - sleep seconds
 - menu
 - items
+- talk
 
 ## cursor|setxy x y
 
@@ -415,3 +416,18 @@ Salta a `:etiqueta` si `item` está en en inventario.
 
 Salta a `:etiqueta` si `item` NO está en el inventario.
 
+## Talk
+
+Una pequeña utilidad para cuando hagas visual novels. Puedes poner quien habla fuera de la zona de texto que hace scroll, lo que viene muy bien
+
+```
+	talk "personaje"
+```
+
+Escribe `personaje`. Puedes usar una cadena vacía.
+
+```
+	talk config x y w c1 c2
+```
+
+Configura el texto para que aparezca en (x, y) con los colores (c1, c2), de anchura w

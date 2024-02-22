@@ -27,6 +27,13 @@ int backend_menu_c2 = 1;
 int backend_menu_w = 16;
 int backend_menu_selected = 0;
 
+int backend_talk_x = 0;
+int backend_talk_y = 0;
+int backend_talk_c1 = 15;
+int backend_talk_c2 = 1;
+int backend_talk_w = 16;
+int backend_talk_selected = 0;
+
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
@@ -86,6 +93,24 @@ void backend_print_ln (char *string) {
 
 void backend_print (char *string) {
 	buf_print (string);
+}
+
+void backend_print_ghost (int x, int y, int w, int c1, int c2, char *string) {
+	int org_x = buf_getx ();
+	int org_y = buf_gety ();
+	int org_c1 = buf_getc1 ();
+	int org_c2 = buf_getc2 ();
+
+	buf_setxy (x, y);
+	buf_color (c1, c2);
+
+	int l = strlen (string);
+	for (int i = 0; i < w; i ++) {
+		buf_char (i < l ? string [i] : 32);
+	}
+
+	buf_setxy (org_x, org_y);
+	buf_color (org_c1, org_c2);
 }
 
 void backend_setxy (int x, int y) {
@@ -332,6 +357,18 @@ void backend_menu_config (int x, int y, int w, int c1, int c2) {
 	backend_menu_w = w;
 	backend_menu_c1 = c1;
 	backend_menu_c2 = c2;
+}
+
+void backend_talk_config (int x, int y, int w, int c1, int c2) {
+	backend_talk_x = x;
+	backend_talk_y = y;
+	backend_talk_w = w;
+	backend_talk_c1 = c1;
+	backend_talk_c2 = c2;
+}
+
+void backend_talk (char *who) {
+	backend_print_ghost (backend_talk_x, backend_talk_y, backend_talk_w, backend_talk_c1, backend_talk_c2, who);
 }
 
 void backend_menu_set_selected (int selected) {
