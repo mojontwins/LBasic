@@ -35,6 +35,7 @@
 - lin "pic.lin"
 - sleep seconds
 - menu
+- items
 
 ## cursor|setxy x y
 
@@ -343,19 +344,19 @@ Borra todas las opciones del menú.
 	menu add|pon "item"
 ```
 
-Añade al menú el item de texto "item"
+Añade al menú el item de texto `item`
 
 ```
 	menu remove|quita "item"
 ```
 
-Quita del menú el item de texto "item"
+Quita del menú el item de texto `item`
 
 ```
-	menu config x y c1 c2
+	menu config x y w c1 c2
 ```
 
-Configura el menú para que aparezca en (x, y) con los colores (c1, c2).
+Configura el menú para que aparezca en (x, y) con los colores (c1, c2), de anchura w
 
 ```
 	menu run :label
@@ -373,3 +374,44 @@ Muestra el menú y deja al usuario elegir una opción, y luego:
 Ejemplo con rayitas de colores:
 
 ![Ejemplo menus](https://github.com/mojontwins/LBasic/blob/master/docs/lbasic_menu.png?raw=true)
+
+## Items
+
+Estos son los comandos que sirven para llevar un inventario
+
+```
+	items reset|limpia
+```
+
+Elimina todos los items
+
+```
+	items size|tam X
+```
+
+Establece a X el valor máximo de objetos que se puede llevar en el inventario.
+
+```
+	items add|pon "item"
+```
+
+Añade "item" al inventario.
+
+```
+	items remove|quita "item"
+```
+
+Quita "item" del inventario.
+
+```
+	items has|tiene "item" :etiqueta
+```
+
+Salta a `:etiqueta` si `item` está en en inventario.
+
+```
+	item hasnt|notiene "item" :etiqueta
+```
+
+Salta a `:etiqueta` si `item` NO está en el inventario.
+

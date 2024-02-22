@@ -54,7 +54,7 @@ int first_line_to_display;
 char *keywords [] = {
 	"cursor", "setxy", "print", "write", "center", "color", "pause", "beep",
 	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins",
-	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", 
+	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", "menu", "items",
 	NULL
 };
 
@@ -64,13 +64,14 @@ char *flags_keywords [] = {
 };
 
 char *branching_keywords [] = {
-	"go", "eq", "neq", "ge", "lt", "menu", "autogo",
+	"go", "eq", "neq", "ge", "lt", "autogo",
 	NULL
 };
 
 char *modifier_keywords [] = {
 	"cbc", "on", "off", "text", "gfx", "gfx_sq", "gfx_med", "gfx_hi",
-	"kbd", "reset", "limpia", "add", "pon", "remove", "quita", "config", "run", 
+	"kbd", "reset", "limpia", "put", "pon", "remove", "quita", "config", "run", 
+	"has", "tiene", "hasnt", "notiene",
 	NULL
 };
 
@@ -189,8 +190,17 @@ void lines_free_all (void) {
 }
 
 void save_program_do (int from, char *filename) {
-	FILE *pf = fopen (filename, "w");
+	FILE *pf = fopen (filename, "wb");
+	unsigned char clean_buffer [LINE_BUFFER_SIZE];
+	
 	for(int i = from; i < editor_last_line; i ++) {
+
+/*
+		unsigned char *ptr = clean_buffer;
+		for (int j = 0; j < strlen (editor_lines [j])) {
+			unsigned char c = editor_lines [i][j]
+		}
+*/
 		fprintf (pf, "%s\r\n", editor_lines [i]);
 	}
 	fclose (pf);
@@ -334,10 +344,10 @@ void syntax_hightlight (int bkg, unsigned char *s) {
 	buf_color (state == 1 ? find_color(temp_buffer) : 7, bkg);
 	buf_print_abs_clip_to_scroll (temp_buffer);
 
+	*/
 	int x = buf_getx (); while (x < 80) {
 		buf_char (' '); x ++;
 	}
-	*/
 }
 
 void display_editor_lines (int cursor) {

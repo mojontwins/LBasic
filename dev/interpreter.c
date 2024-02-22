@@ -325,11 +325,13 @@ int lbasi_run_file (FILE *file) {
 		}
 
 		// *** BULMA ***
+
 		else if (strcmp (command_token, "lin") == 0) {
 			backend_bulma_lin (main_path_spec, get_token (1));
 		}
 
 		// *** MENU ***
+
 		else if (strcmp (command_token, "menu") == 0) {
 			char *menu_command = get_token (1);
 			utils_tolower (menu_command);
@@ -338,7 +340,7 @@ int lbasi_run_file (FILE *file) {
 				menu_reset ();
 				backend_menu_set_selected (0);
 
-			} else if (strcmp (menu_command, "add") == 0 || strcmp (menu_command, "pon") == 0) {
+			} else if (strcmp (menu_command, "put") == 0 || strcmp (menu_command, "pon") == 0) {
 				if (menu_get_options () < MAX_MENU_ITEMS) menu_add_item (get_token (2));
 
 			} else if (strcmp (menu_command, "remove") == 0 || strcmp (menu_command, "quita") == 0) {
@@ -364,6 +366,38 @@ int lbasi_run_file (FILE *file) {
 
 					lbasi_goto (file, temp_buffer);
 				}
+			}
+		}
+
+		// *** INVENTARIO **
+
+		else if (strcmp (command_token, "items") == 0) {
+			char *items_command = get_token (1);
+			utils_tolower (items_command);
+
+			if (strcmp (items_command, "reset") == 0 || strcmp (items_command, "limpia") == 0) {
+				inventory_reset ();
+			
+			} else if (strcmp (items_command, "size") == 0 || strcmp (items_command, "tam") == 0) {
+				inventory_set_max_items (flags_parse_value (get_token (2)));
+
+			} else if (strcmp (items_command, "put") == 0 || strcmp (items_command, "pon") == 0) {
+				// TODO : ERROR HANDLE THIS
+				inventory_add_item (get_token (2));
+
+			} else if (strcmp (items_command, "remove") == 0 || strcmp (items_command, "quita") == 0) {
+				inventory_delete_item (get_token (2));
+
+			} else if (strcmp (items_command, "has") == 0 || strcmp (items_command, "tiene") == 0) {
+				if (inventory_has_item (get_token (2))) {
+					lbasi_goto (file, get_token (3));
+				}
+
+			} else if (strcmp (items_command, "hasnt") == 0 || strcmp (items_command, "notiene") == 0) {
+				if (!inventory_has_item (get_token (2))) {
+					lbasi_goto (file, get_token (3));
+				}
+
 			}
 		}
 

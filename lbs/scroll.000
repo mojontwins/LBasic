@@ -1,0 +1,8 @@
+# Scroll test
+#mode gfx
+viewport 5 9
+margins 10 29
+color 14 1
+cls
+
+ww "Hola, amiguitos, esto es un textito, debe partirse, entrar en la ventanita, y luego hacer scrollcito. Y si no lo hace, tendr‚ que mirar un poquito el backend, porque probablemente habr‚ metido una patarra y una patorra. Y tendr‚ que intentarlo de nuevo con los huevo" cbc

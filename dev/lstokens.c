@@ -112,7 +112,8 @@ void parse_to_tokens_whitespace (char *string) {
 			}
 		} else {
 			// We are collecting words / quoted text
-			if (in_quotes == 0 && (cur_char == 0 || cur_char == '\r' || cur_char == '\n' || ((cur_char == ' ' || cur_char == '\t') && in_quotes == 0))) {
+			if ((in_quotes == 0 && (cur_char == 0 || cur_char == '\r' || cur_char == '\n' || ((cur_char == ' ' || cur_char == '\t') && in_quotes == 0))) ||
+				(in_quotes == 1 && cur_char == 0)) {
 				if (cur_index > 0) {
 					tokens [cur_token ++][cur_index] = 0;
 					cur_index = 0;

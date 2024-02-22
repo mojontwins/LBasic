@@ -1,6 +1,6 @@
 # Backend
 
-[ ] Scroll bien hecho (teniendo en cuenta los margenes) -> necesito implementar blit de buffer a buffer (en modo gráfico) y complicar un poco la copia en modo texto.
+[X] Scroll bien hecho (teniendo en cuenta los margenes) -> necesito implementar blit de buffer a buffer (en modo gráfico) y complicar un poco la copia en modo texto.
 
 # Intérprete
 
@@ -25,4 +25,5 @@
 [X] Editor DRAW
 [ ] Editor bulma draw (LIN)
 [ ] AV PAG / RE PAG / HOME / END
-[ ] A veces se salva mal (creo que mezcla `\n` con `\r\n`), revisar.
+[X] A veces se salva mal (creo que mezcla `\n` con `\r\n`), revisar. Cuando cargas->editas->grabas. En HEX EDITOR veo DOS \r... -> Grabar en binario
+[X] Syntax no saca los textos entre comillas hasta que se cierran

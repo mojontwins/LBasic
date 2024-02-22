@@ -140,12 +140,15 @@ void menu_add_item (unsigned char *item) {
 void menu_reorganize (void) {
 	// Clear gaps in the menu
 
-	for (int i = menu_index - 2; i >= 0; i --) {
+	for (int i = 0; i < menu_index; i ++) {
 		if (menu_items [i][0] == 0) {
-			for (int j = i; j < menu_index - 1; j ++) {
-				strcpy (menu_items [j], menu_items [j + 1]);
-				menu_index --;
+			// There's a gap! shift everything up!
+			for (int j = i + 1; j <= menu_index; j ++) {
+				strcpy (menu_items [j - 1], menu_items [j]);
 			}
+
+			// One menu item less!
+			menu_index --;
 		}
 	}
 }
@@ -193,14 +196,17 @@ int inventory_add_item (unsigned char *item) {
 }
 
 void inventory_reorganize (void) {
-	// Clear gaps in the menu
+	// Clear gaps in the inventory
 
-	for (int i = inventory_index - 2; i >= 0; i --) {
+	for (int i = 0; i < inventory_index; i ++) {
 		if (inventory_items [i][0] == 0) {
-			for (int j = i; j < inventory_index - 1; j ++) {
-				strcpy (inventory_items [j], inventory_items [j + 1]);
-				inventory_index --;
+			// There's a gap! shift everything up!
+			for (int j = i + 1; j <= inventory_index; j ++) {
+				strcpy (inventory_items [j - 1], inventory_items [j]);
 			}
+
+			// One menu item less!
+			inventory_index --;
 		}
 	}
 }

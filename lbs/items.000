@@ -1,0 +1,43 @@
+items reset
+
+menu reset
+menu config 10 10 20 14 1
+menu put "Coger cebolla"
+menu put "Coger tomate"
+menu put "Coger revista"
+menu put "Fin"
+
+:menu
+menu run :menuaccion
+go :menu
+
+:menuaccion_coger_cebolla
+items put "cebolla"
+menu remove "Coger cebolla"
+go :menu
+
+:menuaccion_coger_tomate
+items put "tomate"
+menu remove "Coger tomate"
+go :menu
+
+:menuaccion_coger_revista
+items put "revista"
+menu remove "Coger revista"
+go :menu
+
+:menuaccion_fin
+items hasnt "cebolla" :skip_cebolla
+print "Tienes cebolla"
+:skip_cebolla
+
+items hasnt "tomate" :skip_tomate
+print "Tienes tomate"
+:skip_tomate
+
+items hasnt "revista" :skip_revista
+print "Tienes revista"
+:skip_revista
+
+print "Y ya"
+

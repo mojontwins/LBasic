@@ -87,6 +87,7 @@ int buf_get_mouse_b (int button) {
 void buf_setviewport (int y1, int y2) {
 	viewport_y1 = y1;
 	viewport_y2 = y2;
+	buf_y = viewport_y1;
 }
 
 int buf_getviewport_y1 (void) {
@@ -100,6 +101,7 @@ int buf_getviewport_y2 (void) {
 void buf_setmargins (int col1, int col2) {
 	buf_col1 = col1;
 	buf_col2 = col2;
+	buf_x = buf_col1;
 }
 
 void buf_setxy (int x, int y) {
@@ -107,7 +109,7 @@ void buf_setxy (int x, int y) {
 }
 
 void buf_resetxy (void) {
-	buf_x = 0; buf_y = viewport_y1;
+	buf_x = buf_col1; buf_y = viewport_y1;
 }
 
 void buf_setx (int x) {
@@ -242,9 +244,62 @@ void buf_scroll_up (int from, int to) {
 	}
 }
 
+void buf_scroll_up_window (int x1, int y1, int x2, int y2) {
+	if (buf_mode == LS_MODE_TEXT) {
+		// Text mode
+
+		unsigned char *buf = screenbuffer ();
+		int scr_w = screenwidth ();
+		int scr_w_bytes = scr_w * 2;
+		int w = x2 - x1 + 1;
+		int w_bytes = w * 2;
+		char *ptr;
+		int attrib = buf_get_attrib ();
+
+		// Move everything up
+		for (int y = y1; y < y2; y ++) {
+			ptr = buf + y * scr_w_bytes + x1 * 2;
+			memcpy (ptr, ptr + scr_w_bytes, w_bytes);
+		}
+
+		// Clear bottom
+		ptr = buf + y2 * scr_w_bytes + x1 * 2;
+		for (int x = 0; x < w; x ++) {
+			*ptr ++ = 32; *ptr ++ = attrib;
+		}
+	} else {
+		// Graphics mode
+		int x1_p = 8 * x1;
+		int x2_p = 8 * x2 + 7;
+		int y1_p = buf_char_height * y1;
+		int y2_p = buf_char_height * y2 + buf_char_height - 1;
+		int width = 1 + x2_p - x1_p;
+		int height = 1 + y2_p - y1_p - buf_char_height;
+
+		int byte_size = width * height;
+		char *temp_buf = malloc (byte_size);
+
+		// I've checked, blit works up to down, so I can be dirty and do this:
+		blit (
+			x1_p, y1_p, 
+			screenbuffer (), 
+			screenwidth (), screenheight (), 
+			x1_p, y1_p + buf_char_height, 
+			width, height
+		);
+
+		// Clear bottom
+		setcolor (buf_c2);
+		bar (x1_p, y2 * buf_char_height, width, buf_char_height);
+
+		free (temp_buf);
+	}
+}
+
 void buf_scroll_up_if_needed (void) {
 	while (buf_y > viewport_y2) {
-		buf_scroll_up (viewport_y1 + 1, viewport_y2);
+		//buf_scroll_up (viewport_y1 + 1, viewport_y2);
+		buf_scroll_up_window (buf_col1, viewport_y1, buf_col2, viewport_y2);
 		buf_y --;
 	}
 }
@@ -260,8 +315,8 @@ void buf_char (char c) {
 		buf [idx] = c;
 		buf [idx + 1] = buf_get_attrib ();
 
-		buf_x ++; if (buf_x == scr_w) {
-			buf_x = 0;
+		buf_x ++; if (buf_x == buf_col2 + 1) {
+			buf_x = buf_col1;
 			buf_y ++;
 		}
 	} else {
@@ -293,10 +348,10 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll, int char
 
 			if (char_by_char) buf_char_by_char_delay ();
 
-			buf_x ++; if (buf_x == scr_w) {
+			buf_x ++; if (buf_x == buf_col2 + 1) {
 				if (no_break) break;
 				
-				buf_x = 0;
+				buf_x = buf_col1;
 				buf_y ++;
 			}
 		}
@@ -370,8 +425,8 @@ void _buf_wordwrap (char *s, int char_by_char) {
 	}
 
 	buf_y ++;
-	buf_x = 0;
-	buf_scroll_up_if_needed ();
+	buf_x = buf_col1;
+	// buf_scroll_up_if_needed ();
 }
 
 void buf_wordwrap (char *s) {
@@ -398,7 +453,7 @@ void buf_print_ln (char *s) {
 	buf_print (s);
 	if (buf_x != 0) { 
 		buf_y ++;
-		buf_x = 0;
+		buf_x = buf_col1;
 		// buf_scroll_up_if_needed ();
 	}
 }
@@ -436,21 +491,31 @@ void buf_cls (void) {
 
 void buf_clscroll (void) {
 	if (buf_mode == LS_MODE_TEXT) {
-		int i;
+		char *buf = screenbuffer ();
+		char *ptr;
 		int attrib = buf_get_attrib ();
-		int scr_chars = screenwidth () * (viewport_y2 - viewport_y1 + 1);
-		char *buf = screenbuffer () + viewport_y1 * 2 * screenwidth ();
+		int scr_w = screenwidth ();
+		int scr_w_bytes = 2 * scr_w;
+		int w = buf_col2 - buf_col1 + 1;
 
-		for(i = 0; i < scr_chars; i ++) {
-			*buf ++ = 32;
-			*buf ++ = attrib;
+		for (int y = viewport_y1; y <= viewport_y2; y ++) {
+			ptr = buf + y * scr_w_bytes + buf_col1 * 2;
+			for (int x = 0; x < w; x ++) {
+				*ptr ++ = 32; * ptr ++ = attrib;
+			}
 		}
+
 	} else {
 		setcolor (buf_c2);
-		bar (0, buf_char_height * viewport_y1, screenwidth (), buf_char_height * (viewport_y2 - viewport_y1 + 1));
+		bar (
+			buf_col1 * 8, 
+			buf_char_height * viewport_y1, 
+			(1 + buf_col2 - buf_col1) * 8, 
+			buf_char_height * (viewport_y2 - viewport_y1 + 1)
+		);
 	}
 
-	buf_x = 0; buf_y = viewport_y1;
+	buf_x = buf_col1; buf_y = viewport_y1;
 }
 
 void buf_put_string_xy (int x, int y, int c1, int c2, char *s) {
