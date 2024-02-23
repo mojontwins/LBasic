@@ -440,6 +440,15 @@ int backend_menu_run (void) {
 	return backend_menu_selected;
 }
 
+void backend_fancy_font (char *f) {
+	utils_tolower (f);
+	if (strcmp (f, "cga") == 0) {
+		buf_font_cga ();
+	} else if (strcmp (f, "atari") == 0) {
+		buf_font_atari ();
+	}
+}
+
 void backend_shutdown (void) {
 	lstextmode_shutdown ();
 }

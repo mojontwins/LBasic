@@ -293,58 +293,6 @@ void syntax_hightlight (int bkg, unsigned char *s) {
 		buf_print_abs_clip_to_scroll (token);
 	}
 
-	/*
-	int n_tokens;
-	int found_keyword = 0;
-
-	int state = 0; 
-	int l = strlen (s);
-	
-	int chars_to_copy = 0;
-	char temp_buffer[l + 1];
-	char c;
-
-	int temp_index = 0;
-
-	for (int i = 0; i < l; i ++) {
-		c = s [i];
-
-		if (state == 0) {
-			if (c == ' ' || c == '\t') {
-				temp_buffer [temp_index ++] = c;
-			} else {
-				temp_buffer [temp_index] = '\0';
-				temp_index = 0;
-				state = 1;
-
-				buf_color (7, bkg);
-				buf_print_abs_clip_to_scroll (temp_buffer);
-			}
-		}
-
-		if (state == 1) {
-			if (!(c == ' ' || c == '\t' || c == 34)) {
-				temp_buffer [temp_index ++] = c;
-			} else {
-				temp_buffer [temp_index] = '\0';
-				temp_index = 0;
-				state = 2;
-
-				buf_color (find_color (temp_buffer), bkg);
-				buf_print_abs_clip_to_scroll (temp_buffer);
-			}
-		}
-
-		if (state == 2) {
-			temp_buffer [temp_index ++] = c;
-		}
-	}
-
-	temp_buffer [temp_index] = '\0';
-	buf_color (state == 1 ? find_color(temp_buffer) : 7, bkg);
-	buf_print_abs_clip_to_scroll (temp_buffer);
-
-	*/
 	int x = buf_getx (); while (x < 80) {
 		buf_char (' '); x ++;
 	}
@@ -424,8 +372,6 @@ void wizard_text_insert (int *cursor, int draw) {
 	unsigned char *line_pointer;
 	int action = 0;
 
-	// TODO: Parse line so if F4 is pressed in the middle of the string->edit string
-	// Which may be tricky!
 	// From start of the line to cursor, turn on / off "between_quotes", 
 	// If "between quotes" get from-to, copy to new string, pass it, 
 	// Don't forget to free, or use an all-purpose container array.
@@ -434,7 +380,6 @@ void wizard_text_insert (int *cursor, int draw) {
 	//         A       C   B
 	// editable_text = A-B,
 	// line = 0-A, editable_text, B-fin
-
 	
 	int edit = 0;
 

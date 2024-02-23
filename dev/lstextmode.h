@@ -50,3 +50,5 @@ void buf_bulma_lin (char *pic);
 void buf_sve (void);
 void buf_rec (void);
 void lstextmode_shutdown (void);
+void buf_font_atari (void);
+void buf_font_cga (void);

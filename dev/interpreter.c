@@ -328,6 +328,8 @@ int lbasi_run_file (FILE *file) {
 
 		else if (strcmp (command_token, "lin") == 0) {
 			backend_bulma_lin (main_path_spec, get_token (1));
+		} else if (strcmp (command_token, "font") == 0) {
+			backend_fancy_font (get_token (1));
 		}
 
 		// *** MENU ***

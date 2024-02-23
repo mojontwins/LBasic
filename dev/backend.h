@@ -32,3 +32,4 @@ void backend_wordwrap (char *s, int char_by_char);
 void backend_print_ghost (int x, int y, int w, int c1, int c2, char *string);
 void backend_talk_config (int x, int y, int w, int c1, int c2);
 void backend_talk (char *s);
+void backend_fancy_font (char *f);

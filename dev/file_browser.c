@@ -25,7 +25,9 @@ char *get_file_spec (void) {
 }
 
 int get_cwd (char *pBuf, size_t len) {
-	// Code from https://stackoverflow.com/questions/143174/how-do-i-get-the-directory-that-a-program-is-running-from
+	// Code adapted from 
+	// https://stackoverflow.com/questions/143174/how-do-i-get-the-directory-that-a-program-is-running-from
+	
 	int bytes;
 	char *ptr;
 

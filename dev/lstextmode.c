@@ -9,6 +9,7 @@
 #include "keys.h"
 
 #include "ega14.h"
+#include "atari.h"
 
 int buf_x, buf_y;
 int buf_c1, buf_c2;
@@ -21,6 +22,7 @@ int buf_mouse_y = 0;
 
 int buf_char_height = 8;
 int font_ega14;
+int font_atari8x8;
 
 int buf_char_delay = 4;
 int buf_do_delay;
@@ -30,6 +32,8 @@ int buf_size;
 
 void lstextmode_init (void) {
 	buf_setmode (LS_MODE_TEXT);
+	font_ega14 = installuserfont_array (ega14_fnt);
+	font_atari8x8 = installuserfont_array (atari_fnt);
 }
 
 void debuff_keys (void) {
@@ -531,27 +535,38 @@ void buf_put_string_xy (int x, int y, int c1, int c2, char *s) {
 	}
 }
 
+void buf_font_atari (void) {
+	settextstyle (font_atari8x8, 0, 0, 0);
+}
+
+void buf_font_cga (void) {
+	settextstyle (1, 0, 0, 0);
+}
+
 void buf_setmode(int mode) {
 	buf_mode = mode;
 	buf_char_height = 8;
 	switch (buf_mode) {
 		case LS_MODE_GFX:
 			setvideomode (videomode_320x200);
+			settextstyle (1, 0, 0, 0);
 			break;
 		case LS_MODE_GFX_SQ:
 			setvideomode (videomode_320x240);
+			settextstyle (1, 0, 0, 0);
 			break;
 		case LS_MODE_GFX_HIRES:
 			setvideomode (videomode_640x350);
-			font_ega14 = installuserfont_array (ega14_fnt);
 			settextstyle (font_ega14, 0, 0, 0);
 			buf_char_height = 14;
 			break;
 		case LS_MODE_GFX_MED:
 			setvideomode (videomode_640x200);
+			settextstyle (1, 0, 0, 0);
 			break;
 		default:
 			setvideomode (videomode_80x25_9x16);
+			settextstyle (3, 0, 0, 0);
 			break;
 	}
 

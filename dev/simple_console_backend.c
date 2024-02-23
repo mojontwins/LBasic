@@ -243,3 +243,7 @@ void backend_talk (char *s) {
 void backend_bulma_lin (char *pathspec, char *lin) {
 	// NO OP
 }
+
+void backend_fancy_font (char *f) {
+	// NO OP
+}

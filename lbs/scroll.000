@@ -1,5 +1,6 @@
 # Scroll test
-#mode gfx
+mode gfx
+font atari
 viewport 5 9
 margins 10 29
 color 14 1
