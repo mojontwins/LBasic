@@ -34,7 +34,7 @@ int labels_get_filepos (int index);
  * MENUS
  */
 
-#define MAX_MENU_ITEMS 10
+#define MAX_MENU_ITEMS 16
 #define MENU_ITEM_MAX_LENGTH 40
 
 void menu_reset (void);
@@ -66,5 +66,21 @@ int inventory_has_item (unsigned char *item);
 int inventory_find_index (unsigned char *item);
 int inventory_get_items (void);
 unsigned char *inventory_get_item (int index);
+
+/*
+ * EXITS
+ */
+
+#define MAX_EXITS 16
+#define EXIT_TEXT_MAX_LENGTH 40
+#define EXIT_LABEL_MAX_LENGTH 40
+
+void exits_reset (void);
+int exits_add_item (unsigned char *text, unsigned char *label);
+void exits_reorganize (void);
+void exits_delete_item (unsigned char *item);
+int exits_get_options (void);
+unsigned char *exits_get_option_text (int index);
+unsigned char *exits_get_option_label (int index);
 
 #endif

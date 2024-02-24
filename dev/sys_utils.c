@@ -145,7 +145,6 @@ int menu_get_token_type (unsigned char *text) {
 }
 
 void menu_add_item (unsigned char *item, int type) {
-	printf ("ADDING %s %d \n", item, type);
 	menu_items [menu_index].type = type;
 	strcpy (menu_items [menu_index ++].text, item);
 }
@@ -269,3 +268,68 @@ unsigned char *inventory_get_item (int index) {
 	return inventory_items [index];
 }
 
+/*
+ * EXITS
+ */
+
+typedef struct EXIT {
+	unsigned char text [EXIT_TEXT_MAX_LENGTH];
+	unsigned char label [EXIT_LABEL_MAX_LENGTH];
+} EXIT;
+
+EXIT extis_items [MAX_EXITS];
+
+void exits_reset (void) {
+	exits_index = 0;
+	for (int i = 0; i < MAX_EXITS; i ++) {
+		exits_items [exits_index].text [0] = 0;
+	}
+}
+
+int exits_add_item (unsigned char *text, unsigned char *label) {
+	if (exits_index < MAX_EXITS) {
+		strcpy (exits_items [exits_index].text, text);
+		strcpy (exits_items [exits_index].label, label);
+		exits_index ++
+		return 1;
+	}
+
+	return 0;
+}
+
+void exits_reorganize (void) {
+	// Clear gaps in the exits
+
+	for (int i = 0; i < exits_index; i ++) {
+		if (exits_items [i].text [0] == 0) {
+			// There's a gap! shift everything up!
+			for (int j = i + 1; j <= exits_index; j ++) {
+				strcpy (exits_items [j - 1].text, exits_items [j].text);
+				strcpy (exits_items [j - 1].label, exits_items [j].label);
+			}
+
+			// One menu item less!
+			exits_index --;
+		}
+	}
+}
+
+void exits_delete_item (unsigned char *item) {
+	for (int i = 0; i < exits_index; i ++) {
+		if (strcmp (item, exits_items [i].text) == 0) exits_items [i].text [0] = 0;
+	}
+
+	exits_reorganize ();
+}
+
+int exits_get_options (void) {
+	return exits_index;
+}
+
+unsigned char *exits_get_option_text (int index) {
+	return exits_items [index].text;
+}
+
+unsigned char *exits_get_option_label (int index) {
+	return exits_items [index].label;
+}
