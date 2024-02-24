@@ -16,6 +16,7 @@ void backend_init (void);
 void backend_menu_config (int x, int y, int w, int c1, int c2);
 int backend_menu_run (void);
 int backend_inventory_run (void);
+int backend_exits_run (void);
 void backend_menu_set_selected (int selected);
 void backend_pause (void);
 void backend_setxy (int x, int y);

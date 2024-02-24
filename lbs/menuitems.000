@@ -1,5 +1,6 @@
 items reset
 menu reset
+exits reset
 
 menu config 10 10 20 14 1
 
@@ -7,9 +8,13 @@ items put "cebolla"
 items put "revista"
 items put "perro"
 
+exits put "norte" :norte
+exits put "escaleras" :escaleras
+
 menu put "mirar"
 menu put "pensar"
 menu put "usar" items
+menu put "salir" exits
 menu put "fin"
 
 :menu
@@ -35,6 +40,13 @@ go :menu
 :menuaccion_item_perro
 print "GUAU"
 go :menu
+
+:norte
+print "Y se fue por el norte"
+go :menuaccion_fin
+
+:escaleras
+print "Y se fue por las escaleras"
 
 :menuaccion_fin
 print "ADIOS"

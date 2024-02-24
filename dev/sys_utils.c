@@ -140,6 +140,7 @@ void menu_reset (void) {
 
 int menu_get_token_type (unsigned char *text) {
 	if (strcmp (text, "items") == 0) return MENU_ITEM_TYPE_ITEMS;
+	if (strcmp (text, "exits") == 0) return MENU_ITEM_TYPE_EXITS;
 
 	return MENU_ITEM_TYPE_NORMAL;
 }
@@ -277,7 +278,8 @@ typedef struct EXIT {
 	unsigned char label [EXIT_LABEL_MAX_LENGTH];
 } EXIT;
 
-EXIT extis_items [MAX_EXITS];
+EXIT exits_items [MAX_EXITS];
+int exits_index;
 
 void exits_reset (void) {
 	exits_index = 0;
@@ -290,7 +292,7 @@ int exits_add_item (unsigned char *text, unsigned char *label) {
 	if (exits_index < MAX_EXITS) {
 		strcpy (exits_items [exits_index].text, text);
 		strcpy (exits_items [exits_index].label, label);
-		exits_index ++
+		exits_index ++;
 		return 1;
 	}
 

@@ -9,8 +9,9 @@
 [/] Legacy Lbasic 8
 [ ] GOSUB
 [X] Autogo
-[ ] Inventario sencillo ~ parecido a menús, añadiendo Tokens a una lista
+[X] Inventario sencillo ~ parecido a menús, añadiendo Tokens a una lista
 [X] Bulma "draw" support (LIN)
+[ ] caracter parpadeante en pulsa una tecla: indicator off|on x y c1 c2 c
 
 # Editor
 

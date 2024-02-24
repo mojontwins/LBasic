@@ -342,16 +342,16 @@ Estos son los comandos que controlan los menús de opciones con GOTO automático
 Borra todas las opciones del menú.
 
 ```
-	menu add|pon "item"
+	menu add|pon "texto"
 ```
 
-Añade al menú el item de texto `item`
+Añade al menú la opción con texto `texto`
 
 ```
-	menu remove|quita "item"
+	menu remove|quita "texto"
 ```
 
-Quita del menú el item de texto `item`
+Quita del menú el la opción con texto `texto`
 
 ```
 	menu config x y w c1 c2
@@ -419,17 +419,36 @@ Salta a `:etiqueta` si `item` NO está en el inventario.
 ## Menú con items
 
 ```
-	menu items
-```
-
-Añadirá todos los items al menú, tal y como esté, como opciones separadas.
-
-```
-	menu "texto" items
+	menu add|pon "texto" items
 ```
 
 Añade una opción al menú con `texto` que, al seleccionarla, desplegará un menú con los items. La etiqueta generada finalmente por `menu run :label` será `:label_usar_ITEM`, con `ITEM` el item que se seleccione en el segundo menú.
 
+## Menú con salidas
+
+```
+	exits reset|limpia
+```
+
+Limpia las salidas
+
+```
+	exits put|pon "texto" :etiqueta
+```
+
+Añade una salida con texto `texto` que llevará a `:etiqueta`.
+
+```
+	exits remove|quita "texto"
+```
+
+Quita la salida con texto `texto`.
+
+```
+	menu pon|put "texto" exits
+```
+
+Añade una opción al menú con `texto` que, al seleccionarla, desplegará un menú con las salidas. La etiqueta generada finalmente será la etiqueta asociada a la salida.
 
 ## Talk
 

@@ -245,6 +245,18 @@ int backend_inventory_run (void) {
 	return res - 1;
 }
 
+int backend_exits_run (void) {
+	// Very simple implementation
+	printf ("EXITS: %d\n", exits_get_options ());
+	for (int i = 0; i < exits_get_options (); i ++) {
+		printf ("%d. %s\n", i + 1, exits_get_option_text (i));
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
+}
+
 void backend_talk_config (int x, int y, int w, int c1, int c2) {
 	// NO OP
 }

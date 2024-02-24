@@ -375,6 +375,45 @@ void backend_menu_set_selected (int selected) {
 	backend_menu_selected = selected;
 }
 
+void backend_menu_display (unsigned char* (*get_option) (int), int backend_menu_options) {
+	for (int i = 0; i < backend_menu_options; i ++) {
+		buf_setxy (backend_menu_x + 1, backend_menu_y + 1 + i);
+		if (i == backend_menu_selected) {
+			buf_color (backend_menu_c2, backend_menu_c1);
+		} else {
+			buf_color (backend_menu_c1, backend_menu_c2);
+		}
+		
+		unsigned char *option = get_option (i);
+		int l = strlen (option);
+		for (int j = 0; j < backend_menu_w - 2; j ++) {
+			buf_char (j < l ? option [j] : ' ');
+		}
+	}
+}
+
+void backend_menu_keys (int *backend_menu_selected, int *done, int backend_menu_options) {
+	keys_read ();
+	int pad_this_frame = keys_get_this_frame ();
+
+	if (pad_this_frame & MT_KEY_UP) {
+		if (*backend_menu_selected > 0) *backend_menu_selected = *backend_menu_selected - 1;
+	}
+
+	if (pad_this_frame & MT_KEY_DOWN) {
+		if (*backend_menu_selected < backend_menu_options - 1) *backend_menu_selected  = *backend_menu_selected + 1;
+	}
+
+	if (pad_this_frame & MT_KEY_ENTER) {
+		*done = 1;
+	}
+
+	if (pad_this_frame & MT_KEY_ESC) {
+		*done = 1;
+		*backend_menu_selected = -1;
+	}
+}
+
 int backend_menu_run (void) {
 	int prev_x = buf_getx ();
 	int prev_y = buf_gety (); 
@@ -393,42 +432,10 @@ int backend_menu_run (void) {
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		for (int i = 0; i < backend_menu_options; i ++) {
-			buf_setxy (backend_menu_x + 1, backend_menu_y + 1 + i);
-			if (i == backend_menu_selected) {
-				buf_color (backend_menu_c2, backend_menu_c1);
-			} else {
-				buf_color (backend_menu_c1, backend_menu_c2);
-			}
-			
-			unsigned char *option = menu_get_option_text (i);
-			int l = strlen (option);
-			for (int j = 0; j < backend_menu_w - 2; j ++) {
-				buf_char (j < l ? option [j] : ' ');
-			}
-		}
+		backend_menu_display (menu_get_option_text, backend_menu_options);
 
 		// Read keys
-		keys_read ();
-		int pad_this_frame = keys_get_this_frame ();
-
-		if (pad_this_frame & MT_KEY_UP) {
-			if (backend_menu_selected > 0) backend_menu_selected --;
-		}
-
-		if (pad_this_frame & MT_KEY_DOWN) {
-			if (backend_menu_selected < backend_menu_options - 1) backend_menu_selected ++;
-		}
-
-		if (pad_this_frame & MT_KEY_ENTER) {
-			done = 1;
-		}
-
-		if (pad_this_frame & MT_KEY_ESC) {
-			done = 1;
-			backend_menu_selected = -1;
-		}
-
+		backend_menu_keys (&backend_menu_selected, &done, backend_menu_options);
 	}
 
 	debuff_keys ();
@@ -458,42 +465,43 @@ int backend_inventory_run (void) {
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		for (int i = 0; i < backend_inventory_items; i ++) {
-			buf_setxy (backend_menu_x + 1, backend_menu_y + 1 + i);
-			if (i == backend_menu_selected) {
-				buf_color (backend_menu_c2, backend_menu_c1);
-			} else {
-				buf_color (backend_menu_c1, backend_menu_c2);
-			}
-			
-			unsigned char *option = inventory_get_item (i);
-			int l = strlen (option);
-			for (int j = 0; j < backend_menu_w - 2; j ++) {
-				buf_char (j < l ? option [j] : ' ');
-			}
-		}
+		backend_menu_display (inventory_get_item, backend_inventory_items);
 
 		// Read keys
-		keys_read ();
-		int pad_this_frame = keys_get_this_frame ();
+		backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items);
+	}
 
-		if (pad_this_frame & MT_KEY_UP) {
-			if (backend_menu_selected > 0) backend_menu_selected --;
-		}
+	debuff_keys ();
 
-		if (pad_this_frame & MT_KEY_DOWN) {
-			if (backend_menu_selected < backend_inventory_items - 1) backend_menu_selected ++;
-		}
+	buf_rec ();
+	buf_setxy (prev_x, prev_y);
+	buf_color (prev_c1, prev_c2);
 
-		if (pad_this_frame & MT_KEY_ENTER) {
-			done = 1;
-		}
+	return backend_menu_selected;
+}
 
-		if (pad_this_frame & MT_KEY_ESC) {
-			done = 1;
-			backend_menu_selected = -1;
-		}
+int backend_exits_run (void) {
+	int prev_x = buf_getx ();
+	int prev_y = buf_gety (); 
+	int prev_c1 = buf_getc1 ();
+	int prev_c2 = buf_getc2 ();
+	buf_sve ();
 
+	int done = 0;
+	int backend_exits_items = exits_get_options ();
+	if (backend_menu_selected >= backend_exits_items) backend_menu_selected = backend_exits_items - 1;
+
+	// Paint box
+	buf_color (backend_menu_c1, backend_menu_c2);
+	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_exits_items);
+
+	keys_read ();
+	while (!done && !buf_heartbeat ()) {
+		// Paint options (w/selected)
+		backend_menu_display (exits_get_option_text, backend_exits_items);
+
+		// Read keys
+		backend_menu_keys (&backend_menu_selected, &done, backend_exits_items);
 	}
 
 	debuff_keys ();

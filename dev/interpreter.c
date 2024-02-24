@@ -366,6 +366,7 @@ int lbasi_run_file (FILE *file) {
 
 				if (selected >= 0) {
 					int type = menu_get_option_type (selected);
+					int submenu;
 
 					strcpy (temp_buffer, get_token (2));
 					strcat (temp_buffer, "_");
@@ -374,13 +375,22 @@ int lbasi_run_file (FILE *file) {
 						case MENU_ITEM_TYPE_ITEMS:
 							strcat (temp_buffer, "item_");
 
-							int item_selected = backend_inventory_run ();
-
-							if (selected >= 0) {
-								strcat (temp_buffer, inventory_get_item (item_selected));
+							submenu = backend_inventory_run ();
+							if (submenu >= 0) {
+								strcat (temp_buffer, inventory_get_item (submenu));
 							}
 
 							break;
+
+						case MENU_ITEM_TYPE_EXITS:
+
+							submenu = backend_exits_run ();
+							if (submenu >= 0) {
+								strcpy (temp_buffer, exits_get_option_label (submenu));
+							}
+
+							break;
+
 						default:
 							strcat (temp_buffer, menu_get_option_text (selected));
 
@@ -420,6 +430,25 @@ int lbasi_run_file (FILE *file) {
 				if (!inventory_has_item (get_token (2))) {
 					lbasi_goto (file, get_token (3));
 				}
+
+			}
+		}
+
+		// *** EXITS ***
+
+		else if (strcmp (command_token, "exits") == 0) {
+			char *items_command = get_token (1);
+			utils_tolower (items_command);
+
+			if (strcmp (items_command, "reset") == 0 || strcmp (items_command, "limpia") == 0) {
+				exits_reset ();
+			
+			} else if (strcmp (items_command, "put") == 0 || strcmp (items_command, "pon") == 0) {
+				// TODO : ERROR HANDLE THIS
+				exits_add_item (get_token (2), get_token (3));
+
+			} else if (strcmp (items_command, "remove") == 0 || strcmp (items_command, "quita") == 0) {
+				exits_delete_item (get_token (2));
 
 			}
 		}
@@ -572,6 +601,9 @@ int lbasi_run_tmp (char *tmp, char *spec) {
 
 	flags_clear ();
 	menu_reset ();
+	inventory_reset ();
+	exits_reset ();
+	
 	attempts = DEFAULT_ATTEMPTS;
 
 	FILE *file;

@@ -54,6 +54,7 @@ int menu_get_option_type (int index);
 
 #define MENU_ITEM_TYPE_NORMAL 0
 #define MENU_ITEM_TYPE_ITEMS 1
+#define MENU_ITEM_TYPE_EXITS 2
 
 void inventory_reset (void);
 void inventory_set_max_items (int max_items);
