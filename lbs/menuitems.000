@@ -1,0 +1,41 @@
+items reset
+menu reset
+
+menu config 10 10 20 14 1
+
+items put "cebolla"
+items put "revista"
+items put "perro"
+
+menu put "mirar"
+menu put "pensar"
+menu put "usar" items
+menu put "fin"
+
+:menu
+menu run :menuaccion
+go :menu
+
+:menuaccion_mirar
+print "MIRAR"
+go :menu
+
+:menuaccion_pensar
+print "PENSAR"
+go :menu
+
+:menuaccion_item_cebolla
+print "Cogio la cebolla"
+go :menu
+
+:menuaccion_item_revista
+print "Cogio la revista"
+go :menu
+
+:menuaccion_item_perro
+print "GUAU"
+go :menu
+
+:menuaccion_fin
+print "ADIOS"
+

@@ -416,6 +416,21 @@ Salta a `:etiqueta` si `item` está en en inventario.
 
 Salta a `:etiqueta` si `item` NO está en el inventario.
 
+## Menú con items
+
+```
+	menu items
+```
+
+Añadirá todos los items al menú, tal y como esté, como opciones separadas.
+
+```
+	menu "texto" items
+```
+
+Añade una opción al menú con `texto` que, al seleccionarla, desplegará un menú con los items. La etiqueta generada finalmente por `menu run :label` será `:label_usar_ITEM`, con `ITEM` el item que se seleccione en el segundo menú.
+
+
 ## Talk
 
 Una pequeña utilidad para cuando hagas visual novels. Puedes poner quien habla fuera de la zona de texto que hace scroll, lo que viene muy bien

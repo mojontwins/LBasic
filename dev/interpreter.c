@@ -343,7 +343,10 @@ int lbasi_run_file (FILE *file) {
 				backend_menu_set_selected (0);
 
 			} else if (strcmp (menu_command, "put") == 0 || strcmp (menu_command, "pon") == 0) {
-				if (menu_get_options () < MAX_MENU_ITEMS) menu_add_item (get_token (2));
+				if (
+					menu_get_options () < MAX_MENU_ITEMS && 
+					strlen (get_token (2)) < MENU_ITEM_MAX_LENGTH
+				) menu_add_item (get_token (2), menu_get_token_type (get_token (3)));
 
 			} else if (strcmp (menu_command, "remove") == 0 || strcmp (menu_command, "quita") == 0) {
 				menu_delete_item (get_token (2));
@@ -362,9 +365,27 @@ int lbasi_run_file (FILE *file) {
 				int selected = backend_menu_run ();				
 
 				if (selected >= 0) {
+					int type = menu_get_option_type (selected);
+
 					strcpy (temp_buffer, get_token (2));
 					strcat (temp_buffer, "_");
-					strcat (temp_buffer, menu_get_option (selected));
+
+					switch (type) {
+						case MENU_ITEM_TYPE_ITEMS:
+							strcat (temp_buffer, "item_");
+
+							int item_selected = backend_inventory_run ();
+
+							if (selected >= 0) {
+								strcat (temp_buffer, inventory_get_item (item_selected));
+							}
+
+							break;
+						default:
+							strcat (temp_buffer, menu_get_option_text (selected));
+
+							break;
+					}
 
 					lbasi_goto (file, temp_buffer);
 				}

@@ -123,28 +123,42 @@ int labels_get_filepos (int index) {
  * MENUS
  */
 
-unsigned char menu_items [MAX_MENU_ITEMS][MENU_ITEM_MAX_LENGTH];
+typedef struct MENU_ITEM {
+	unsigned char text [MENU_ITEM_MAX_LENGTH];
+	int type;
+} MENU_ITEM;
+
+MENU_ITEM menu_items [MAX_MENU_ITEMS];
 int menu_index = 0;
 
 void menu_reset (void) {
 	menu_index = 0;
 	for (int i = 0; i < MAX_MENU_ITEMS; i ++) {
-		menu_items [i][0] = 0;
+		menu_items [i].text [0] = 0;
 	}
 }
 
-void menu_add_item (unsigned char *item) {
-	strcpy (menu_items [menu_index ++], item);
+int menu_get_token_type (unsigned char *text) {
+	if (strcmp (text, "items") == 0) return MENU_ITEM_TYPE_ITEMS;
+
+	return MENU_ITEM_TYPE_NORMAL;
+}
+
+void menu_add_item (unsigned char *item, int type) {
+	printf ("ADDING %s %d \n", item, type);
+	menu_items [menu_index].type = type;
+	strcpy (menu_items [menu_index ++].text, item);
 }
 
 void menu_reorganize (void) {
 	// Clear gaps in the menu
 
 	for (int i = 0; i < menu_index; i ++) {
-		if (menu_items [i][0] == 0) {
+		if (menu_items [i].text [0] == 0) {
 			// There's a gap! shift everything up!
 			for (int j = i + 1; j <= menu_index; j ++) {
-				strcpy (menu_items [j - 1], menu_items [j]);
+				strcpy (menu_items [j - 1].text, menu_items [j].text);
+				menu_items [j - 1].type = menu_items [i].type;
 			}
 
 			// One menu item less!
@@ -155,7 +169,7 @@ void menu_reorganize (void) {
 
 void menu_delete_item (unsigned char *item) {
 	for (int i = 0; i < menu_index; i ++) {
-		if (strcmp (item, menu_items [i]) == 0) menu_items [i][0] = 0;
+		if (strcmp (item, menu_items [i].text) == 0) menu_items [i].text [0] = 0;
 	}
 }
 
@@ -163,8 +177,12 @@ int menu_get_options (void) {
 	return menu_index;
 }
 
-unsigned char *menu_get_option (int index) {
-	return menu_items [index];
+unsigned char *menu_get_option_text (int index) {
+	return menu_items [index].text;
+}
+
+int menu_get_option_type (int index) {
+	return menu_items [index].type;
 }
 
 /*
@@ -242,3 +260,12 @@ int inventory_find_index (unsigned char *item) {
 
 	return -1;
 }
+
+int inventory_get_items (void) {
+	return inventory_index;
+}
+
+unsigned char *inventory_get_item (int index) {
+	return inventory_items [index];
+}
+

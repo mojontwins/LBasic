@@ -401,7 +401,7 @@ int backend_menu_run (void) {
 				buf_color (backend_menu_c1, backend_menu_c2);
 			}
 			
-			unsigned char *option = menu_get_option (i);
+			unsigned char *option = menu_get_option_text (i);
 			int l = strlen (option);
 			for (int j = 0; j < backend_menu_w - 2; j ++) {
 				buf_char (j < l ? option [j] : ' ');
@@ -418,6 +418,71 @@ int backend_menu_run (void) {
 
 		if (pad_this_frame & MT_KEY_DOWN) {
 			if (backend_menu_selected < backend_menu_options - 1) backend_menu_selected ++;
+		}
+
+		if (pad_this_frame & MT_KEY_ENTER) {
+			done = 1;
+		}
+
+		if (pad_this_frame & MT_KEY_ESC) {
+			done = 1;
+			backend_menu_selected = -1;
+		}
+
+	}
+
+	debuff_keys ();
+
+	buf_rec ();
+	buf_setxy (prev_x, prev_y);
+	buf_color (prev_c1, prev_c2);
+
+	return backend_menu_selected;
+}
+
+int backend_inventory_run (void) {
+	int prev_x = buf_getx ();
+	int prev_y = buf_gety (); 
+	int prev_c1 = buf_getc1 ();
+	int prev_c2 = buf_getc2 ();
+	buf_sve ();
+
+	int done = 0;
+	int backend_inventory_items = inventory_get_items ();
+	if (backend_menu_selected >= backend_inventory_items) backend_menu_selected = backend_inventory_items - 1;
+
+	// Paint box
+	buf_color (backend_menu_c1, backend_menu_c2);
+	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_inventory_items);
+
+	keys_read ();
+	while (!done && !buf_heartbeat ()) {
+		// Paint options (w/selected)
+		for (int i = 0; i < backend_inventory_items; i ++) {
+			buf_setxy (backend_menu_x + 1, backend_menu_y + 1 + i);
+			if (i == backend_menu_selected) {
+				buf_color (backend_menu_c2, backend_menu_c1);
+			} else {
+				buf_color (backend_menu_c1, backend_menu_c2);
+			}
+			
+			unsigned char *option = inventory_get_item (i);
+			int l = strlen (option);
+			for (int j = 0; j < backend_menu_w - 2; j ++) {
+				buf_char (j < l ? option [j] : ' ');
+			}
+		}
+
+		// Read keys
+		keys_read ();
+		int pad_this_frame = keys_get_this_frame ();
+
+		if (pad_this_frame & MT_KEY_UP) {
+			if (backend_menu_selected > 0) backend_menu_selected --;
+		}
+
+		if (pad_this_frame & MT_KEY_DOWN) {
+			if (backend_menu_selected < backend_inventory_items - 1) backend_menu_selected ++;
 		}
 
 		if (pad_this_frame & MT_KEY_ENTER) {

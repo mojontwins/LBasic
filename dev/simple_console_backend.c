@@ -223,8 +223,21 @@ void backend_menu_set_selected (int selected) {
 
 int backend_menu_run (void) {
 	// Very simple implementation
+	printf ("MENU OPTIONS: %d\n", menu_get_options ());
 	for (int i = 0; i < menu_get_options (); i ++) {
-		printf ("%d. %s\n", i + 1, menu_get_option (i));		
+		printf ("%d. %s\n", i + 1, menu_get_option_text (i));		
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
+}
+
+int backend_inventory_run (void) {
+	// Very simple implementation
+	printf ("INVENTORY ITEMS: %d\n", inventory_get_items ());
+	for (int i = 0; i < inventory_get_items (); i ++) {
+		printf ("%d. %s\n", i + 1, inventory_get_item (i));
 	}
 
 	int res = backend_read_option (10);
