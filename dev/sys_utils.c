@@ -337,6 +337,62 @@ unsigned char *exits_get_option_label (int index) {
 }
 
 /*
+ * ACTIONS
+ */
+
+unsigned char actions_text [MAX_ACTIONS][ACTIONS_MAX_LENGTH];
+int actions_index;
+
+void actions_reset (void) {
+	actions_index = 0;
+	for (int i = 0; i < MAX_ACTIONS; i ++) {
+		actions_text [i][0] = 0;
+	}
+}
+
+int actions_add_item (unsigned char *text) {
+	if (actions_index < MAX_ACTIONS) {
+		strcpy (actions_text [actions_index], text);
+		actions_index ++;
+		return 1;
+	}
+
+	return 0;
+}
+
+void actions_reorganize (void) {
+	// Clear gaps in the actions
+
+	for (int i = 0; i < actions_index; i ++) {
+		if (actions_text [i][0] == 0) {
+			// There's a gap! shift everything up!
+			for (int j = i + 1; j <= actions_index; j ++) {
+				strcpy (actions_text [j - 1], actions_text [j]);
+			}
+
+			// One menu item less!
+			actions_index --;
+		}
+	}
+}
+
+void actions_delete_item (unsigned char *item) {
+	for (int i = 0; i < actions_index; i ++) {
+		if (strcmp (item, actions_text [i]) == 0) actions_text [i][0] = 0;
+	}
+
+	actions_reorganize ();
+}
+
+int actions_get_actions (void) {
+	return actions_index;
+}
+
+unsigned char *actions_get_action (int index) {
+	return actions_text [index];
+}
+
+/*
  * ZONES
  */
 
@@ -355,18 +411,18 @@ int zones_index;
 void zones_reset (void) {
 	zones_index = 0;
 	for (int i = 0; i < MAX_ZONES; i ++) {
-		zones_items [i].text [0] = 0;
+		zones [i].text [0] = 0;
 	}
 }
 
 int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type) {
 	if (zones_index < MAX_ZONES) {
-		strcpy (zones_items [zones_index].text, text);
-		zones [items_index].x1 = x1;
-		zones [items_index].y1 = y1;
-		zones [items_index].x2 = x2;
-		zones [items_index].y2 = y2;
-		zones [items_index].type = type;
+		strcpy (zones [zones_index].text, text);
+		zones [zones_index].x1 = x1;
+		zones [zones_index].y1 = y1;
+		zones [zones_index].x2 = x2;
+		zones [zones_index].y2 = y2;
+		zones [zones_index].type = type;
 		zones_index ++;
 		return 1;
 	}
@@ -378,10 +434,10 @@ void zones_reorganize (void) {
 	// Clear gaps in the zones
 
 	for (int i = 0; i < zones_index; i ++) {
-		if (zones_items [i].text [0] == 0) {
+		if (zones [i].text [0] == 0) {
 			// There's a gap! shift everything up!
 			for (int j = i + 1; j <= zones_index; j ++) {
-				strcpy (zones_items [j - 1].text, zones_items [j].text);
+				strcpy (zones [j - 1].text, zones [j].text);
 				zones [j - 1].x1 = zones [j].x1;
 				zones [j - 1].y1 = zones [j].y1;
 				zones [j - 1].x2 = zones [j].x2;
@@ -397,13 +453,13 @@ void zones_reorganize (void) {
 
 void zones_delete_item (unsigned char *item) {
 	for (int i = 0; i < zones_index; i ++) {
-		if (strcmp (item, zones_items [i].text) == 0) zones_items [i].text [0] = 0;
+		if (strcmp (item, zones [i].text) == 0) zones [i].text [0] = 0;
 	}
 
 	zones_reorganize ();
 }
 
-int zones_get_options (void) {
+int zones_get_zones (void) {
 	return zones_index;
 }
 
@@ -432,5 +488,5 @@ int zones_get_token_type (unsigned char *text) {
 	if (strcmp (text, "items") == 0) return ZONE_TYPE_ITEMS;
 	if (strcmp (text, "actions") == 0) return ZONE_TYPE_ACTIONS;
 
-	return ZONES_TYPE_NORMAL;
+	return ZONE_TYPE_NORMAL;
 }

@@ -257,6 +257,30 @@ int backend_exits_run (void) {
 	return res - 1;
 }
 
+int backend_actions_run (void) {
+	// Very simple implementation
+	printf ("EXITS: %d\n", actions_get_actions ());
+	for (int i = 0; i < actions_get_actions (); i ++) {
+		printf ("%d. %s\n", i + 1, actions_get_action (i));
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
+}
+
+int backend_zones_run (void) {
+	// Very simple implementation
+	printf ("EXITS: %d\n", zones_get_zones ());
+	for (int i = 0; i < zones_get_zones (); i ++) {
+		printf ("%d. %s\n", i + 1, zones_get_text (i));
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
+}
+
 void backend_talk_config (int x, int y, int w, int c1, int c2) {
 	// NO OP
 }

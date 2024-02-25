@@ -1,4 +1,4 @@
-//#define DEBUG
+º//#define DEBUG
 
 #include <stdio.h>
 #include <string.h>
@@ -523,6 +523,14 @@ int backend_exits_run (void) {
 	buf_color (prev_c1, prev_c2);
 
 	return backend_menu_selected;
+}
+
+int backend_actions_run (void) {
+	// Display menu
+}
+
+int backend_zones_run (void) {
+	// Read mouse, show info, register zone click
 }
 
 void backend_fancy_font (char *f) {
