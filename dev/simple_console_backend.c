@@ -269,6 +269,10 @@ void backend_bulma_lin (char *pathspec, char *lin) {
 	// NO OP
 }
 
+void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
+	// NO OP
+}
+
 void backend_fancy_font (char *f) {
 	// NO OP
 }

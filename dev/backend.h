@@ -11,6 +11,7 @@ void backend_draw (char *string);
 int backend_get_break (void);
 void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal);
 void backend_bulma_lin (char *pathspec, char *lin);
+void backend_bulma_pix (char *pathspec, char *lin, int dbl, int load_pal);
 int backend_heartbeat (void);
 void backend_init (void);
 void backend_menu_config (int x, int y, int w, int c1, int c2);

@@ -310,6 +310,16 @@ void backend_bulma_lin (char *pathspec, char *lin) {
 	free (fullpath);
 }
 
+void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
+	char *fullpath = compute_full_path (pathspec, pix);
+
+	if (buf_getmode () != LS_MODE_TEXT) {
+		buf_bulma_pix (fullpath, dbl, load_pal);
+	}
+
+	free (fullpath);
+}
+
 void backend_wait_frames (int frames) {
 	while (!backend_heartbeat () && frames --) {
 		int c = *readchars ();
@@ -340,6 +350,8 @@ void backend_set_mode (char *mode) {
 		buf_setmode (LS_MODE_GFX_MED);
 	} else if (strcmp (mode, "gfx_hi") == 0) {
 		buf_setmode (LS_MODE_GFX_HIRES);
+	} else if (strcmp (mode, "gfx_dbl") == 0) {
+		buf_setmode (LS_MODE_GFX_DBL);
 	}
 }
 

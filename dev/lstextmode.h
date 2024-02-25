@@ -3,6 +3,7 @@
 #define LS_MODE_GFX_SQ		2
 #define LS_MODE_GFX_HIRES	3
 #define LS_MODE_GFX_MED		4
+#define LS_MODE_GFX_DBL		5
 
 void lstextmode_init (void);
 void debuff_keys (void);
@@ -39,6 +40,7 @@ void buf_setmode (int mode);
 int buf_getmode (void);
 void buf_pause (void);
 void buf_gif_at (char *gif, int x, int y, int do_setpal);
+void buf_bulma_pix (char *pix, int dbl, int do_setpal);
 void buf_textmode_pic (char *pic);
 void buf_box (int x1, int x2, int y1, int y2);
 int buf_get_mouse_x (void);

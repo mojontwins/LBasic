@@ -564,6 +564,11 @@ void buf_setmode(int mode) {
 			setvideomode (videomode_640x200);
 			settextstyle (1, 0, 0, 0);
 			break;
+		case LS_MODE_GFX_DBL:
+			setvideomode (videomode_640x400);
+			settextstyle (2, 0, 0, 0);
+			buf_char_height = 16;
+			break;
 		default:
 			setvideomode (videomode_80x25_9x16);
 			settextstyle (3, 0, 0, 0);
@@ -641,6 +646,55 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 
 	free (gif_buffer);
 	free (pal_buffer);
+}
+
+// Assumes compatible video mode!
+void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
+	char *pix_buffer = malloc (8 + 64000 + 768);
+	FILE *pf = fopen (pix, "rb");
+	unsigned char *buf = screenbuffer ();
+	int width = screenwidth ();
+
+	if (dbl && width != 640) dbl = 0;
+
+	if (pf) {
+		fread (pix_buffer, 1, sizeof (pix_buffer), pf);
+
+		if (do_setpal) {
+			char *pal_ptr = pix_buffer + 8 + 64000;
+			int r, g, b;
+			for (int i = 0; i < 256; i ++) {
+				r = (int) *pal_ptr ++;
+				g = (int) *pal_ptr ++;
+				b = (int) *pal_ptr ++;
+				setpal (i, r, g, b);
+			}
+		}
+
+		if (dbl) {
+			unsigned char *ptr = pix_buffer + 8;
+			int x = 0; int ofs = 0;
+			for (int i = 0; i < 64000; i ++) {
+				unsigned char c = *ptr ++;
+				buf [ofs + x] = c;
+				buf [ofs + x + 1] = c;
+				buf [ofs + width + x] = c;
+				buf [ofs + width + x + 1] = c;
+				x += 2;
+				if (x == width) {
+					x = 0; ofs += width + width;
+				}
+			}
+		} else {
+			// Just copy raw
+			memcpy (buf, pix_buffer + 8, 64000);
+		}
+
+		fclose (pf);
+	}
+
+
+	free (pix_buffer);
 }
 
 void buf_textmode_pic (char *pic) {
