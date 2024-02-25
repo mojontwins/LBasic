@@ -196,7 +196,7 @@ int inventory_max_items = MAX_INVENTORY_ITEMS;
 void inventory_reset (void) {
 	inventory_index = 0;
 	for (int i = 0; i < MAX_INVENTORY_ITEMS; i ++) {
-		inventory_items [inventory_index][0] = 0;
+		inventory_items [i][0] = 0;
 	}
 }
 
@@ -284,7 +284,7 @@ int exits_index;
 void exits_reset (void) {
 	exits_index = 0;
 	for (int i = 0; i < MAX_EXITS; i ++) {
-		exits_items [exits_index].text [0] = 0;
+		exits_items [i].text [0] = 0;
 	}
 }
 
@@ -334,4 +334,103 @@ unsigned char *exits_get_option_text (int index) {
 
 unsigned char *exits_get_option_label (int index) {
 	return exits_items [index].label;
+}
+
+/*
+ * ZONES
+ */
+
+typedef struct ZONE {
+	char text [ZONE_TEXT_MAX_LENGTH];
+	int x1;
+	int y1;
+	int x2;
+	int y2;
+	int type;
+} ZONE;
+
+ZONE zones [MAX_ZONES];
+int zones_index;
+
+void zones_reset (void) {
+	zones_index = 0;
+	for (int i = 0; i < MAX_ZONES; i ++) {
+		zones_items [i].text [0] = 0;
+	}
+}
+
+int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type) {
+	if (zones_index < MAX_ZONES) {
+		strcpy (zones_items [zones_index].text, text);
+		zones [items_index].x1 = x1;
+		zones [items_index].y1 = y1;
+		zones [items_index].x2 = x2;
+		zones [items_index].y2 = y2;
+		zones [items_index].type = type;
+		zones_index ++;
+		return 1;
+	}
+
+	return 0;
+}
+
+void zones_reorganize (void) {
+	// Clear gaps in the zones
+
+	for (int i = 0; i < zones_index; i ++) {
+		if (zones_items [i].text [0] == 0) {
+			// There's a gap! shift everything up!
+			for (int j = i + 1; j <= zones_index; j ++) {
+				strcpy (zones_items [j - 1].text, zones_items [j].text);
+				zones [j - 1].x1 = zones [j].x1;
+				zones [j - 1].y1 = zones [j].y1;
+				zones [j - 1].x2 = zones [j].x2;
+				zones [j - 1].y2 = zones [j].y2;
+				zones [j - 1].type = zones [j].type;
+			}
+
+			// One menu item less!
+			zones_index --;
+		}
+	}
+}
+
+void zones_delete_item (unsigned char *item) {
+	for (int i = 0; i < zones_index; i ++) {
+		if (strcmp (item, zones_items [i].text) == 0) zones_items [i].text [0] = 0;
+	}
+
+	zones_reorganize ();
+}
+
+int zones_get_options (void) {
+	return zones_index;
+}
+
+char *zones_get_text (int index) {
+	return zones [index].text;
+}
+
+int zones_find (int x, int y) {
+	for (int i = 0; i < zones_index; i ++) {
+		if (
+			x >= zones [i].x1 && y <= zones [i].x2 &&
+			y >= zones [i].y1 && y <= zones [i].y2
+		) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+int zones_get_type (int index) {
+	return zones [index].type;
+}
+
+int zones_get_token_type (unsigned char *text) {
+	if (strcmp (text, "items") == 0) return ZONE_TYPE_ITEMS;
+	if (strcmp (text, "actions") == 0) return ZONE_TYPE_ACTIONS;
+
+	return ZONES_TYPE_NORMAL;
 }

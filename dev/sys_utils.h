@@ -84,4 +84,24 @@ int exits_get_options (void);
 unsigned char *exits_get_option_text (int index);
 unsigned char *exits_get_option_label (int index);
 
+/*
+ * ZONES
+ */
+
+#define MAX_ZONES 32
+#define ZONE_TEXT_MAX_LENGTH 40
+
+#define ZONE_TYPE_NORMAL 0
+#define ZONE_TYPE_ITEMS 1
+#define ZONE_TYPE_ACTIONS 3
+
+void zones_reset (void);
+int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type);
+void zones_reorganize (void);
+void zones_delete_item (unsigned char *item);
+int zones_get_options (void);
+char *zones_get_text (int index);
+int zones_find (int x, int y);
+int zones_get_type (int index);
+int zones_get_token_type (unsigned char *text);
 #endif

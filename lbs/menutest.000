@@ -1,3 +1,4 @@
+mode gfx
 print "Menu test"
 
 menu limpia

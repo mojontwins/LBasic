@@ -12,6 +12,19 @@
 [X] Inventario sencillo ~ parecido a menús, añadiendo Tokens a una lista
 [X] Bulma "draw" support (LIN)
 [ ] caracter parpadeante en pulsa una tecla: indicator off|on x y c1 c2 c
+[ ] Bulma stuff
+	- actions reset
+	- actions put X
+	- actions remove X
+
+	- zones reset
+	- zones def x1 x2 y1 y2 name [items|actions]
+	- zones run :label
+
+	:label_name / :label_name_item / :label_name_action
+
+
+
 
 # Editor
 

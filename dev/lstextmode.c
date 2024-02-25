@@ -324,7 +324,20 @@ void buf_char (char c) {
 			buf_y ++;
 		}
 	} else {
-		// TODO
+		int x1 = 8 * buf_x;
+		int y1 = buf_char_height * buf_y;
+
+		unsigned char minibuf [2];
+		minibuf [0] = c; minibuf [1] = 0;
+
+		setcolor (buf_c2);
+		if (buf_c2 < 256) bar (x1, y1, 8, buf_char_height);
+		setcolor (buf_c1);
+		outtextxy (x1, y1, minibuf);		
+		buf_x ++; if (buf_x == buf_col2 + 1) {
+			buf_x = buf_col1;
+			buf_y ++;
+		}
 	}
 }
 
@@ -650,18 +663,18 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 
 // Assumes compatible video mode!
 void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
-	char *pix_buffer = malloc (8 + 64000 + 768);
-	FILE *pf = fopen (pix, "rb");
+	char pix_buffer [7 + 64000 + 768];
 	unsigned char *buf = screenbuffer ();
 	int width = screenwidth ();
 
 	if (dbl && width != 640) dbl = 0;
 
+	FILE *pf = fopen (pix, "rb");
 	if (pf) {
-		fread (pix_buffer, 1, sizeof (pix_buffer), pf);
+		int bytes = fread (pix_buffer, 1, sizeof (pix_buffer), pf);
 
 		if (do_setpal) {
-			char *pal_ptr = pix_buffer + 8 + 64000;
+			char *pal_ptr = pix_buffer + 7 + 64000;
 			int r, g, b;
 			for (int i = 0; i < 256; i ++) {
 				r = (int) *pal_ptr ++;
@@ -672,7 +685,7 @@ void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
 		}
 
 		if (dbl) {
-			unsigned char *ptr = pix_buffer + 8;
+			unsigned char *ptr = pix_buffer + 7;
 			int x = 0; int ofs = 0;
 			for (int i = 0; i < 64000; i ++) {
 				unsigned char c = *ptr ++;
@@ -687,14 +700,12 @@ void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
 			}
 		} else {
 			// Just copy raw
-			memcpy (buf, pix_buffer + 8, 64000);
+			memcpy (buf, pix_buffer + 7, 64000);
 		}
 
 		fclose (pf);
 	}
 
-
-	free (pix_buffer);
 }
 
 void buf_textmode_pic (char *pic) {

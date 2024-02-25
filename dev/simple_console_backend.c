@@ -271,6 +271,7 @@ void backend_bulma_lin (char *pathspec, char *lin) {
 
 void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
 	// NO OP
+	printf ("%s %s %d %d\n", pathspec, pix, dbl, load_pal);
 }
 
 void backend_fancy_font (char *f) {
