@@ -37,6 +37,7 @@
 - menu
 - items
 - talk
+- zones
 
 ## cursor|setxy x y
 
@@ -465,3 +466,54 @@ Escribe `personaje`. Puedes usar una cadena vacía.
 ```
 
 Configura el texto para que aparezca en (x, y) con los colores (c1, c2), de anchura w
+
+## Zones
+
+Las zonas permiten implementar point'n'click sencillo. Las zonas utilizan los menús. La posición (x, y) especificada en `menu_config` se ignorará, sólo se establecerá el color.
+
+Las zonas son rectángulos dentro de la pantalla. Las zonas emplean coordenadas reales: en modo texto se refieren a la rejilla de caracteres. En los modos gráficos las coordenadas son de pixels.
+
+Hay dos tipos de zonas: las sencillas y las que llevan asociada una acción. 
+
+Cuando se ejecuta `zones run :label`, si el usuario hace click sobre una zona sencilla se genera un `go :label_Z`, con `Z` el texto de la zona.  Si el usuario hace click sobre una zona asociada a una acción, se mostrará el menú de acciones. Al pulsar sobre una acción, se genera un `go :label_ACTION_Z` con `ACTION` la acción pulsada y `Z` el texto de la zona. Los espacios se sustituyen por `_` y no importa mayúsculas o minúsculas.
+
+```
+	actions reset|limpia
+```
+
+Borra todas las acciones.
+
+```
+	actions put|pon "texto" [items]
+```
+
+Añade una acción con texto "texto". Si se pone "items" al final, la acción mostrará un segundo menú, el de items. En este caso se generará `go :label_ACTION_Z_ITEM`, con `ACTION` la acción pulsada, `Z` la zona e `ITEM` el item elegido.
+
+```
+	actions remove|quita "texto"
+```
+
+Quita la acción
+
+Normalmente para un juego las acciones se establecen al principio y no cambiarán: examinar, hablar, usar...
+
+```
+	zones reset
+```
+
+Borra todas las zonas 
+
+```
+	zones def "texto" x1 y1 x2 y2 [actions]
+```
+
+Añade una zona con `texto` representando al rectángulo que va desde (x1, y1) hasta (x2, y2). Si se especifica `actions` esta zona desplegará el menú de acciones.
+
+```
+	zones run :label
+```
+
+Se espera a que el jugador seleccione una zona y desplegará los menús encadenados que corresponda.
+
+
+

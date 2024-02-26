@@ -340,19 +340,25 @@ unsigned char *exits_get_option_label (int index) {
  * ACTIONS
  */
 
-unsigned char actions_text [MAX_ACTIONS][ACTIONS_MAX_LENGTH];
+typedef struct ACTION {
+	unsigned char text [ACTIONS_MAX_LENGTH];
+	int type;
+} ACTION;
+
+ACTION actions [MAX_ACTIONS];
 int actions_index;
 
 void actions_reset (void) {
 	actions_index = 0;
 	for (int i = 0; i < MAX_ACTIONS; i ++) {
-		actions_text [i][0] = 0;
+		actions [i].text [0] = 0;
 	}
 }
 
-int actions_add_item (unsigned char *text) {
+int actions_add_item (unsigned char *text, int type) {
 	if (actions_index < MAX_ACTIONS) {
-		strcpy (actions_text [actions_index], text);
+		strcpy (actions [actions_index].text, text);
+		actions [actions_index].type = type;
 		actions_index ++;
 		return 1;
 	}
@@ -364,10 +370,11 @@ void actions_reorganize (void) {
 	// Clear gaps in the actions
 
 	for (int i = 0; i < actions_index; i ++) {
-		if (actions_text [i][0] == 0) {
+		if (actions [i].text [0] == 0) {
 			// There's a gap! shift everything up!
 			for (int j = i + 1; j <= actions_index; j ++) {
-				strcpy (actions_text [j - 1], actions_text [j]);
+				strcpy (actions [j - 1].text, actions [j].text);
+				actions [j - 1].type = actions [j].type;
 			}
 
 			// One menu item less!
@@ -378,7 +385,7 @@ void actions_reorganize (void) {
 
 void actions_delete_item (unsigned char *item) {
 	for (int i = 0; i < actions_index; i ++) {
-		if (strcmp (item, actions_text [i]) == 0) actions_text [i][0] = 0;
+		if (strcmp (item, actions [i].text) == 0) actions [i].text [0] = 0;
 	}
 
 	actions_reorganize ();
@@ -389,7 +396,11 @@ int actions_get_actions (void) {
 }
 
 unsigned char *actions_get_action (int index) {
-	return actions_text [index];
+	return actions [index].text;
+}
+
+int actions_get_type (int index) {
+	return actions [index].type;
 }
 
 /*
@@ -485,7 +496,6 @@ int zones_get_type (int index) {
 }
 
 int zones_get_token_type (unsigned char *text) {
-	if (strcmp (text, "items") == 0) return ZONE_TYPE_ITEMS;
 	if (strcmp (text, "actions") == 0) return ZONE_TYPE_ACTIONS;
 
 	return ZONE_TYPE_NORMAL;

@@ -7,6 +7,7 @@
 
 void lstextmode_init (void);
 void debuff_keys (void);
+int buf_get_scrwidth (void);
 void buf_setviewport (int y1, int y2);
 int buf_getviewport_y1 (void);
 int buf_getviewport_y2 (void);

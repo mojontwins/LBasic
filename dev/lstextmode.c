@@ -30,6 +30,8 @@ int buf_do_delay;
 char *buf_copy;
 int buf_size;
 
+int buf_scrwidth = 80;
+
 void lstextmode_init (void) {
 	buf_setmode (LS_MODE_TEXT);
 	font_ega14 = installuserfont_array (ega14_fnt);
@@ -54,6 +56,10 @@ void debuff_keys (void) {
 			any = 1;
 		}
 	} while (any);
+}
+
+int buf_get_scrwidth (void) {
+	return buf_scrwidth;
 }
 
 void buf_char_by_char_delay (void) {
@@ -593,11 +599,13 @@ void buf_setmode(int mode) {
 		buf_setmargins (0, screenwidth () - 1);
 		buf_clscroll ();
 		buf_size = screenwidth () * screenheight () * 2;
+		buf_scrwidth = screenwidth ();
 	} else {
 		buf_setviewport (1, screenheight () / buf_char_height);
 		buf_setmargins (0, screenwidth () / 8 - 1);
 		buf_cls ();
 		buf_size = screenwidth () * screenheight ();
+		buf_scrwidth = screenwidth () / 8;
 	}
 
 	free (buf_copy);

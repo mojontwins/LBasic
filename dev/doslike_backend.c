@@ -1,4 +1,4 @@
-º//#define DEBUG
+//#define DEBUG
 
 #include <stdio.h>
 #include <string.h>
@@ -33,6 +33,13 @@ int backend_talk_c1 = 15;
 int backend_talk_c2 = 1;
 int backend_talk_w = 16;
 int backend_talk_selected = 0;
+
+int backend_info_bar_y = -1; 	// -1 means OFF
+int backend_info_bar_c1 = 0;
+int backend_info_bar_c2 = 0;
+
+int zones_last_x = 0;
+int zones_last_y = 0;
 
 void backend_init (void) {
 	lstextmode_init ();
@@ -387,9 +394,9 @@ void backend_menu_set_selected (int selected) {
 	backend_menu_selected = selected;
 }
 
-void backend_menu_display (unsigned char* (*get_option) (int), int backend_menu_options) {
+void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int backend_menu_options) {
 	for (int i = 0; i < backend_menu_options; i ++) {
-		buf_setxy (backend_menu_x + 1, backend_menu_y + 1 + i);
+		buf_setxy (x + 1, y + 1 + i);
 		if (i == backend_menu_selected) {
 			buf_color (backend_menu_c2, backend_menu_c1);
 		} else {
@@ -444,7 +451,7 @@ int backend_menu_run (void) {
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		backend_menu_display (menu_get_option_text, backend_menu_options);
+		backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
 
 		// Read keys
 		backend_menu_keys (&backend_menu_selected, &done, backend_menu_options);
@@ -459,7 +466,7 @@ int backend_menu_run (void) {
 	return backend_menu_selected;
 }
 
-int backend_inventory_run (void) {
+int _backend_inventory_run (int x, int y) {
 	int prev_x = buf_getx ();
 	int prev_y = buf_gety (); 
 	int prev_c1 = buf_getc1 ();
@@ -472,12 +479,12 @@ int backend_inventory_run (void) {
 
 	// Paint box
 	buf_color (backend_menu_c1, backend_menu_c2);
-	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_inventory_items);
+	buf_box (x, y, x + backend_menu_w - 1, y + 1 + backend_inventory_items);
 
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		backend_menu_display (inventory_get_item, backend_inventory_items);
+		backend_menu_display (x, y, inventory_get_item, backend_inventory_items);
 
 		// Read keys
 		backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items);
@@ -490,6 +497,14 @@ int backend_inventory_run (void) {
 	buf_color (prev_c1, prev_c2);
 
 	return backend_menu_selected;
+}
+
+int backend_inventory_run (void) {
+	return _backend_inventory_run (backend_menu_x, backend_menu_y);
+}
+
+int backend_inventory_run_xy (int x, int y) {
+	return _backend_inventory_run (x, y);
 }
 
 int backend_exits_run (void) {
@@ -510,7 +525,7 @@ int backend_exits_run (void) {
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		backend_menu_display (exits_get_option_text, backend_exits_items);
+		backend_menu_display (backend_menu_x, backend_menu_y, exits_get_option_text, backend_exits_items);
 
 		// Read keys
 		backend_menu_keys (&backend_menu_selected, &done, backend_exits_items);
@@ -525,12 +540,99 @@ int backend_exits_run (void) {
 	return backend_menu_selected;
 }
 
-int backend_actions_run (void) {
-	// Display menu
+int backend_actions_run (int x, int y) {
+	int prev_x = buf_getx ();
+	int prev_y = buf_gety (); 
+	int prev_c1 = buf_getc1 ();
+	int prev_c2 = buf_getc2 ();
+	buf_sve ();
+
+	int done = 0;
+	int backend_actions_items = exits_get_options ();
+	if (backend_menu_selected >= backend_actions_items) backend_menu_selected = backend_actions_items - 1;
+
+	// Paint box
+	buf_color (backend_menu_c1, backend_menu_c2);
+	buf_box (x, y, x + backend_menu_w - 1, y + 1 + backend_actions_items);
+
+	keys_read ();
+	while (!done && !buf_heartbeat ()) {
+		// Paint options (w/selected)
+		backend_menu_display (x, y, actions_get_action, backend_actions_items);
+
+		// Read keys
+		backend_menu_keys (&backend_menu_selected, &done, backend_actions_items);
+	}
+
+	debuff_keys ();
+
+	buf_rec ();
+	buf_setxy (prev_x, prev_y);
+	buf_color (prev_c1, prev_c2);
+
+	return backend_menu_selected;
+}
+
+int backend_show_info_bar (int zone) {
+	unsigned char zone_text [ZONE_TEXT_MAX_LENGTH + 1];
+
+	if (zone >= 0) {
+		strcpy (zone_text, zones_get_text (zone));
+	} else {
+		zone_text [0] = 0;
+	}
+
+	buf_setxy (0, backend_info_bar_y);
+	buf_color (backend_info_bar_c1, backend_info_bar_c2);
+	buf_char (' ');
+
+	int w = buf_get_scrwidth (); 
+	for (int i = 0; i < w; i ++) {
+		buf_char (
+			i > 0 && 
+			i <= strlen (zone_text) && 
+			i < w - 1 
+			? 
+				zone_text [i - 1] 
+			: 
+				32
+		);			
+	}
+}
+
+int backend_zones_last_x (void) {
+	return zones_last_x;
+}
+
+int backend_zones_last_y (void) {
+	return zones_last_y;
 }
 
 int backend_zones_run (void) {
 	// Read mouse, show info, register zone click
+	int done = 0;
+
+	while (!done && !buf_heartbeat ()) {
+		// Get mouse pos
+		int mouse_x = buf_get_mouse_x ();
+		int mouse_y = buf_get_mouse_y ();
+		int mouse_b1 = buf_get_mouse_b (1);
+
+		// Get zone
+		int zone = zones_find (mouse_x, mouse_y);
+
+		// Show
+		if (backend_info_bar_y >= 0) {
+			backend_show_info_bar (zone);
+		}
+
+		// Click
+		if (mouse_b1 && zone >= 0) {
+			zones_last_x = mouse_x;
+			zones_last_y = mouse_y;
+			return zone;
+		}
+	}
 }
 
 void backend_fancy_font (char *f) {
@@ -540,6 +642,12 @@ void backend_fancy_font (char *f) {
 	} else if (strcmp (f, "atari") == 0) {
 		buf_font_atari ();
 	}
+}
+
+void backend_set_info_bar (int y, int c1, int c2) {
+	backend_info_bar_y = y;
+	backend_info_bar_c1 = c1;
+	backend_info_bar_c2 = c2;
 }
 
 void backend_shutdown (void) {

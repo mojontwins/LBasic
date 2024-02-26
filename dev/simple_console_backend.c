@@ -245,6 +245,10 @@ int backend_inventory_run (void) {
 	return res - 1;
 }
 
+int backend_inventory_run_xy (int x, int y) {
+	return backend_inventory_run ();
+}
+
 int backend_exits_run (void) {
 	// Very simple implementation
 	printf ("EXITS: %d\n", exits_get_options ());
@@ -257,7 +261,7 @@ int backend_exits_run (void) {
 	return res - 1;
 }
 
-int backend_actions_run (void) {
+int backend_actions_run (int x, int y) {
 	// Very simple implementation
 	printf ("EXITS: %d\n", actions_get_actions ());
 	for (int i = 0; i < actions_get_actions (); i ++) {
@@ -301,3 +305,16 @@ void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
 void backend_fancy_font (char *f) {
 	// NO OP
 }
+
+void backend_set_info_bar (int y, int c1, int c2) {
+	// NO OP
+}
+
+int backend_zones_last_x (void) {
+	// NO OP
+}
+
+int backend_zones_last_y (void) {
+	// NO OP
+}
+

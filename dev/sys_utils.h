@@ -91,15 +91,19 @@ unsigned char *exits_get_option_label (int index);
 #define MAX_ACTIONS 16
 #define ACTIONS_MAX_LENGTH 40
 
+#define ACTIONS_TYPE_NORMAL 0
+#define ACTIONS_TYPE_ITEMS 1
+
 unsigned char actions_text [MAX_ACTIONS][ACTIONS_MAX_LENGTH];
 int actions_index;
 
 void actions_reset (void);
-int actions_add_item (unsigned char *text);
+int actions_add_item (unsigned char *text, int type);
 void actions_reorganize (void);
 void actions_delete_item (unsigned char *item);
 int actions_get_actions (void);
 unsigned char *actions_get_action (int index);
+int actions_get_type (int index);
 
 /*
  * ZONES
@@ -109,7 +113,6 @@ unsigned char *actions_get_action (int index);
 #define ZONE_TEXT_MAX_LENGTH 40
 
 #define ZONE_TYPE_NORMAL 0
-#define ZONE_TYPE_ITEMS 1
 #define ZONE_TYPE_ACTIONS 3
 
 void zones_reset (void);
