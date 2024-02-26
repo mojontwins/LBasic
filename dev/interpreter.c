@@ -337,6 +337,36 @@ int lbasi_run_file (FILE *file) {
 
 		}
 
+		// *** ACTIONS ***
+
+		else if (strcmp (command_token, "actions") == 0) {
+			char *actions_command = get_token (1);
+			utils_tolower (actions_command);
+
+			if (strcmp (actions_command, "reset") == 0 || strcmp (actions_command, "limpia") == 0) {
+				actions_reset ();
+
+			} else if (strcmp (actions_command, "put") == 0 || strcmp (actions_command, "pon") == 0) {
+				if (
+					menu_get_options () < MAX_ACTIONS && 
+					strlen (get_token (2)) < ACTIONS_MAX_LENGTH
+				) actions_add_item (get_token (2), menu_get_token_type (get_token (3)));
+
+			} else if (strcmp (actions_command, "remove") == 0 || strcmp (actions_command, "quita") == 0) {
+				actions_delete_item (get_token (2));
+
+			}
+		}
+
+		// *** ZONES ***
+
+		else if (strcmp (command_token, "zones") == 0) {
+			char *zones_command = get_token (1);
+			utils_tolower (zones_command);
+
+			// TODO
+		}
+
 		// *** MENU ***
 
 		else if (strcmp (command_token, "menu") == 0) {
