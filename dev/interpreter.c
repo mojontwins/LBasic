@@ -364,7 +364,61 @@ int lbasi_run_file (FILE *file) {
 			char *zones_command = get_token (1);
 			utils_tolower (zones_command);
 
-			// TODO
+			int zone = backend_zones_run ();
+			if (zone > 0) {
+				int x = backend_zones_last_x ();
+				int y = backend_zones_last_y ();
+
+				int type = zones_get_type (zone);
+
+				strcpy (temp_buffer, get_token (2)); 				// :label
+				strcat (temp_buffer, "_");                          // _
+				strcat (temp_buffer, zones_get_text (zone));        // ZONE
+
+				if (type == ZONE_TYPE_ACTIONS) {
+
+					// Display actions menu
+					int action = backend_actions_run (x, y);
+					if (action >= 0) {
+						strcat (temp_buffer, "_");
+						strcat (temp_buffer, actions_get_action (action));
+
+						// Get action type
+						int action_type = actions_get_type (action);
+
+						// Show items?
+						if (action_type == ACTIONS_TYPE_ITEMS) {
+							int item = backend_inventory_run_xy (x, y);
+
+							if (item >= 0) {
+								strcat (temp_buffer, "_");
+								strcat (temp_buffer, inventory_get_item (item));
+							}
+						}
+					}
+
+				}
+
+				lbasi_goto (file, temp_buffer);
+
+			}
+
+		} else if (strcmp (command_token, "infobar") == 0) {
+			char *infobar_command = get_token (1);
+			utils_tolower (infobar_command);
+
+			if (strcmp (infobar_command, "off") == 0) {
+				backend_set_info_bar (-1, 0, 0);
+
+			} else {
+				backend_set_info_bar (
+					flags_parse_value (get_token (1)),
+					flags_parse_value (get_token (2)),
+					flags_parse_value (get_token (3))
+				);
+
+			}
+
 		}
 
 		// *** MENU ***

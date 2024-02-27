@@ -515,5 +515,11 @@ Añade una zona con `texto` representando al rectángulo que va desde (x1, y1) h
 
 Se espera a que el jugador seleccione una zona y desplegará los menús encadenados que corresponda.
 
+```
+	infobar off|y c1 c2
+```
+
+Desactiva o activa (y configura) una barra de información que se deplegará mientras el usuario se mueve por la pantalla con el ratón, mostrando el texto de la zona activa.
+
 
 
