@@ -22,6 +22,7 @@ void lstokens_free (void) {
 		for(int i = 0; i < MAX_TOKENS; i ++) {
 			free (tokens [i]);
 		}
+		is_initialized = 0;
 	}
 }
 

@@ -36,9 +36,10 @@ int buf_scrwidth = 80;
 int buf_scrheight = 25;
 
 void lstextmode_init (void) {
-	buf_setmode (LS_MODE_TEXT);
 	font_ega14 = installuserfont_array (ega14_fnt);
 	font_atari8x8 = installuserfont_array (atari_fnt);
+
+	buf_setmode (LS_MODE_TEXT);
 }
 
 void debuff_keys (void) {
@@ -630,6 +631,7 @@ void buf_font_cga (void) {
 void buf_setmode(int mode) {
 	buf_mode = mode;
 	buf_char_height = 8;
+	
 	switch (buf_mode) {
 		case LS_MODE_GFX:
 			setvideomode (videomode_320x200);

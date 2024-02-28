@@ -27,6 +27,7 @@ int clr_statusbar_2;
 
 char main_path_spec [256];
 char next_file [256];
+char initial_label [LABEL_LEN];
 
 /*
 
@@ -122,9 +123,14 @@ int lbasi_run_file (FILE *file) {
 	char draw_buffer [2048];
 	char *command_token;
 
-	next_file [0] = 0;
-
 	lbasi_read_labels (file);
+
+	if (strlen (initial_label)) {
+		lbasi_goto (file, initial_label);
+	}
+
+	next_file [0] = 0;
+	initial_label [0] = 0;
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
 		// Tokenize line_buffer
@@ -291,6 +297,7 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "chain") == 0) {
 			strcpy (next_file, main_path_spec);
 			strcat (next_file, get_token (1));
+			strcpy (initial_label, get_token (2));
 			res = 8;
 			run = 0;
 		}
@@ -368,7 +375,7 @@ int lbasi_run_file (FILE *file) {
 				// Lame, but that's life:
 				char *title = get_token (2);
 				if (stricmp ("wt", title) == 0 || stricmp ("cbc", title) == 0) {
-					title [2] = 0;
+					title [0] = 0;
 				}
 
 				backend_tb (get_token (1), title, wt, cbc);
@@ -420,7 +427,10 @@ int lbasi_run_file (FILE *file) {
 			} else if (strcmp (zones_command, "run") == 0) {
 
 				int zone = backend_zones_run ();
-				if (zone >= 0) {
+
+				if (zone == 999999) {
+					res = -1; run = 0;
+				} else if (zone >= 0) {
 
 					int type = zones_get_type (zone);
 
@@ -438,7 +448,9 @@ int lbasi_run_file (FILE *file) {
 						//y -= actions_get_actions () / 2;
 
 						int action = backend_actions_run (x, y);
-						if (action >= 0) {
+						if (action == 999999) {
+							res = -1; run = 0;
+						} else if (action >= 0) {
 							strcat (temp_buffer, "_");
 							strcat (temp_buffer, actions_get_action (action));
 
@@ -448,8 +460,9 @@ int lbasi_run_file (FILE *file) {
 							// Show items?
 							if (action_type == ACTIONS_TYPE_ITEMS) {
 								int item = backend_inventory_run_xy (x, y);
-
-								if (item >= 0) {
+								if (item == 999999) {
+									res = -1; run = 0;
+								} else if (item >= 0) {
 									strcat (temp_buffer, "_");
 									strcat (temp_buffer, inventory_get_item (item));
 								}
@@ -458,7 +471,7 @@ int lbasi_run_file (FILE *file) {
 
 					}
 
-					lbasi_goto (file, temp_buffer);
+					if (run) lbasi_goto (file, temp_buffer);
 				}
 			}
 
@@ -512,7 +525,9 @@ int lbasi_run_file (FILE *file) {
 			} else if (strcmp (menu_command, "run") == 0) {
 				int selected = backend_menu_run ();				
 
-				if (selected >= 0) {
+				if (selected == 999999) {
+					res = -1; run = 0;
+				} else if (selected >= 0) {
 					int type = menu_get_option_type (selected);
 					int submenu;
 
@@ -524,7 +539,9 @@ int lbasi_run_file (FILE *file) {
 							strcat (temp_buffer, "item_");
 
 							submenu = backend_inventory_run ();
-							if (submenu >= 0) {
+							if (submenu == 999999) {
+								res = -1; run = 0;
+							} else if (submenu >= 0) {
 								strcat (temp_buffer, inventory_get_item (submenu));
 							}
 
@@ -533,7 +550,9 @@ int lbasi_run_file (FILE *file) {
 						case MENU_ITEM_TYPE_EXITS:
 
 							submenu = backend_exits_run ();
-							if (submenu >= 0) {
+							if (submenu == 999999) {
+								res = -1; run = 0;
+							} else if (submenu >= 0) {
 								strcpy (temp_buffer, exits_get_option_label (submenu));
 							}
 
@@ -545,7 +564,7 @@ int lbasi_run_file (FILE *file) {
 							break;
 					}
 
-					lbasi_goto (file, temp_buffer);
+					if (run) lbasi_goto (file, temp_buffer);
 				}
 			}
 		}
@@ -780,8 +799,7 @@ int lbasi_run (char *spec, int autoboot) {
 	int playing = 1;
 	int backend_on = 0;
 
-	char file_extension [5];
-	char *filename;
+	char filename [512];
 
 	FILE *file;
 
@@ -789,23 +807,24 @@ int lbasi_run (char *spec, int autoboot) {
 	
 	flags_clear ();
 	menu_reset ();
+	inventory_reset ();
+	exits_reset ();
+	actions_reset ();
+	zones_reset ();
+
 	attempts = DEFAULT_ATTEMPTS;
 
 	while (playing) {
 		// Make filename
 		
 		if (strlen (next_file)) {
-			filename = strdup (next_file);
-			//printf ("Chain to %s\n", filename);
+			strcpy (filename, next_file);
+			sprintf (str_status_top, "LBASIC: %s", filename);
 
 		} else {
-			sprintf (file_extension, ".%03d", cur_block); 			// Generate a .XXX extension
-			filename = strdup (spec); 								// Duplicate spec, pointed by fileaname
-			filename = realloc (filename, strlen (spec) + 4);		// Add space for the extension
-			strcat (filename, file_extension); 						// Concatenate spec + extension
+			sprintf (filename, "%s.%03d", spec, cur_block);
+			sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 		}
-
-		sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 
 		if ((file = fopen (filename, "r")) != NULL) {			
 			update_path_spec (filename);
@@ -821,8 +840,7 @@ int lbasi_run (char *spec, int autoboot) {
 
 			res = lbasi_run_file (file);
 			fclose (file);
-			free (filename);
-
+			
 			if (res < 0) {
 				playing = 0;
 			} else switch (res) {

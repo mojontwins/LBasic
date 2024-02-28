@@ -24,8 +24,8 @@ int flags_parse_value (char *s);
  * LABELS
  */ 
 
-#define MAX_LABELS 256
-#define LABEL_LEN 64
+#define MAX_LABELS 1024
+#define LABEL_LEN 80
 
 void labels_clear (void);
 int labels_add (int file_pos, char *label);

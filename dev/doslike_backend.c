@@ -437,10 +437,12 @@ void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int
 	}
 }
 
-void backend_menu_keys (
+int backend_menu_keys (
 	int *backend_menu_selected, int *done, int backend_menu_options, 
 	int x0, int y0, int w
 ) {
+	int res = 0;
+
 	keys_read ();
 	int pad_this_frame = keys_get_this_frame ();
 
@@ -459,6 +461,7 @@ void backend_menu_keys (
 	if (pad_this_frame & MT_KEY_ESC) {
 		*done = 1;
 		*backend_menu_selected = -1;
+		res = 999999;
 	}
 
 	int x = buf_to_char_coords_x (buf_get_mouse_x ()) - x0;
@@ -469,6 +472,8 @@ void backend_menu_keys (
 			*backend_menu_selected = y;
 		}
 	}
+
+	return res;
 }
 
 int backend_menu_run (void) {
@@ -492,10 +497,10 @@ int backend_menu_run (void) {
 		backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
 
 		// Read keys
-		backend_menu_keys (
+		if (backend_menu_keys (
 			&backend_menu_selected, &done, backend_menu_options,
 			backend_menu_x, backend_menu_y, backend_menu_w
-		);
+		) == 999999) return 999999;
 	}
 
 	debuff_keys ();
@@ -532,8 +537,9 @@ int _backend_inventory_run (int x, int y) {
 		backend_menu_display (x, y, inventory_get_item, backend_inventory_items);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items,
-			x, y, backend_menu_w);
+		if (backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items,
+			x, y, backend_menu_w
+		) == 999999) return 999999;
 	}
 
 	debuff_keys ();
@@ -574,8 +580,9 @@ int backend_exits_run (void) {
 		backend_menu_display (backend_menu_x, backend_menu_y, exits_get_option_text, backend_exits_items);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_exits_items,
-			backend_menu_x, backend_menu_y, backend_menu_w);
+		if (backend_menu_keys (&backend_menu_selected, &done, backend_exits_items,
+			backend_menu_x, backend_menu_y, backend_menu_w
+		) == 999999) return 999999;
 	}
 
 	debuff_keys ();
@@ -612,8 +619,9 @@ int backend_actions_run (int x, int y) {
 		backend_menu_display (x, y, actions_get_action, backend_actions_items);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_actions_items,
-			x, y, backend_menu_w);
+		if (backend_menu_keys (&backend_menu_selected, &done, backend_actions_items,
+			x, y, backend_menu_w
+		) == 999999) return 999999;
 	}
 
 	debuff_keys ();
@@ -690,7 +698,7 @@ int backend_zones_run (void) {
 		}
 
 		if (pad_this_frame & MT_KEY_ESC) {
-			zone = -1;
+			zone = 999999;
 			done = 1;
 		}
 	}
