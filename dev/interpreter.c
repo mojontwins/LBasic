@@ -26,6 +26,7 @@ int clr_statusbar_1;
 int clr_statusbar_2;
 
 char main_path_spec [256];
+char next_file [256];
 
 /*
 
@@ -120,6 +121,8 @@ int lbasi_run_file (FILE *file) {
 	char legacy_buffer [LEGACY_BUFFER_SIZE];
 	char draw_buffer [2048];
 	char *command_token;
+
+	next_file [0] = 0;
 
 	lbasi_read_labels (file);
 
@@ -284,6 +287,12 @@ int lbasi_run_file (FILE *file) {
 			strcat (temp_buffer, string_convert_buffer);
 
 			lbasi_goto (file, temp_buffer);
+
+		} else if (strcmp (command_token, "chain") == 0) {
+			strcpy (next_file, main_path_spec);
+			strcat (next_file, get_token (1));
+			res = 8;
+			run = 0;
 		}
 
 		// *** GFX MODE ***
@@ -785,10 +794,16 @@ int lbasi_run (char *spec, int autoboot) {
 	while (playing) {
 		// Make filename
 		
-		sprintf (file_extension, ".%03d", cur_block); 			// Generate a .XXX extension
-		filename = strdup (spec); 								// Duplicate spec, pointed by fileaname
-		filename = realloc (filename, strlen (spec) + 4);		// Add space for the extension
-		strcat (filename, file_extension); 						// Concatenate spec + extension
+		if (strlen (next_file)) {
+			filename = strdup (next_file);
+			//printf ("Chain to %s\n", filename);
+
+		} else {
+			sprintf (file_extension, ".%03d", cur_block); 			// Generate a .XXX extension
+			filename = strdup (spec); 								// Duplicate spec, pointed by fileaname
+			filename = realloc (filename, strlen (spec) + 4);		// Add space for the extension
+			strcat (filename, file_extension); 						// Concatenate spec + extension
+		}
 
 		sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 
@@ -806,6 +821,7 @@ int lbasi_run (char *spec, int autoboot) {
 
 			res = lbasi_run_file (file);
 			fclose (file);
+			free (filename);
 
 			if (res < 0) {
 				playing = 0;
@@ -813,6 +829,11 @@ int lbasi_run (char *spec, int autoboot) {
 				case 0:
 					// Next block
 					cur_block ++;
+					break;
+
+				case 8:
+					// Custom chain
+
 					break;
 
 				case 4:
@@ -843,7 +864,6 @@ int lbasi_run (char *spec, int autoboot) {
 			playing = 0;
 		}
 
-		free (filename);
 	}
 
 	backend_shutdown ();

@@ -1,0 +1,3 @@
+print "Chain a bulma.lbs! Pulsa una tecla"
+pause
+chain "bulma.lbs"

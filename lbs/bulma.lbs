@@ -1,0 +1,54 @@
+mode "gfx_dbl"
+fnt "broadway.fnt"
+pix "ACANTIL.PIX" dbl
+
+tb config 1, 19, 78, 6, 0, 7, 15, 0, 9
+
+tb "Un acantilado que est  aqu¡ al lado. Un acantilado que parece una explanada de costado. Un acantilado liso y aterciopeado. Un acantilado." "Un acantilado" wt cbc
+
+items reset
+items put "cebolla"
+items put "cuerda"
+items put "collons"
+
+actions reset
+actions put "mirar"
+actions put "hablar"
+actions put "manipular"
+actions put "inventario" items
+
+# No importan x y en este uso del menu
+menu config 0 0 16 0 7
+
+infobar 0 0 7
+
+zones reset
+zones def "Rocas" 20 20 600 380 actions
+zones def "Irse" 610 20 640 380
+
+:zones_loop
+zones run :zone1_do
+tb "Esto no sirve de nada" wt
+go :zones_loop
+
+:zone1_do_rocas_mirar
+tb "Son muy rocosas" "mirar" wt
+go :zones_loop
+
+:zone1_do_rocas_hablar
+tb "Le hablas a las rocas" "hablar" wt
+go :zones_loop
+
+:zone1_do_rocas_inventario_cebolla
+tb "Cebolleas las rocas" "cebolla" wt
+go :zones_loop
+
+:zone1_do_rocas_inventario_cuerda
+tb "La cuerda no se agarra" "cuerda" wt
+go :zones_loop
+
+:zone1_do_rocas_inventario_collons
+tb "COLLONS!!" wt cbc
+go :zones_loop
+
+:zone1_do_irse
