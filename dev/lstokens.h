@@ -9,3 +9,4 @@ int get_num_tokens (void);
 char *get_token (int i);
 char **get_tokens_from (int i);
 char **get_tokens (void);
+int token_exists (char *token);

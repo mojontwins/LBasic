@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "lstokens.h"
 
 char *tokens [MAX_TOKENS];
@@ -22,6 +23,27 @@ void lstokens_free (void) {
 			free (tokens [i]);
 		}
 	}
+}
+
+void tolower (char *s) {
+	char *p;
+	for (p = s; *p; ++p) {
+		*p = *p > 0x40 && *p < 0x5b ? *p | 0x60 : *p;
+	}
+}
+
+int token_exists (char *token) {
+	char temp_buffer [TOKEN_MAX_LENGTH];
+	tolower (token);
+
+	for (int i = 0; i < cur_token; i ++) {
+		strcpy (temp_buffer, tokens [i]);
+		tolower (temp_buffer);
+
+		if (strcmp (token, temp_buffer) == 0) return 1;
+	}
+
+	return 0;
 }
 
 void parse_to_tokens (char *string) {

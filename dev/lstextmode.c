@@ -5,6 +5,8 @@
 #include <string.h>
 
 #include "../dos-like/source/dos.h"
+#include "../dos-like/source/libs/pixelfont.h"
+
 #include "lstextmode.h"
 #include "keys.h"
 
@@ -14,8 +16,8 @@
 int buf_x, buf_y;
 int buf_c1, buf_c2;
 int buf_col1, buf_col2;
-int viewport_y1 = 1;
 int viewport_y2 = 23;
+int viewport_y1 = 1;
 int buf_mode = LS_MODE_TEXT;
 int buf_mouse_x = 0;
 int buf_mouse_y = 0;
@@ -506,6 +508,56 @@ void buf_print_char_by_char (char *s) {
 	_buf_print (s, 1, 0, 0, 1);
 }
 
+void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int f, char *title, char *text, int char_by_char) {
+	if (buf_mode == LS_MODE_TEXT) {
+		// TODO
+	} else {
+		int x1p = x1 * 8;
+		int y1p = y1 * buf_char_height;
+		int wp = w * 8;
+		int hp = h * buf_char_height;
+		int x2p = x1p + wp - 1;
+		int y2p = y1p + hp - 1;
+
+		setcolor (c2);
+		bar (x1p, y1p, wp, hp);
+		setcolor (f);
+		rectangle (x1p - 1, y1p - 1, wp + 2, hp + 2);
+
+		if (title && strlen (title)) {
+			setcolor (tc2);
+			bar (x1p, y1p, wp, buf_char_height);
+			setcolor (tc1);
+			outtextxy (x1p + 8, y1p, title);
+			y1 ++;
+		}
+
+		int backup_x = buf_x;
+		int backup_y = buf_y;
+		int backup_c1 = buf_c1;
+		int backup_c2 = buf_c2;
+		int backup_viewport_y1 = viewport_y1;
+		int backup_viewport_y2 = viewport_y2;
+		int backup_col1 = buf_col1;
+		int backup_col2 = buf_col2;
+
+		buf_c1 = c1; buf_c2 = c2;
+		buf_x = x1 + 1; buf_y = y1;
+		buf_col1 = x1 + 1; buf_col2 = x1 + w - 1;
+		viewport_y1 = y1; viewport_y2 = y1 + h - 1;
+
+		buf_do_delay = 1;
+		keys_read ();
+		_buf_wordwrap (text, char_by_char);
+
+		buf_x = backup_x; buf_y = backup_y;
+		buf_c1 = backup_c1; buf_c2 = backup_c2;
+		viewport_y1 = backup_viewport_y1; viewport_y2 = backup_viewport_y2;
+		buf_col1 = backup_col1; buf_col2 = backup_col2;
+	}
+
+}
+
 void buf_cls (void) {
 	if (buf_mode == LS_MODE_TEXT) {
 		int i;
@@ -770,6 +822,41 @@ void buf_bulma_lin (char *pic) {
 					break;
 			}
 		}
+		fclose (file);
+	}
+}
+
+void buf_load_font_16 (char *font) {
+	FILE *file = fopen (font, "rb");
+	if (file) {
+		PIXELFONT_U8 pixels [32 * 32];
+		pixelfont_builder_t* builder = pixelfont_builder_create (
+			16, 
+			12, 
+			16,
+			NULL
+		);
+
+		for (int i = 0; i < 256; i ++) {
+			for (int y = 0; y < 16; y ++) {
+				char c = fgetc (file);
+
+				for (int x = 0; x < 8; x ++) {
+					if (c & (1 << (7 - x))) {
+						pixels [x + 8 * y] = 1;
+					} else {
+						pixels [x + 8 * y] = 0;
+					}
+				}
+			}
+
+			pixelfont_builder_glyph (builder, i, 8, pixels, 8, 0, 8);
+		}
+
+		pixelfont_t* pixelfont = pixelfont_builder_font (builder);
+		int font = installuserfont_array ((char const *) pixelfont);
+		settextstyle (font, 0, 0, 0);
+
 		fclose (file);
 	}
 }

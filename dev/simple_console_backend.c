@@ -321,3 +321,17 @@ int backend_zones_last_y (void) {
 int backend_menu_get_w (void) {
 	return 0;
 }
+
+void backend_tb_config (int x, int y, int w, int h, int c1, int c2, int tc1, int tc2, int f) {
+	// NO OP
+}
+
+void backend_tb (char *text, char *title, int wt, int cbc) {
+	if (title && strlen(title)) backend_print_ln (title);
+	backend_print_ln (text);
+	if (wt) backend_pause ();
+}
+
+void backend_fnt (char *pathspec, char *fnt) {
+	// NO OP
+}

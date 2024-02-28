@@ -3058,10 +3058,10 @@ static int app_proc( app_t* app, void* user_data ) {
         } 
         */
         if( strcmp( app_context->argv[ i ], "--full" ) == 0 ) {
-            fullscreen = false;
+            fullscreen = true;
         }
         else if( strcmp( app_context->argv[ i ], "-f" ) == 0 ) {
-            fullscreen = false;
+            fullscreen = true;
         } 
 
         else {
@@ -3086,10 +3086,10 @@ static int app_proc( app_t* app, void* user_data ) {
         APP_U32 blank = 0;
         app_pointer( app, 1, 1, &blank, 0, 0 );
     #else
-        if( fullscreen ) {
+        /*if( fullscreen ) {
             APP_U32 blank = 0;
             app_pointer( app, 1, 1, &blank, 0, 0 );
-        } else {
+        } else */{
             app_pointer( app, pointer_width, pointer_height, pointer_pixels, pointer_hotspot_x, pointer_hotspot_y );
         }
     #endif
@@ -3232,10 +3232,10 @@ static int app_proc( app_t* app, void* user_data ) {
                         APP_U32 blank = 0;
                         app_pointer( app, 1, 1, &blank, 0, 0 );
                     #else
-                        if( fullscreen ) {
+                        /*if( fullscreen ) {
                             APP_U32 blank = 0;
                             app_pointer( app, 1, 1, &blank, 0, 0 );
-                        } else {
+                        } else */{
                             app_pointer( app, pointer_width, pointer_height, pointer_pixels, pointer_hotspot_x, pointer_hotspot_y );
                         }
                     #endif

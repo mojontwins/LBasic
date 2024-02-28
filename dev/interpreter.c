@@ -335,6 +335,36 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "pix") == 0) {
 			backend_bulma_pix (main_path_spec, get_token (1), strcmp (get_token (2), "dbl") == 0, 1);
 
+		} else if (strcmp (command_token, "fnt") == 0) {
+			backend_fnt (main_path_spec, get_token (1));
+
+		} else if (strcmp (command_token, "tb") == 0) {
+			if (token_exists ("config")) {
+				backend_tb_config (
+					flags_parse_value (get_token (2)),		// x
+					flags_parse_value (get_token (3)), 		// y
+					flags_parse_value (get_token (4)), 		// w
+					flags_parse_value (get_token (5)), 		// h
+					flags_parse_value (get_token (6)), 		// c1
+					flags_parse_value (get_token (7)), 		// c2
+					flags_parse_value (get_token (8)), 		// tc1
+					flags_parse_value (get_token (9)), 		// tc2
+					flags_parse_value (get_token (10)) 		// f
+				);
+
+			} else {
+				int wt = token_exists ("wt");
+				int cbc = token_exists ("cbc");
+
+				// Lame, but that's life:
+				char *title = get_token (2);
+				if (stricmp ("wt", title) == 0 || stricmp ("cbc", title) == 0) {
+					title [2] = 0;
+				}
+
+				backend_tb (get_token (1), title, wt, cbc);
+
+			}
 		}
 
 		// *** ACTIONS ***
@@ -396,7 +426,7 @@ int lbasi_run_file (FILE *file) {
 						int y = backend_zones_last_y ();
 
 						x -= backend_menu_get_w () / 2;
-						y -= actions_get_actions () / 2;
+						//y -= actions_get_actions () / 2;
 
 						int action = backend_actions_run (x, y);
 						if (action >= 0) {

@@ -41,6 +41,16 @@ int backend_info_bar_c2 = 0;
 int zones_last_x = 0;
 int zones_last_y = 0;
 
+int tb_x = 1;
+int tb_y = 1;
+int tb_w = 78;
+int tb_h = 10;
+int tb_c1 = 15;
+int tb_c2 = 7;
+int tb_tc1 = 0;
+int tb_tc2 = 7;
+int tb_f = 8; 
+
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
@@ -139,9 +149,14 @@ void backend_pause (void) {
 		if (c == 0) break;
 	}
 
+	keys_read ();
 	while (!backend_heartbeat ()) {
 		int c = *readchars ();
 		if (c > 0) break;
+
+		keys_read ();
+		int keys_this_frame = keys_get_this_frame ();
+		if (keys_this_frame & MT_KEY_LBUTTON) break;
 	}
 }
 
@@ -325,6 +340,17 @@ void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
 	}
 
 	free (fullpath);
+}
+
+void backend_fnt (char *pathspec, char *fnt) {
+	char *fullpath = compute_full_path (pathspec, fnt);
+
+	if (buf_getmode () != LS_MODE_TEXT) {
+		// TODO: Call the right version depending on video mode!
+		buf_load_font_16 (fullpath);
+	}
+
+	free (fullpath);	
 }
 
 void backend_wait_frames (int frames) {
@@ -689,6 +715,27 @@ void backend_set_info_bar (int y, int c1, int c2) {
 
 int backend_menu_get_w (void) {
 	return backend_menu_w;
+}
+
+void backend_tb_config (int x, int y, int w, int h, int c1, int c2, int tc1, int tc2, int f) {
+	tb_x = x; tb_y = y; tb_w = w; tb_h = h;
+	tb_c1 = c1; tb_c2 = c2; tb_tc1 = tc1; tb_tc2 = tc2;
+	tb_f = f;
+}
+
+void backend_tb (char *text, char *title, int wt, int cbc) {
+	if (wt) buf_sve ();
+
+	buf_tb (
+		tb_x, tb_y, tb_w, tb_h,
+		tb_c1, tb_c2, tb_tc1, tb_tc2, tb_f,
+		title, text, cbc
+	);
+
+	if (wt) {
+		backend_pause ();
+		buf_rec ();
+	}
 }
 
 void backend_shutdown (void) {

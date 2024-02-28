@@ -1,7 +1,7 @@
 # Backend
 
 [X] Scroll bien hecho (teniendo en cuenta los margenes) -> necesito implementar blit de buffer a buffer (en modo gráfico) y complicar un poco la copia en modo texto.
-[ ] Añadir clicks a PAD_THIS_FRAME y usarlo en los menús y zonas!
+[X] Añadir clicks a PAD_THIS_FRAME y usarlo en los menús y zonas!
 
 # Intérprete
 
@@ -13,7 +13,7 @@
 [X] Inventario sencillo ~ parecido a menús, añadiendo Tokens a una lista
 [X] Bulma "draw" support (LIN)
 [ ] caracter parpadeante en pulsa una tecla: indicator off|on x y c1 c2 c
-[ ] Bulma stuff
+[X] Bulma stuff
 	- actions reset
 	- actions put X
 	- actions remove X
@@ -24,9 +24,25 @@
 
 	:label_name / :label_name_item / :label_name_action
 
-[ ] Controlar ESC en menús y zones para salir del juego <- reaprovechar TUI -- parametrizar cuadro de texto para que lo centre en cualquier resolución de pantalla!!!
+[ ] Controlar ESC en menús y zones para salir del juego <- reaprovechar TUI -- parametrizar cuadro de texto para que lo centre en cualquier resolución de pantalla!!! -> Ejecutar spec.END, si existe. Si no, salir.
+[ ] Flujo chain "file.ext", sin restricción. Se le añade "directory spec" al principcio.como a todo.
+[X] Caja de texto bulma
+[ ] Itegración "EXTERN N M" para que lo implemente el juego que sea
 
 
+```
+	tb config x y w h c1 c2 tc1 tc2 f
+```
+
+Eso son un montón de parámetros!
+
+```
+	tb "text" ["title"] [cbc] [wt]
+```
+ffffffffffffffff
+fTITLE
+ftextotextotextotexto
+ffffffffffffffff...
 
 # Editor
 

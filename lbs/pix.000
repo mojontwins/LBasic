@@ -1,7 +1,10 @@
 mode "gfx_dbl"
-color 15 1
+fnt "broadway.fnt"
 pix "ACANTIL.PIX" dbl
-print "UNA HAMBURGUESA"
+
+tb config 1, 19, 78, 6, 0, 7, 15, 0, 9
+
+tb "Un acantilado que est  aqu¡ al lado. Un acantilado que parece una explanada de costado. Un acantilado liso y aterciopeado. Un acantilado." "Un acantilado" wt cbc
 
 items reset
 items put "cebolla"
@@ -25,27 +28,27 @@ zones def "Irse" 610 20 640 380
 
 :zones_loop
 zones run :zone1_do
-print "Eso no sirve de nada"
+tb "Esto no sirve de nada" wt
 go :zones_loop
 
 :zone1_do_rocas_mirar
-print "Son muy rocosas"
+tb "Son muy rocosas" "mirar" wt
 go :zones_loop
 
 :zone1_do_rocas_hablar
-print "Le hablas a las rocas"
+tb "Le hablas a las rocas" "hablar" wt
 go :zones_loop
 
 :zone1_do_rocas_inventario_cebolla
-print "Cebolleas las rocas
+tb "Cebolleas las rocas" "cebolla" wt
 go :zones_loop
 
 :zone1_do_rocas_inventario_cuerda
-print "La cuerda no se agarra"
+tb "La cuerda no se agarra" "cuerda" wt
 go :zones_loop
 
 :zone1_do_rocas_inventario_collons
-print "COLLONS!!"
+tb "COLLONS!!" wt cbc
 go :zones_loop
 
 :zone1_do_irse
