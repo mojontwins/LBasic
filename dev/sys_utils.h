@@ -6,6 +6,8 @@
  */
 
 void utils_tolower (char *s);
+void utils_nospaces (char *s);
+int utils_adjust_coords (int coord, int min, int max);
 
 /*
  * FLAGS

@@ -31,6 +31,7 @@ char *buf_copy;
 int buf_size;
 
 int buf_scrwidth = 80;
+int buf_scrheight = 25;
 
 void lstextmode_init (void) {
 	buf_setmode (LS_MODE_TEXT);
@@ -60,6 +61,10 @@ void debuff_keys (void) {
 
 int buf_get_scrwidth (void) {
 	return buf_scrwidth;
+}
+
+int buf_get_scrheight (void) {
+	return buf_scrheight;
 }
 
 void buf_char_by_char_delay (void) {
@@ -92,6 +97,14 @@ int buf_get_mouse_b (int button) {
 	if (button & 1) return keystate (KEY_LBUTTON);
 	if (button & 2) return keystate (KEY_RBUTTON);
 	return 0;
+}
+
+int buf_to_char_coords_x (int x) {
+	return x >> 3;
+}
+
+int buf_to_char_coords_y (int y) {
+	return y / buf_char_height;
 }
 
 void buf_setviewport (int y1, int y2) {
@@ -600,12 +613,14 @@ void buf_setmode(int mode) {
 		buf_clscroll ();
 		buf_size = screenwidth () * screenheight () * 2;
 		buf_scrwidth = screenwidth ();
+		buf_scrheight = screenheight ();
 	} else {
 		buf_setviewport (1, screenheight () / buf_char_height);
 		buf_setmargins (0, screenwidth () / 8 - 1);
 		buf_cls ();
 		buf_size = screenwidth () * screenheight ();
 		buf_scrwidth = screenwidth () / 8;
+		buf_scrheight = screenheight () / buf_char_height;
 	}
 
 	free (buf_copy);

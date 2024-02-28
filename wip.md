@@ -1,6 +1,7 @@
 # Backend
 
 [X] Scroll bien hecho (teniendo en cuenta los margenes) -> necesito implementar blit de buffer a buffer (en modo gráfico) y complicar un poco la copia en modo texto.
+[ ] Añadir clicks a PAD_THIS_FRAME y usarlo en los menús y zonas!
 
 # Intérprete
 
@@ -23,6 +24,7 @@
 
 	:label_name / :label_name_item / :label_name_action
 
+[ ] Controlar ESC en menús y zones para salir del juego <- reaprovechar TUI -- parametrizar cuadro de texto para que lo centre en cualquier resolución de pantalla!!!
 
 
 

@@ -6,6 +6,8 @@
 #define MT_KEY_RIGHT   32
 #define MT_KEY_YES     64
 #define MT_KEY_NO      128
+#define MT_KEY_LBUTTON 256
+#define MT_KEY_RBUTTON 512
 
 void keys_read (void);
 

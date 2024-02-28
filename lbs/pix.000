@@ -4,47 +4,48 @@ pix "ACANTIL.PIX" dbl
 print "UNA HAMBURGUESA"
 
 items reset
-
-menu reset
-menu config 10 10 20 0 7
-menu put "Coger cebolla"
-menu put "Coger tomate"
-menu put "Coger revista"
-menu put "Fin"
-
-:menu
-menu run :menuaccion
-go :menu
-
-:menuaccion_coger_cebolla
 items put "cebolla"
-menu remove "Coger cebolla"
-go :menu
+items put "cuerda"
+items put "collons"
 
-:menuaccion_coger_tomate
-items put "tomate"
-menu remove "Coger tomate"
-go :menu
+actions reset
+actions put "mirar"
+actions put "hablar"
+actions put "manipular"
+actions put "inventario" items
 
-:menuaccion_coger_revista
-items put "revista"
-menu remove "Coger revista"
-go :menu
+# No importan x y en este uso del menu
+menu config 0 0 16 0 7
 
-:menuaccion_fin
-items hasnt "cebolla" :skip_cebolla
-print "Tienes cebolla"
-:skip_cebolla
+infobar 0 0 7
 
-items hasnt "tomate" :skip_tomate
-print "Tienes tomate"
-:skip_tomate
+zones reset
+zones def "Rocas" 20 20 600 380 actions
+zones def "Irse" 610 20 640 380
 
-items hasnt "revista" :skip_revista
-print "Tienes revista"
-:skip_revista
+:zones_loop
+zones run :zone1_do
+print "Eso no sirve de nada"
+go :zones_loop
 
-print "Y ya"
+:zone1_do_rocas_mirar
+print "Son muy rocosas"
+go :zones_loop
 
+:zone1_do_rocas_hablar
+print "Le hablas a las rocas"
+go :zones_loop
 
-pause
+:zone1_do_rocas_inventario_cebolla
+print "Cebolleas las rocas
+go :zones_loop
+
+:zone1_do_rocas_inventario_cuerda
+print "La cuerda no se agarra"
+go :zones_loop
+
+:zone1_do_rocas_inventario_collons
+print "COLLONS!!"
+go :zones_loop
+
+:zone1_do_irse

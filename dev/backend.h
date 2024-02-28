@@ -15,6 +15,7 @@ void backend_bulma_pix (char *pathspec, char *lin, int dbl, int load_pal);
 int backend_heartbeat (void);
 void backend_init (void);
 void backend_menu_config (int x, int y, int w, int c1, int c2);
+int backend_menu_get_w (void);
 int backend_menu_run (void);
 int backend_inventory_run (void);
 int backend_exits_run (void);

@@ -8,6 +8,7 @@
 void lstextmode_init (void);
 void debuff_keys (void);
 int buf_get_scrwidth (void);
+int buf_get_scrheight (void);
 void buf_setviewport (int y1, int y2);
 int buf_getviewport_y1 (void);
 int buf_getviewport_y2 (void);
@@ -55,3 +56,5 @@ void buf_rec (void);
 void lstextmode_shutdown (void);
 void buf_font_atari (void);
 void buf_font_cga (void);
+int buf_to_char_coords_x (int x);
+int buf_to_char_coords_y (int y);

@@ -20,6 +20,12 @@ void utils_nospaces (char *s) {
 	}
 }
 
+int utils_adjust_coords (int coord, int min, int max) {
+	if (coord < min) return min;
+	if (coord > max) return max;
+	return coord;
+}
+
 /*
  * FLAGS
  */
@@ -481,7 +487,7 @@ char *zones_get_text (int index) {
 int zones_find (int x, int y) {
 	for (int i = 0; i < zones_index; i ++) {
 		if (
-			x >= zones [i].x1 && y <= zones [i].x2 &&
+			x >= zones [i].x1 && x <= zones [i].x2 &&
 			y >= zones [i].y1 && y <= zones [i].y2
 		) {
 			return i;

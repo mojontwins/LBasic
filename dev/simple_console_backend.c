@@ -263,7 +263,7 @@ int backend_exits_run (void) {
 
 int backend_actions_run (int x, int y) {
 	// Very simple implementation
-	printf ("EXITS: %d\n", actions_get_actions ());
+	printf ("ACTIONS: %d\n", actions_get_actions ());
 	for (int i = 0; i < actions_get_actions (); i ++) {
 		printf ("%d. %s\n", i + 1, actions_get_action (i));
 	}
@@ -318,3 +318,6 @@ int backend_zones_last_y (void) {
 	// NO OP
 }
 
+int backend_menu_get_w (void) {
+	return 0;
+}

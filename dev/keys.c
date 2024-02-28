@@ -16,7 +16,9 @@ void keys_read (void) {
 		(keystate (KEY_LEFT) << 4) |
 		(keystate (KEY_RIGHT) << 5) |
 		(keystate (KEY_S) << 6) |
-		(keystate (KEY_N) << 7)
+		(keystate (KEY_N) << 7) |
+		(keystate (KEY_LBUTTON) << 8) |
+		(keystate (KEY_RBUTTON) << 9)
 	;
 
 	pad_this_frame = (pad_this_frame ^ pad0) & pad0;

@@ -411,7 +411,10 @@ void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int
 	}
 }
 
-void backend_menu_keys (int *backend_menu_selected, int *done, int backend_menu_options) {
+void backend_menu_keys (
+	int *backend_menu_selected, int *done, int backend_menu_options, 
+	int x0, int y0, int w
+) {
 	keys_read ();
 	int pad_this_frame = keys_get_this_frame ();
 
@@ -423,13 +426,22 @@ void backend_menu_keys (int *backend_menu_selected, int *done, int backend_menu_
 		if (*backend_menu_selected < backend_menu_options - 1) *backend_menu_selected  = *backend_menu_selected + 1;
 	}
 
-	if (pad_this_frame & MT_KEY_ENTER) {
+	if ((pad_this_frame & MT_KEY_ENTER) || (pad_this_frame & MT_KEY_LBUTTON)) {
 		*done = 1;
 	}
 
 	if (pad_this_frame & MT_KEY_ESC) {
 		*done = 1;
 		*backend_menu_selected = -1;
+	}
+
+	int x = buf_to_char_coords_x (buf_get_mouse_x ()) - x0;
+	int y = buf_to_char_coords_y (buf_get_mouse_y ()) - y0 - 1;
+
+	if (x >= 0 && x <= w) {
+		if (y >= 0 && y <= backend_menu_options) {
+			*backend_menu_selected = y;
+		}
 	}
 }
 
@@ -454,7 +466,10 @@ int backend_menu_run (void) {
 		backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_menu_options);
+		backend_menu_keys (
+			&backend_menu_selected, &done, backend_menu_options,
+			backend_menu_x, backend_menu_y, backend_menu_w
+		);
 	}
 
 	debuff_keys ();
@@ -477,6 +492,10 @@ int _backend_inventory_run (int x, int y) {
 	int backend_inventory_items = inventory_get_items ();
 	if (backend_menu_selected >= backend_inventory_items) backend_menu_selected = backend_inventory_items - 1;
 
+	// Fix coords
+	x = utils_adjust_coords (x, 0, buf_get_scrwidth () - backend_menu_w);
+	y = utils_adjust_coords (y, 0, buf_get_scrheight () - backend_inventory_items - 2);
+
 	// Paint box
 	buf_color (backend_menu_c1, backend_menu_c2);
 	buf_box (x, y, x + backend_menu_w - 1, y + 1 + backend_inventory_items);
@@ -487,7 +506,8 @@ int _backend_inventory_run (int x, int y) {
 		backend_menu_display (x, y, inventory_get_item, backend_inventory_items);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items);
+		backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items,
+			x, y, backend_menu_w);
 	}
 
 	debuff_keys ();
@@ -528,7 +548,8 @@ int backend_exits_run (void) {
 		backend_menu_display (backend_menu_x, backend_menu_y, exits_get_option_text, backend_exits_items);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_exits_items);
+		backend_menu_keys (&backend_menu_selected, &done, backend_exits_items,
+			backend_menu_x, backend_menu_y, backend_menu_w);
 	}
 
 	debuff_keys ();
@@ -548,8 +569,12 @@ int backend_actions_run (int x, int y) {
 	buf_sve ();
 
 	int done = 0;
-	int backend_actions_items = exits_get_options ();
+	int backend_actions_items = actions_get_actions ();
 	if (backend_menu_selected >= backend_actions_items) backend_menu_selected = backend_actions_items - 1;
+
+	// Fix coords
+	x = utils_adjust_coords (x, 0, buf_get_scrwidth () - backend_menu_w);
+	y = utils_adjust_coords (y, 0, buf_get_scrheight () - backend_actions_items - 2);
 
 	// Paint box
 	buf_color (backend_menu_c1, backend_menu_c2);
@@ -561,7 +586,8 @@ int backend_actions_run (int x, int y) {
 		backend_menu_display (x, y, actions_get_action, backend_actions_items);
 
 		// Read keys
-		backend_menu_keys (&backend_menu_selected, &done, backend_actions_items);
+		backend_menu_keys (&backend_menu_selected, &done, backend_actions_items,
+			x, y, backend_menu_w);
 	}
 
 	debuff_keys ();
@@ -587,7 +613,7 @@ int backend_show_info_bar (int zone) {
 	buf_char (' ');
 
 	int w = buf_get_scrwidth (); 
-	for (int i = 0; i < w; i ++) {
+	for (int i = 0; i < w - 1; i ++) {
 		buf_char (
 			i > 0 && 
 			i <= strlen (zone_text) && 
@@ -601,25 +627,26 @@ int backend_show_info_bar (int zone) {
 }
 
 int backend_zones_last_x (void) {
-	return zones_last_x;
+	return buf_to_char_coords_x (zones_last_x);
 }
 
 int backend_zones_last_y (void) {
-	return zones_last_y;
+	return buf_to_char_coords_y (zones_last_y);
 }
 
 int backend_zones_run (void) {
 	// Read mouse, show info, register zone click
 	int done = 0;
+	int zone;
 
+	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Get mouse pos
 		int mouse_x = buf_get_mouse_x ();
 		int mouse_y = buf_get_mouse_y ();
-		int mouse_b1 = buf_get_mouse_b (1);
-
+		
 		// Get zone
-		int zone = zones_find (mouse_x, mouse_y);
+		zone = zones_find (mouse_x, mouse_y);
 
 		// Show
 		if (backend_info_bar_y >= 0) {
@@ -627,12 +654,22 @@ int backend_zones_run (void) {
 		}
 
 		// Click
-		if (mouse_b1 && zone >= 0) {
+		keys_read ();
+		int pad_this_frame = keys_get_this_frame ();
+		
+		if (pad_this_frame & MT_KEY_LBUTTON) {
 			zones_last_x = mouse_x;
 			zones_last_y = mouse_y;
-			return zone;
+			done = 1;
+		}
+
+		if (pad_this_frame & MT_KEY_ESC) {
+			zone = -1;
+			done = 1;
 		}
 	}
+	
+	return zone;
 }
 
 void backend_fancy_font (char *f) {
@@ -648,6 +685,10 @@ void backend_set_info_bar (int y, int c1, int c2) {
 	backend_info_bar_y = y;
 	backend_info_bar_c1 = c1;
 	backend_info_bar_c2 = c2;
+}
+
+int backend_menu_get_w (void) {
+	return backend_menu_w;
 }
 
 void backend_shutdown (void) {

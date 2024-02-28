@@ -364,43 +364,63 @@ int lbasi_run_file (FILE *file) {
 			char *zones_command = get_token (1);
 			utils_tolower (zones_command);
 
-			int zone = backend_zones_run ();
-			if (zone > 0) {
-				int x = backend_zones_last_x ();
-				int y = backend_zones_last_y ();
+			if (strcmp (zones_command, "reset") == 0 || strcmp (zones_command, "limpia") == 0) {
+				zones_reset ();
 
-				int type = zones_get_type (zone);
+			} else if (strcmp (zones_command, "def") == 0) {
+				// "texto" x1 y1 x2 y2 [actions]
+				zones_add_item (
+					get_token (2),
+					flags_parse_value (get_token (3)),
+					flags_parse_value (get_token (4)),
+					flags_parse_value (get_token (5)),
+					flags_parse_value (get_token (6)),
+					zones_get_token_type (get_token (7))
+				);
 
-				strcpy (temp_buffer, get_token (2)); 				// :label
-				strcat (temp_buffer, "_");                          // _
-				strcat (temp_buffer, zones_get_text (zone));        // ZONE
+			} else if (strcmp (zones_command, "run") == 0) {
 
-				if (type == ZONE_TYPE_ACTIONS) {
+				int zone = backend_zones_run ();
+				if (zone >= 0) {
 
-					// Display actions menu
-					int action = backend_actions_run (x, y);
-					if (action >= 0) {
-						strcat (temp_buffer, "_");
-						strcat (temp_buffer, actions_get_action (action));
+					int type = zones_get_type (zone);
 
-						// Get action type
-						int action_type = actions_get_type (action);
+					strcpy (temp_buffer, get_token (2)); 				// :label
+					strcat (temp_buffer, "_");                          // _
+					strcat (temp_buffer, zones_get_text (zone));        // ZONE
 
-						// Show items?
-						if (action_type == ACTIONS_TYPE_ITEMS) {
-							int item = backend_inventory_run_xy (x, y);
+					if (type == ZONE_TYPE_ACTIONS) {
 
-							if (item >= 0) {
-								strcat (temp_buffer, "_");
-								strcat (temp_buffer, inventory_get_item (item));
+						// Display actions menu
+						int x = backend_zones_last_x ();
+						int y = backend_zones_last_y ();
+
+						x -= backend_menu_get_w () / 2;
+						y -= actions_get_actions () / 2;
+
+						int action = backend_actions_run (x, y);
+						if (action >= 0) {
+							strcat (temp_buffer, "_");
+							strcat (temp_buffer, actions_get_action (action));
+
+							// Get action type
+							int action_type = actions_get_type (action);
+
+							// Show items?
+							if (action_type == ACTIONS_TYPE_ITEMS) {
+								int item = backend_inventory_run_xy (x, y);
+
+								if (item >= 0) {
+									strcat (temp_buffer, "_");
+									strcat (temp_buffer, inventory_get_item (item));
+								}
 							}
 						}
+
 					}
 
+					lbasi_goto (file, temp_buffer);
 				}
-
-				lbasi_goto (file, temp_buffer);
-
 			}
 
 		} else if (strcmp (command_token, "infobar") == 0) {
@@ -692,6 +712,8 @@ int lbasi_run_tmp (char *tmp, char *spec) {
 	menu_reset ();
 	inventory_reset ();
 	exits_reset ();
+	actions_reset ();
+	zones_reset ();
 	
 	attempts = DEFAULT_ATTEMPTS;
 
