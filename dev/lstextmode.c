@@ -523,19 +523,27 @@ void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int
 		int hp = h * buf_char_height;
 		int x2p = x1p + wp - 1;
 		int y2p = y1p + hp - 1;
+		int dotitle = title && strlen (title);
 
-		setcolor (c2);
-		bar (x1p, y1p, wp, hp);
-		setcolor (f);
-		rectangle (x1p - 1, y1p - 1, wp + 2, hp + 1);
-		rectangle (x1p - 2, y1p - 2, wp + 4, hp + 3);
-
-		if (title && strlen (title)) {
+		int h2 = h;
+		if (dotitle) {
 			setcolor (tc2);
 			bar (x1p, y1p, wp, buf_char_height);
 			setcolor (tc1);
 			outtextxy (x1p + 8, y1p, title);
 			y1 ++;
+			h2 --;
+		}
+
+		int y1p2 = y1 * buf_char_height;
+
+		for (int hi = 1; hi <= h2; hi ++) {
+			setcolor (c2);
+			bar (x1p, y1p2, wp, hi * buf_char_height);
+			setcolor (f);
+			rectangle (x1p - 1, y1p - 1, wp + 2, (hi + dotitle) * buf_char_height + 1);
+			rectangle (x1p - 2, y1p - 2, wp + 2, (hi + dotitle) * buf_char_height + 3);
+			waitvbl ();
 		}
 
 		int backup_x = buf_x;

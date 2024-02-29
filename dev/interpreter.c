@@ -401,6 +401,9 @@ int lbasi_run_file (FILE *file) {
 				backend_tb (get_token (1), title, wt, cbc);
 
 			}
+		} else if (strcmp (command_token, "fancy_cls") == 0) {
+			backend_fancy_cls ();
+			
 		}
 
 		// *** ACTIONS ***

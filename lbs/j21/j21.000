@@ -9,4 +9,17 @@ pause
 mode gfx_dbl
 fnt "pix/SCRIPT2.FNT"
 
+actions reset
+actions put "Mirar"
+actions put "Hablar"
+actions put "Manipular"
+actions put "Inventario"
+
+items reset
+items put "D.N.I."
+
+menu config 0 0 16 0 7
+infobar 0 0 7
+cbc 2
+
 chain "J21_F1.lbs" :yoli1_start

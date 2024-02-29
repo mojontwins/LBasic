@@ -767,7 +767,29 @@ void backend_shpal (void) {
 
 void backend_fancy_cls (void) {
 	// Fuera adentro, rectangulitos. Sólo gráficos
-	
+	int w = buf_getscrw ();	// 640
+	int h = buf_getscrh ();
+
+	int sqs = w == 640 ? 16 : 8; 	// 16
+
+	int maxy = 1 + (h / sqs) / 2; 		// (400 / 16) / 2 = 12
+	int wx = w / sqs; 				// wx = 40
+	int hy = h / sqs; 				// hy = 25
+
+	setcolor (0);
+	for (int i = 0; i < maxy; i ++) {
+		for (int x = i; x < wx - i; x ++) {
+			bar (x * sqs, i * sqs, sqs, sqs);
+			bar (x * sqs, h - (i + 1) * sqs, sqs, sqs);
+		}
+
+		for (int y = i; y < hy - i; y ++) {
+			bar (i * sqs, y * sqs, sqs, sqs);
+			bar (w - (i + 1) * sqs, y * sqs, sqs, sqs);
+		}
+
+		waitvbl ();
+	}
 }
 
 void backend_shutdown (void) {

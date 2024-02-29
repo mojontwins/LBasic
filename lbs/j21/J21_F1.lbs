@@ -1,16 +1,4 @@
 tb config 1 18 78 6 0 7 15 0 8
-menu config 0 0 16 0 7
-infobar 0 0 7
-cbc 2
-
-actions reset
-actions put "Mirar"
-actions put "Hablar"
-actions put "Manipular"
-actions put "Inventario"
-
-items reset
-items put "D.N.I."
 
 pix "pix/CHALET.PIX" dbl fancy
 
@@ -94,7 +82,7 @@ ret
 fancy_cls
 pix "pix/YOLI1.PIX" dbl fancy
 
-tb config 50 6 29 12 0 7 255 0 8
+tb config 50 9 29 6 0 7 255 0 8
 tbwc "Eh... ­Hola! ¨Y t£ quien eres?" "Extra¤a"
 tbwc "Ah, hola..." "T£"
 tbwc "Vaya... ¨Qui‚n es esta? ­Ya lo s‚! ­Me he equivocado de casa!" "T£ (pensando)"
@@ -108,4 +96,33 @@ tbwc "Oh, s¡, claro, ­qu‚ tonta! Pasa, pasa." "Extra¤a"
 :vestibulo_start
 fancy_cls
 tb config 1 18 78 6 0 7 15 0 8
+
+tbwc "­Menos mal! Casi ibas a desfallecer por el calor. "
+
+pix "pix/VESTIB.PIX" dbl fancy
+
+zones clear
+zones def "Vest¡bulo" *0 *0 *319 *199 actions
+
+:vestibulo_run
+zones run :vestibulo :vestibulo_run
+tbwc "Eso no parece que sirva para nada..." wt
+ret
+
+:vestibulo_vest¡bulo_mirar
+tbwc "La estancia a la que has accedido es un vest¡bulo oscuro y t‚trico. Varias puertas parecen llevar a otras zonas de la enorme casa, y hay una escalera que lleva al piso superior. Antes de que puedas fijarte mejor, la chica se acerca desde atr s y te toca en el hombro."
+
+fancy_cls
+pix "pix/YOLI1.PIX" dbl fancy
+
+tb config 50 9 29 6 0 7 255 0 8
+tbwc "Ay, perdona, no te he dicho mi nombre. Me llamo Yolanda, pero me dicen Yoli. Soy una amiga de la infancia de Mar¡a." "Extra¤a"
+tbwc "Yo tambi‚n estoy pasando aqu¡ unos d¡as con ella... ­la casa es tan grande!" "Yoli"
+tbwc "Mar¡a me dijo que ten¡a que bajar al pueblo a comprar algunas cosas que le hac¡an falta. No creo que tarde mucho" "Yoli"
+tbwc "Mucho gusto conocerte, Yoli." "T£"
+tbwc "­Pero no te quedes ah¡ de pie! Cuando has llamado me has pillado yendo al jard¡n a tomar el sol." "Yoli"
+tbwc "¨Por qu‚ no vienes conmigo y charlamos un rato hasta que llegue Maria? ¨Te apetece?" "Yoli"
+tbwc "Claro, ser  agradable" "T£"
+
+fancy_cls
 
