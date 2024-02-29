@@ -304,7 +304,7 @@ void backend_bulma_lin (char *pathspec, char *lin) {
 	// NO OP
 }
 
-void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
+void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal, int fancy) {
 	// NO OP
 	printf ("%s %s %d %d\n", pathspec, pix, dbl, load_pal);
 }

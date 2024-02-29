@@ -752,10 +752,13 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 }
 
 // Assumes compatible video mode!
-void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
-	char pix_buffer [7 + 64000 + 768];
+void buf_bulma_pix (char *pix, int dbl, int do_setpal, int fancy) {
 	unsigned char *buf = screenbuffer ();
 	int width = screenwidth ();
+	int height = screenheight ();
+
+	char pix_buffer [7 + 64000 + 768];
+	char render_buffer [width * height];
 
 	if (dbl && width != 640) dbl = 0;
 
@@ -779,10 +782,10 @@ void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
 			int x = 0; int ofs = 0;
 			for (int i = 0; i < 64000; i ++) {
 				unsigned char c = *ptr ++;
-				buf [ofs + x] = c;
-				buf [ofs + x + 1] = c;
-				buf [ofs + width + x] = c;
-				buf [ofs + width + x + 1] = c;
+				render_buffer [ofs + x] = c;
+				render_buffer [ofs + x + 1] = c;
+				render_buffer [ofs + width + x] = c;
+				render_buffer [ofs + width + x + 1] = c;
 				x += 2;
 				if (x == width) {
 					x = 0; ofs += width + width;
@@ -790,10 +793,41 @@ void buf_bulma_pix (char *pix, int dbl, int do_setpal) {
 			}
 		} else {
 			// Just copy raw
-			memcpy (buf, pix_buffer + 7, 64000);
+			memcpy (render_buffer, pix_buffer + 7, 64000);
 		}
 
 		fclose (pf);
+
+		// Blit
+		if (fancy) {
+			int sqs = width == 640 ? 16 : 8;
+			int wx = width / sqs; 				// wx = 40
+			int hy = height / sqs; 				// hy = 25
+			int maxy = hy / 2;
+
+			for (int i =maxy; i >= 0; i --) {
+				for (int x = i; x < wx - i; x ++) {
+					blit (x * sqs, i * sqs, render_buffer, width, height, 
+						x * sqs, i * sqs, sqs, sqs);
+
+					blit (x * sqs, height - (i + 1) * sqs, render_buffer, width, height, 
+						x * sqs, height - (i + 1) * sqs, sqs, sqs);
+				}
+
+				for (int y = i; y < hy - i; y ++) {
+					blit (i * sqs, y * sqs, render_buffer, width, height,
+						i * sqs, y * sqs, sqs, sqs);
+
+					blit (width - (i + 1) * sqs, y * sqs, render_buffer, width, height,
+						width - (i + 1) * sqs, y * sqs, sqs, sqs);
+				}
+
+				waitvbl ();
+			}
+
+		} else {
+			memcpy (buf, render_buffer, sizeof (render_buffer));
+		}
 	}
 
 }

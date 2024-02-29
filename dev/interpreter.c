@@ -365,7 +365,7 @@ int lbasi_run_file (FILE *file) {
 			backend_fancy_font (get_token (1));
 
 		} else if (strcmp (command_token, "pix") == 0) {
-			backend_bulma_pix (main_path_spec, get_token (1), strcmp (get_token (2), "dbl") == 0, 1);
+			backend_bulma_pix (main_path_spec, get_token (1), token_exists ("dbl"), 1, token_exists ("fancy"));
 
 		} else if (strcmp (command_token, "fnt") == 0) {
 			backend_fnt (main_path_spec, get_token (1));

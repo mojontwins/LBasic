@@ -332,11 +332,11 @@ void backend_bulma_lin (char *pathspec, char *lin) {
 	free (fullpath);
 }
 
-void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal) {
+void backend_bulma_pix (char *pathspec, char *pix, int dbl, int load_pal, int fancy) {
 	char *fullpath = compute_full_path (pathspec, pix);
 
 	if (buf_getmode () != LS_MODE_TEXT) {
-		buf_bulma_pix (fullpath, dbl, load_pal);
+		buf_bulma_pix (fullpath, dbl, load_pal, fancy);
 	}
 
 	free (fullpath);

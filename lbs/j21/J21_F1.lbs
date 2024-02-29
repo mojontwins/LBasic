@@ -113,9 +113,9 @@ ret
 tbwc "La estancia a la que has accedido es un vest¡bulo oscuro y t‚trico. Varias puertas parecen llevar a otras zonas de la enorme casa, y hay una escalera que lleva al piso superior. Antes de que puedas fijarte mejor, la chica se acerca desde atr s y te toca en el hombro."
 
 fancy_cls
+tb config 50 9 29 6 0 7 255 0 8
 pix "pix/YOLI1.PIX" dbl fancy
 
-tb config 50 9 29 6 0 7 255 0 8
 tbwc "Ay, perdona, no te he dicho mi nombre. Me llamo Yolanda, pero me dicen Yoli. Soy una amiga de la infancia de Mar¡a." "Extra¤a"
 tbwc "Yo tambi‚n estoy pasando aqu¡ unos d¡as con ella... ­la casa es tan grande!" "Yoli"
 tbwc "Mar¡a me dijo que ten¡a que bajar al pueblo a comprar algunas cosas que le hac¡an falta. No creo que tarde mucho" "Yoli"
@@ -124,5 +124,52 @@ tbwc "­Pero no te quedes ah¡ de pie! Cuando has llamado me has pillado yendo al 
 tbwc "¨Por qu‚ no vienes conmigo y charlamos un rato hasta que llegue Maria? ¨Te apetece?" "Yoli"
 tbwc "Claro, ser  agradable" "T£"
 
+:cocina_intro
 fancy_cls
+tb config 1 18 78 6 0 7 15 0 8
+pix "pix/COCINA.pix" dbl fancy
+
+tbwc "Entr is por la primera puerta, que da a la cocina. No te da tiempo de deleitarte con los muebles de los a¤os ochenta: os dirig¡s directamente a la puerta que da a un jard¡n con una piscina. Por desgracia, parece que la puerta est  cerrada con llave..."
+
+fancy_cls
+tb config 50 9 29 6 0 7 255 0 8
+pix "pix/YOLI1.PIX" dbl fancy
+
+tbwc "­Vaya, hombre! ­Ahora est  cerrada!" "Yoli"
+tbwc "¨No sabes donde est  la llave?" "T£"
+tbwc "Qu‚ va. Creo que he visto a Mar¡a guardarla por el sal¢n o por ah¡, pero no se d¢nde" "Yoli"
+tbwc "­Voy a buscarla" "T£"
+
+# Flags:
+# 1 - llave
+# 2 - aceite
+
+let 1 0
+let 2 0
+let 3 0
+let 4 0
+
+:cocina_start
+fancy_cls
+tb config 1 18 78 6 0 7 15 0 8
+pix "pix/COCINA.pix" dbl fancy
+
+zones clear
+zones def "Alacena" *0 *28 *36 *101 actions
+zones def "Alacena" *31 *33 *88 *75 actions
+zones def "Alacena" *176 *51 *194 *95 actions
+zones def "Alacena" *210 *48 *231 *158 actions
+zones def "Alacena" *239 *40 *302 *71 actions
+zones def "Alacena" *0 *157 *49 *189 actions
+# El jugador no ver  el espacio pero genera otra etiqueta!
+zones def "Alacena " *127 *136 *167 *175 actions
+zones def "Grifo" *126 *108 *137 *122 actions
+
+zones def "Vest¡bulo" *0 *190 *300 *199
+zones def "Piscina" *301 *0 *319 *199
+
+:cocina_run
+zones run :cocina :cocina_run
+tbwc "Eso no parece que sirva para nada..." wt
+ret
 
