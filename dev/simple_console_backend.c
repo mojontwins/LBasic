@@ -275,9 +275,16 @@ int backend_actions_run (int x, int y) {
 
 int backend_zones_run (void) {
 	// Very simple implementation
-	printf ("EXITS: %d\n", zones_get_zones ());
+	printf ("ZONES: %d\n", zones_get_zones ());
 	for (int i = 0; i < zones_get_zones (); i ++) {
-		printf ("%d. %s\n", i + 1, zones_get_text (i));
+		printf ("%d. %s %d %d %d %d\n", 
+			i + 1, 
+			zones_get_text (i), 
+			zones_get_x1 (i), 
+			zones_get_y1 (i), 
+			zones_get_x2 (i), 
+			zones_get_y2 (i)
+		);
 	}
 
 	int res = backend_read_option (10);
@@ -333,5 +340,17 @@ void backend_tb (char *text, char *title, int wt, int cbc) {
 }
 
 void backend_fnt (char *pathspec, char *fnt) {
+	// NO OP
+}
+
+void backend_buf_char_delay (int d) {
+	// NO OP
+}
+
+void backend_shpal (void) {
+	// NO OP
+}
+
+void backend_fancy_cls (void) {
 	// NO OP
 }

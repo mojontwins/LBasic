@@ -1,0 +1,12 @@
+print
+centra "JA S.ADV. 2.1"
+print
+centra "LBasic port demo"
+print
+centra "Pulsa una tecla"
+pause
+
+mode gfx_dbl
+fnt "pix/SCRIPT2.FNT"
+
+chain "J21_F1.lbs" :yoli1_start

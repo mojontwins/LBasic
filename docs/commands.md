@@ -510,10 +510,10 @@ Borra todas las zonas
 Añade una zona con `texto` representando al rectángulo que va desde (x1, y1) hasta (x2, y2). Si se especifica `actions` esta zona desplegará el menú de acciones.
 
 ```
-	zones run :label
+	zones run :label :label_ret
 ```
 
-Se espera a que el jugador seleccione una zona y desplegará los menús encadenados que corresponda.
+Se espera a que el jugador seleccione una zona y desplegará los menús encadenados que corresponda. La segunda etiqueta es adónde se volverá al ejecutar "ret".
 
 ```
 	infobar off|y c1 c2
@@ -521,5 +521,33 @@ Se espera a que el jugador seleccione una zona y desplegará los menús encadena
 
 Desactiva o activa (y configura) una barra de información que se deplegará mientras el usuario se mueve por la pantalla con el ratón, mostrando el texto de la zona activa.
 
+# Text box
 
+```
+	tb "texto" ["titulo"] [wt] [cbc]
+	tbwc "texto" ["titulo"]
+```
 
+Dibuja una caja de texto con `texto` y un título opcional `título`. Si se especifica `wt` se espera a que se haga click o se pulse ENTER. Si se especifica `cbc` se presenta el texto carácter a carácter. 
+
+`tbwc` es una abreviatura de tb con `wt` y `cbc`, para escribir menos.
+
+El cuadro de texto se configura con un porrón de parámetros:
+
+```
+	tb config x y w h c1 c2 tc1 tc2 f
+```
+
+* `x`, `y` las coordenadas (carácter) de la esquina superior izquierda. 
+* `w`, `h` la anchura y la altura (en carácteres).
+* `c1`, `c2` el color de primer plano y de fondo del texto.
+* `tc1`, `tc2` el color de primer plano y de fondo del título opcional.
+* `f` el color de la linea que hace de borde.
+
+# cbc
+
+```
+	cbc n
+```
+
+Establece el delay del texto a "n" ticks. El valor por defecto es 4. Cuanto más, más lento. Hay 60 ticks en 1 segundo.

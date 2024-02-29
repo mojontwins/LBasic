@@ -47,9 +47,12 @@ void flags_set (int index, int value) {
 int flags_parse_value (char *s) {
 	// Parse an encoded value with possible flags
 	// 1, $3, $$2, etc are allowed.
+	// *3 returns 6 (3x2)
 
 	if (strlen (s)) {
-		if (s [0] == '$') {
+		if (s [0] == '*') {
+			return flags_parse_value (s + 1) * 2;
+		} else if (s [0] == '$') {
 			return flags_get (flags_parse_value (s + 1));
 		} else {
 			// Compose number
@@ -424,6 +427,22 @@ typedef struct ZONE {
 
 ZONE zones [MAX_ZONES];
 int zones_index;
+
+int zones_get_x1 (int index) {
+	return zones [index].x1;
+}
+
+int zones_get_y1 (int index) {
+	return zones [index].y1;
+}
+
+int zones_get_x2 (int index) {
+	return zones [index].x2;
+}
+
+int zones_get_y2 (int index) {
+	return zones [index].y2;
+}
 
 void zones_reset (void) {
 	zones_index = 0;

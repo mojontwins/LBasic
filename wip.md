@@ -28,21 +28,7 @@
 [ ] Flujo chain "file.ext", sin restricción. Se le añade "directory spec" al principcio.como a todo.
 [X] Caja de texto bulma
 [ ] Itegración "EXTERN N M" para que lo implemente el juego que sea
-
-
-```
-	tb config x y w h c1 c2 tc1 tc2 f
-```
-
-Eso son un montón de parámetros!
-
-```
-	tb "text" ["title"] [cbc] [wt]
-```
-ffffffffffffffff
-fTITLE
-ftextotextotextotexto
-ffffffffffffffff...
+[ ] Añadir un flag para que los comandos no esperen vbl, por lo general!
 
 # Editor
 

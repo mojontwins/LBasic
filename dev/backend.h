@@ -46,3 +46,6 @@ int backend_zones_last_y (void);
 void backend_set_info_bar (int y, int c1, int c2);
 void backend_tb_config (int x, int y, int w, int h, int c1, int c2, int tc1, int tc2, int f);
 void backend_tb (char *text, char *title, int wt, int cbc);
+void backend_buf_char_delay (int d);
+void backend_shpal (void);
+void backend_fancy_cls (void);

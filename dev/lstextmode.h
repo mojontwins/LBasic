@@ -6,6 +6,7 @@
 #define LS_MODE_GFX_DBL		5
 
 void lstextmode_init (void);
+void buf_set_buf_char_delay (int d);
 void debuff_keys (void);
 int buf_get_scrwidth (void);
 int buf_get_scrheight (void);

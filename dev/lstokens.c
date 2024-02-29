@@ -59,6 +59,7 @@ void parse_to_tokens (char *string) {
 	cur_token = 0;
 	int cur_index = 0;
 	int in_quotes = 0;
+	int was_quoted = 1;
 
 	// Clear first
 	for (i = 0; i < MAX_TOKENS; i ++) {
@@ -70,8 +71,14 @@ void parse_to_tokens (char *string) {
 
 		if (cur_char == 0 || cur_char == '\r' || cur_char == '\n' || ((cur_char == ' ' || cur_char == '\t') && in_quotes == 0)) {
 			if (cur_index > 0) {
-				tokens [cur_token ++][cur_index] = 0;
+				tokens [cur_token][cur_index] = 0;
 				cur_index = 0;
+
+				// Break early on comments!
+				if (was_quoted == 0 && strlen (tokens [cur_token]) && tokens [cur_token][1] == '#') break;
+
+				cur_token ++;
+				was_quoted = 0;
 			}
 		} else if (cur_char == 34) {
 			in_quotes = !in_quotes;
@@ -79,7 +86,7 @@ void parse_to_tokens (char *string) {
 			if (in_quotes == 0 && cur_index > 0) {
 				tokens [cur_token ++][cur_index] = 0;
 				cur_index = 0;
-			}
+			} else was_quoted = 1;
 		} else {
 			tokens [cur_token][cur_index ++] = cur_char;
 			if (cur_index == TOKEN_MAX_LENGTH) {

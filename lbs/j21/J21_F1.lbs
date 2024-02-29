@@ -1,0 +1,111 @@
+tb config 1 18 78 6 0 7 15 0 8
+menu config 0 0 16 0 7
+infobar 0 0 7
+cbc 2
+
+actions reset
+actions put "Mirar"
+actions put "Hablar"
+actions put "Manipular"
+actions put "Inventario"
+
+items reset
+items put "D.N.I."
+
+pix "pix/CHALET.PIX" dbl fancy
+
+sleep 2.0
+
+tbwc "Entusiasmado haces todos los preparativos. Te montas en tu viejo coche del 71 dispuesto a vivir muchas aventuras. Los nervios te juegan una mala pasada y te pierdes un par de veces... ­te haces un l¡o con los mapas! Por suerte, a media ma¤ana, consigues llegar a la direcci¢n que ven¡a en la carta. ­Es impresionante! Se trata de un chal‚ enorme en una urbanizaci¢n de super lujo..."
+
+sleep 1.0
+
+tbwc "­Empieza, pues tu aventura! Recuerda actuar con cabeza, ­no hagas locuras! te bajas el coche y caminas con paso firme a la entrada de la casa . . ." "­Vamos al l¡o!"
+
+fancy_cls
+
+:puerta_start
+pix "pix/PUERTA.PIX" dbl fancy
+
+# *N significa que la coordenada se multiplicar  por 2
+# (y as¡ casar  con los gr ficos a doble tama¤o)
+
+zones reset
+zones def "Pomo" *191 *65 *207 *83 actions
+zones def "Puerta" *104 *0 *210 *149 actions
+zones def "Timbre" *219 *15 *237 *32 actions
+zones def "C‚sped" *0 *149 *319 *199 actions
+zones def "Pared" *0 *0 *104 *148 actions
+zones def "Pared" *211 *0 *319 *148 actions
+
+:puerta_run
+zones run :puerta :puerta_run
+tbwc "Eso no parece que sirva para nada..." wt
+ret
+
+# todos los 'Hablar' fallan
+:puerta_pomo_hablar
+:puerta_puerta_hablar
+:puerta_timbre_hablar
+:puerta_c‚sped_hablar
+:puerta_pared_hablar
+tbwc "­Vaya! ¨Otra vez hablando con tu amigo imaginario? ­Pues empezamos bien! ­Como te vean, van a pensar que no est s en tus cabales!"
+ret
+
+# Pomo
+:puerta_pomo_mirar
+tbwc "Un pomo bien caro, de metal macizo bru¤ido. Debe pesar como que dos kilos. Seguro que este pomo vale m s que todo el porche de tu casa."
+ret
+
+:puerta_pomo_manipular
+tbwc "Pues no se mueve ni un poquito. Y te parece muy normal."
+ret
+
+# Puerta
+:puerta_puerta_mirar
+tbwc "Una maciza puerta met lica que parece que pudiera soportar un ob£s, y que sirve de entrada a la casa de Mar¡a (esperas que no te hayas equivocado de casa). Est  cerrada a cal y canto. Debe haber cosas muy valiosas al otro lado."
+ret
+
+:puerta_puerta_manipular
+tbwc "Ni se cantea. La puerta encaja perfectamente en los goznes. Podr¡a servir como exclusa de un submarino."
+ret
+
+# Timbre
+:puerta_timbre_mirar
+tbwc "Un timbre el‚ctrico precioso. De muy alta calidad. Fabricado con pl sticos nobles."
+ret
+
+:puerta_timbre_manipular
+tbwc "Oyes un melodioso DING DONG que parece grabado por la Filarm¢nica de Londres. Esperas unos instantes y alguien te abre la puerta" cbc wt
+go :yoli1_start
+
+# C‚sped
+:puerta_c‚sped_mirar
+tbwc "Bonito, fresco, bien cuidado. Cada brizna parece ser exactamente de la misma longitud de las dem s. Casi te da pena pisarlo con tus indignas chanclas de todo a 100."
+ret
+
+:puerta_pared_mirar
+tbwc "La pared est  un poco resquebrajada. No sabes si tendr  que ver con la salinidad del ambiente, ya que la casa est  pr cticamente a pie de playa, o quiz  se sea as¡ por dise¤o. Probablemente sea esto £ltimo. La gente con pasta es bastante extravagante."
+ret
+
+# 
+
+:yoli1_start
+fancy_cls
+pix "pix/YOLI1.PIX" dbl fancy
+
+tb config 50 6 29 12 0 7 255 0 8
+tbwc "Eh... ­Hola! ¨Y t£ quien eres?" "Extra¤a"
+tbwc "Ah, hola..." "T£"
+tbwc "Vaya... ¨Qui‚n es esta? ­Ya lo s‚! ­Me he equivocado de casa!" "T£ (pensando)"
+tbwc "Me llamo [...]. Perdona, ¨es esta la casa de Mar¡a?" "T£"
+tbwc "S¡, claro... ¨Eres una de sus amistades de la ciudad o algo? No me suena nada tu cara" "Extra¤a"
+tbwc "S¡. Nos conocemos del a¤o pasado. Recib¡ una carta la semana pasada en la que me invitaba a pasar unos d¡as aqu¡, en la playa" "T£"
+tbwc "Pues ella no est  aqu¡ ahora mismo. Ha salido a hacer unas cosas." "Extra¤a"
+tbwc "¨Te importa si paso y la espero dentro? ­Es que hace m£ch¡simo calor!" "T£"
+tbwc "Oh, s¡, claro, ­qu‚ tonta! Pasa, pasa." "Extra¤a"
+
+:vestibulo_start
+fancy_cls
+tb config 1 18 78 6 0 7 15 0 8
+

@@ -118,6 +118,10 @@ int actions_get_type (int index);
 #define ZONE_TYPE_ACTIONS 3
 
 void zones_reset (void);
+int zones_get_x1 (int index);
+int zones_get_y1 (int index);
+int zones_get_x2 (int index);
+int zones_get_y2 (int index);
 int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type);
 void zones_reorganize (void);
 void zones_delete_item (unsigned char *item);

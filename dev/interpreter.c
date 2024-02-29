@@ -122,6 +122,8 @@ int lbasi_run_file (FILE *file) {
 	char legacy_buffer [LEGACY_BUFFER_SIZE];
 	char draw_buffer [2048];
 	char *command_token;
+	char ret_label [LABEL_LEN];
+	ret_label [0] = 0;
 
 	lbasi_read_labels (file);
 
@@ -145,12 +147,16 @@ int lbasi_run_file (FILE *file) {
 			backend_setxy (atoi (get_token (1)), atoi (get_token (2)));
 
 		} else if (strcmp (command_token, "print") == 0) {
-			backend_print_ln (get_token (1));
+			if (strlen (get_token (1)) == 0) {
+				backend_print_ln ("");
+			} else {
+				backend_print_ln (get_token (1));
+			}
 
 		} else if (strcmp(command_token, "write") == 0) {
 			backend_print (get_token (1));
 
-		} else if (strcmp (command_token, "center") == 0) {
+		} else if (strcmp (command_token, "center") == 0 || strcmp (command_token, "centra") == 0) {
 			backend_center (get_token (1));
 
 		} else if (strcmp (command_token, "color") == 0) {
@@ -216,6 +222,9 @@ int lbasi_run_file (FILE *file) {
 
 		} else if (strcmp (command_token, "ansibin") == 0) {
 			backend_ansibin (main_path_spec, get_token (1));
+
+		} else if (strcmp (command_token, "cbc") == 0) {
+			backend_buf_char_delay (flags_parse_value (get_token (1)));
 
 		}
 
@@ -300,6 +309,10 @@ int lbasi_run_file (FILE *file) {
 			strcpy (initial_label, get_token (2));
 			res = 8;
 			run = 0;
+
+		} else if (strcmp (command_token, "ret") == 0) {
+			lbasi_goto (file, ret_label);
+
 		}
 
 		// *** GFX MODE ***
@@ -312,6 +325,9 @@ int lbasi_run_file (FILE *file) {
 			backend_set_mode (mode);
 			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
+		} else if (strcmp (command_token, "shpal") == 0) {
+			backend_shpal ();
+			
 		}
 
 		// *** PRESENTS.EXE ***
@@ -354,7 +370,7 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "fnt") == 0) {
 			backend_fnt (main_path_spec, get_token (1));
 
-		} else if (strcmp (command_token, "tb") == 0) {
+		} else if (strcmp (command_token, "tb") == 0 || strcmp (command_token, "tbwc") == 0) {
 			if (token_exists ("config")) {
 				backend_tb_config (
 					flags_parse_value (get_token (2)),		// x
@@ -371,6 +387,10 @@ int lbasi_run_file (FILE *file) {
 			} else {
 				int wt = token_exists ("wt");
 				int cbc = token_exists ("cbc");
+
+				if (strcmp (command_token, "tbwc") == 0) {
+					wt = cbc = 1;
+				}
 
 				// Lame, but that's life:
 				char *title = get_token (2);
@@ -425,6 +445,11 @@ int lbasi_run_file (FILE *file) {
 				);
 
 			} else if (strcmp (zones_command, "run") == 0) {
+
+				// Update ret label, if present
+				if (strlen (get_token (3))) {
+					strcpy (ret_label, get_token (3));
+				}
 
 				int zone = backend_zones_run ();
 

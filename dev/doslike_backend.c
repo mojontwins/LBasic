@@ -673,7 +673,10 @@ int backend_zones_run (void) {
 	int done = 0;
 	int zone;
 
-	keys_read ();
+	do {
+		keys_read ();
+	} while (keys_get ());
+
 	while (!done && !buf_heartbeat ()) {
 		// Get mouse pos
 		int mouse_x = buf_get_mouse_x ();
@@ -744,6 +747,27 @@ void backend_tb (char *text, char *title, int wt, int cbc) {
 		backend_pause ();
 		buf_rec ();
 	}
+}
+
+void backend_buf_char_delay (int d) {
+	buf_set_buf_char_delay (d);
+}
+
+void backend_shpal (void) {
+	int x = 0;
+	int y = 0;
+	for (int i = 0; i < 256; i ++) {
+		setcolor (i);
+		bar (x, y, 8, 8);
+		x += 8; if (x == 128) {
+			x = 0; y += 8;
+		}
+	}
+}
+
+void backend_fancy_cls (void) {
+	// Fuera adentro, rectangulitos. Sólo gráficos
+	
 }
 
 void backend_shutdown (void) {

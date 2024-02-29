@@ -42,6 +42,10 @@ void lstextmode_init (void) {
 	buf_setmode (LS_MODE_TEXT);
 }
 
+void buf_set_buf_char_delay (int d) {
+	buf_char_delay = d;
+}
+
 void debuff_keys (void) {
 	int any;
 	do {
@@ -74,7 +78,7 @@ void buf_char_by_char_delay (void) {
 	if (buf_do_delay) {
 		keys_read ();
 		int keys_this_frame = keys_get_this_frame ();
-		if (keys_this_frame & (MT_KEY_ENTER | MT_KEY_ESC)) {
+		if (keys_this_frame & (MT_KEY_ENTER | MT_KEY_ESC | MT_KEY_LBUTTON)) {
 			buf_do_delay = 0;
 		} else {
 			for (int i = 0; i < buf_char_delay && !buf_heartbeat (); i ++);
@@ -490,7 +494,7 @@ void buf_print_trim (char *s) {
 
 void buf_print_ln (char *s) {
 	buf_print (s);
-	if (buf_x != 0) { 
+	if (buf_x != 0 || strlen (s) == 0) { 
 		buf_y ++;
 		buf_x = buf_col1;
 		// buf_scroll_up_if_needed ();
@@ -523,7 +527,8 @@ void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int
 		setcolor (c2);
 		bar (x1p, y1p, wp, hp);
 		setcolor (f);
-		rectangle (x1p - 1, y1p - 1, wp + 2, hp + 2);
+		rectangle (x1p - 1, y1p - 1, wp + 2, hp + 1);
+		rectangle (x1p - 2, y1p - 2, wp + 4, hp + 3);
 
 		if (title && strlen (title)) {
 			setcolor (tc2);
@@ -544,7 +549,7 @@ void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int
 
 		buf_c1 = c1; buf_c2 = c2;
 		buf_x = x1 + 1; buf_y = y1;
-		buf_col1 = x1 + 1; buf_col2 = x1 + w - 1;
+		buf_col1 = x1 + 1; buf_col2 = x1 + w - 2;
 		viewport_y1 = y1; viewport_y2 = y1 + h - 1;
 
 		buf_do_delay = 1;
