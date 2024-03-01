@@ -735,6 +735,17 @@ int lbasi_run_file (FILE *file) {
 				backend_music_stop ();
 
 			} 
+		} else if (strcmp (command_token, "sound") == 0) {
+			char *sound_command = get_token (1);
+			utils_tolower (sound_command);
+
+			if (strcmp (sound_command, "play") == 0) {
+				backend_wav_load (main_path_spec, get_token (2), flags_parse_value (get_token (3)), strcmp ("loop", get_token (4)) == 0);
+
+			} else if (strcmp (sound_command, "off") == 0) {
+				backend_sound_stop (flags_parse_value (get_token (2)));
+
+			}
 		}
 
 		// *** LEGACY ***

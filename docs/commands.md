@@ -611,3 +611,12 @@ Util si integras el intérprete en tu programa C. Esto llama a una función C `i
 	music off
 ```
 
+# sound
+
+```
+	sound play "spec" channel [loop]
+	sound off channel
+```
+
+channel = 0..15. Probablemente los primeros estén ocupados por el midi o el mod.
+

@@ -385,3 +385,11 @@ void backend_mod_load (char *pathspec, char *mod, int loop) {
 void backend_music_stop (void) {
 	// NO OP
 }
+
+void backend_wav_load (char *pathspec, char *wav, int loop, int channel) {
+	// NO OP
+}
+
+void backend_sound_stop (void) {
+	// NO OP
+}

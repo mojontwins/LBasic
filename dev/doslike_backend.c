@@ -56,6 +56,9 @@ int resp_c1 = 15;
 int resp_c2 = 0;
 
 struct music_t *mus = NULL;
+struct sound_t *sound = NULL;
+
+int cur_sound_channel = 0;
 
 void backend_init (void) {
 	lstextmode_init ();
@@ -861,6 +864,7 @@ void backend_fancy_cls (void) {
 void backend_midi_load (char *pathspec, char *mid, int loop) {
 	char *fullpath = compute_full_path (pathspec, mid);
 
+	if (mus != NULL) free (mus);
 	mus = loadmid (fullpath);
 	playmusic (mus, loop, 192);
 
@@ -870,6 +874,7 @@ void backend_midi_load (char *pathspec, char *mid, int loop) {
 void backend_mod_load (char *pathspec, char *mod, int loop) {
 	char *fullpath = compute_full_path (pathspec, mod);
 
+	if (mus != NULL) free (mus);
 	mus = loadmod (fullpath);
 	playmusic (mus, loop, 192);
 
@@ -878,6 +883,24 @@ void backend_mod_load (char *pathspec, char *mod, int loop) {
 
 void backend_music_stop (void) {
 	if (musicplaying ()) stopmusic ();
+}
+
+void backend_wav_load (char *pathspec, char *wav, int loop, int channel) {
+	char *fullpath = compute_full_path (pathspec, mid);
+
+	if (sound != NULL) free (sound);
+	sound = loadwav (fullpath);
+	if (channel == -1) {
+		channel = cur_sound_channel;
+		cur_sound_channel = (cur_sound_channel + 1) % SOUND_CHANNELS;	
+	}
+	playsound (channel, sound, loop, 255);
+
+	free (fullpath);
+}
+
+void backend_sound_stop (int channel) {
+	stopsound (channel);
 }
 
 void backend_shutdown (void) {
