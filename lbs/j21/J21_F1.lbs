@@ -13,6 +13,8 @@ tbwc "­Empieza, pues tu aventura! Recuerda actuar con cabeza, ­no hagas locuras!
 fancy_cls
 
 :puerta_start
+music midi "mid/TENTACUL.MID" loop
+
 pix "pix/PUERTA.PIX" dbl fancy
 
 # *N significa que la coordenada se multiplicar  por 2

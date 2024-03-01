@@ -61,6 +61,7 @@ void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
 	buf_clscroll ();
+	setsoundbank (DEFAULT_SOUNDBANK_SB16);
 }
 
 int backend_get_break (void) {
