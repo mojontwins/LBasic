@@ -231,8 +231,18 @@ int lbasi_run_file (FILE *file) {
 		// *** FLAGS ***
 
 		else if (strcmp (command_token, "let") == 0) {
-			int flag = flags_parse_value (get_token (1));
 			int value = flags_parse_value (get_token (2));
+			int flag = 0;
+
+			// Using alias?
+			char c = get_token (1) [0];
+			if (c != '%' && c != '$' && (c < '0' || c > '9')) {
+				if (strlen (get_token (1)) < MAX_ALIAS_LENGTH) {
+					flag = flags_find_or_create_alias (get_token (1));
+				} 
+			} else {
+				flag = flags_parse_value (get_token (1));
+			}
 
 			flags_set (flag, value);
 		} else if (strcmp (command_token, "input") == 0) {

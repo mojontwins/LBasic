@@ -183,6 +183,21 @@ Este tipo de imagenes puede generarse con editores de texto Ansi como "Moebius" 
 
 Asigna a la flag `flag` el valor `valor`. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
 
+LBasic soporta alias de forma transparente. Los alias se asignan a un número de flag y le dan una forma más amable de llamarlos. La asignación es automática:
+
+```
+	let alias valor
+```
+
+Creará `alias` y le asignará valor al flag asociado. Para referenciar este flag (del que no sabemos el número) usaremos la forma `%alias`. Por ejemplo:
+
+```
+	let perro 5
+	tell %perro
+```
+
+**Esta es la únia forma de crear aliases de flags**. Para usar en un input antes deberá ser creado con let, aunque se le asigne un valor que luego jamás vaya a usarse. **Los aliases podrán tener hasta 32 caracteres**, si son más largos no se registrarán y el script no funcionará.
+
 ## input 
 
 ```

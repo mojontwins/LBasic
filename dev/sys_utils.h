@@ -14,11 +14,15 @@ int utils_adjust_coords (int coord, int min, int max);
  */
 
 #define MAX_FLAGS 256
+#define MAX_ALIAS_LENGTH 33
 
 void flags_clear (void);
 int flags_get (int index);
 void flags_set (int index, int value);
 int flags_parse_value (char *s);
+int flags_reset_aliases (void);
+int flags_find_alias (char *s);
+int flags_find_or_create_alias (char *s);
 
 /* 
  * LABELS

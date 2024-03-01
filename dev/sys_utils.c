@@ -31,6 +31,9 @@ int utils_adjust_coords (int coord, int min, int max) {
  */
 
 int s_flags [MAX_FLAGS];
+char aliases [MAX_FLAGS][MAX_ALIAS_LENGTH];
+
+int aliases_index = 0;
 
 void flags_clear (void) {
 	memset (s_flags, 0, MAX_FLAGS * sizeof (int));
@@ -54,6 +57,10 @@ int flags_parse_value (char *s) {
 			return flags_parse_value (s + 1) * 2;
 		} else if (s [0] == '$') {
 			return flags_get (flags_parse_value (s + 1));
+		} else if (s [0] == '%') {
+			int i = flags_find_alias (s + 1);
+			if (i >= 0) return flags_get (i);
+			return 0;
 		} else {
 			// Compose number
 			char c;
@@ -70,6 +77,30 @@ int flags_parse_value (char *s) {
 	}
 
 	return 0;
+}
+
+int flags_reset_aliases (void) {
+	aliases_index = 0;
+}
+
+int flags_find_alias (char *s) {
+	for (int i = 0; i < aliases_index; i ++) {
+		if (strcmp (s, aliases [i]) == 0) return i;
+	}
+
+	return -1;
+}
+
+int flags_find_or_create_alias (char *s) {
+	int i = flags_find_alias (s);
+	if (i >= 0) return i;
+
+	// Create
+	if (aliases_index < MAX_FLAGS - 1) {
+		strcpy (aliases [aliases_index ++], s);
+	}
+
+	return aliases_index - 1;
 }
 
 /* 
