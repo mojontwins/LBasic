@@ -1,6 +1,6 @@
 let perro 2
 let 2 20
-let 3 %perro
+let cabeza %perro
 let 4 $%perro
 let 5 $4
 let 6 $$4
@@ -10,7 +10,7 @@ tell %perro
 write " "
 tell $2
 write " "
-tell $3
+tell %cabeza
 write " "
 tell $4
 write " "

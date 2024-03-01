@@ -134,4 +134,17 @@ char *zones_get_text (int index);
 int zones_find (int x, int y);
 int zones_get_type (int index);
 int zones_get_token_type (unsigned char *text);
+
+/*
+ * RESP
+ */
+
+#define MAX_RESP 16
+#define RESP_MAX_LENGTH 80
+
+void resp_reset (void);
+void resp_add (char *s);
+int resp_get_resps (void);
+char *resp_get_text (int index);
+
 #endif

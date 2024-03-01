@@ -186,8 +186,10 @@ int menu_get_token_type (unsigned char *text) {
 }
 
 void menu_add_item (unsigned char *item, int type) {
-	menu_items [menu_index].type = type;
-	strcpy (menu_items [menu_index ++].text, item);
+	if (strlen (item) < MENU_ITEM_MAX_LENGTH) {
+		menu_items [menu_index].type = type;
+		strcpy (menu_items [menu_index ++].text, item);
+	}
 }
 
 void menu_reorganize (void) {
@@ -245,9 +247,11 @@ void inventory_set_max_items (int max_items) {
 }
 
 int inventory_add_item (unsigned char *item) {
-	if (inventory_index < inventory_max_items - 1) {
-		strcpy (inventory_items [inventory_index ++], item);
-		return 1;
+	if (strlen (item) < INVENTORY_ITEM_MAX_LENGTH) {
+		if (inventory_index < inventory_max_items - 1) {
+			strcpy (inventory_items [inventory_index ++], item);
+			return 1;
+		}
 	}
 
 	return 0;
@@ -329,7 +333,7 @@ void exits_reset (void) {
 }
 
 int exits_add_item (unsigned char *text, unsigned char *label) {
-	if (exits_index < MAX_EXITS) {
+	if (exits_index < MAX_EXITS && strlen (text) < EXIT_TEXT_MAX_LENGTH && strlen (label) < EXIT_LABEL_MAX_LENGTH) {
 		strcpy (exits_items [exits_index].text, text);
 		strcpy (exits_items [exits_index].label, label);
 		exits_index ++;
@@ -396,7 +400,7 @@ void actions_reset (void) {
 }
 
 int actions_add_item (unsigned char *text, int type) {
-	if (actions_index < MAX_ACTIONS) {
+	if (actions_index < MAX_ACTIONS && strlen (text) < ACTIONS_MAX_LENGTH) {
 		strcpy (actions [actions_index].text, text);
 		actions [actions_index].type = type;
 		actions_index ++;
@@ -483,7 +487,7 @@ void zones_reset (void) {
 }
 
 int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type) {
-	if (zones_index < MAX_ZONES) {
+	if (zones_index < MAX_ZONES && strlen (text) < ZONE_TEXT_MAX_LENGTH) {
 		strcpy (zones [zones_index].text, text);
 		zones [zones_index].x1 = x1;
 		zones [zones_index].y1 = y1;
@@ -555,4 +559,29 @@ int zones_get_token_type (unsigned char *text) {
 	if (strcmp (text, "actions") == 0) return ZONE_TYPE_ACTIONS;
 
 	return ZONE_TYPE_NORMAL;
+}
+
+/*
+ * RESP
+ */
+
+char resp [MAX_RESP][RESP_MAX_LENGTH];
+int resp_index;
+
+void resp_reset (void) {
+	resp_index = 0;
+}
+
+void resp_add (char *s) {
+	if (resp_index < MAX_RESP - 1 && strlen (s) < RESP_MAX_LENGTH) {
+		strcpy (resp [resp_index ++], s);
+	}
+}
+
+int resp_get_resps (void) {
+	return resp_index;
+}
+
+char *resp_get_text (int index) {
+	return resp [index];
 }

@@ -51,6 +51,10 @@ int tb_tc1 = 0;
 int tb_tc2 = 7;
 int tb_f = 8; 
 
+int resp_y = 25;
+int resp_c1 = 15;
+int resp_c2 = 0;
+
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
@@ -412,6 +416,12 @@ void backend_talk_config (int x, int y, int w, int c1, int c2) {
 	backend_talk_c2 = c2;
 }
 
+void backend_resp_config (int y, int c1, int c2) {
+	resp_y = y;
+	resp_c1 = c1;
+	resp_c2 = c2;
+}
+
 void backend_talk (char *who) {
 	backend_print_ghost (backend_talk_x, backend_talk_y, backend_talk_w, backend_talk_c1, backend_talk_c2, who);
 }
@@ -631,6 +641,59 @@ int backend_actions_run (int x, int y) {
 	buf_color (prev_c1, prev_c2);
 
 	return backend_menu_selected;
+}
+
+int backend_resp_run (void) {
+	// Adjust real y so it fits
+	int h = buf_get_scrheight ();
+	int w = buf_get_scrwidth () - 2;
+	int backend_resp_items = resp_get_resps ();
+	int y = resp_y; if (y > h - 1 - backend_resp_items - 2) y = h - 1 - backend_resp_items - 2;
+
+	int prev_x = buf_getx ();
+	int prev_y = buf_gety (); 
+	int prev_c1 = buf_getc1 ();
+	int prev_c2 = buf_getc2 ();
+	buf_sve ();
+
+	int done = 0;
+	int selected = 0;
+
+	// Paint box
+	buf_color (resp_c1, resp_c2);
+	buf_box (1, y, 1 + w - 1, y + 1 + backend_resp_items);
+
+	keys_read ();
+	while (!done && !buf_heartbeat ()) {
+		// Paint options (w/selected)
+		for (int i = 0; i < backend_resp_items; i ++) {
+			buf_setxy (1 + 1, y + 1 + i);
+			if (i == selected) {
+				buf_color (resp_c2, resp_c1);
+			} else {
+				buf_color (resp_c1, resp_c2);
+			}
+			
+			unsigned char *option = resp_get_text (i);
+			int l = strlen (option);
+			for (int j = 0; j < w - 2; j ++) {
+				buf_char (j < l ? option [j] : ' ');
+			}
+		}
+
+		// Read keys
+		if (backend_menu_keys (&selected, &done, backend_resp_items,
+			1, y, w
+		) == 999999) return 999999;
+	}
+
+	debuff_keys ();
+
+	buf_rec ();
+	buf_setxy (prev_x, prev_y);
+	buf_color (prev_c1, prev_c2);
+
+	return selected;		
 }
 
 int backend_show_info_bar (int zone) {

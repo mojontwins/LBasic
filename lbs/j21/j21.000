@@ -22,4 +22,4 @@ menu config 0 0 16 0 7
 infobar 0 0 7
 cbc 2
 
-chain "J21_F1.lbs" :yoli1_start
+chain "J21_F1.lbs" #:yoli1_start

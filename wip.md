@@ -29,6 +29,8 @@
 [X] Caja de texto bulma
 [ ] Itegración "EXTERN N M" para que lo implemente el juego que sea
 [ ] Añadir un flag para que los comandos no esperen vbl, por lo general!
+[ ] print con N parámetros incluyendo flags `print "El valor introducido es " %perro " !"
+[ ] cajas de "talk" con 3 opciones para clickear / menus grandes  que generan 1 2 3 
 
 # Editor
 
@@ -42,6 +44,8 @@
 [X] RUN / RUN FROM / NEW
 [X] Editor DRAW
 [ ] Editor bulma draw (LIN)
+[ ] Editor zones->código
+[ ] Auto-generar etiquetas para zones->run
 [ ] AV PAG / RE PAG / HOME / END
 [X] A veces se salva mal (creo que mezcla `\n` con `\r\n`), revisar. Cuando cargas->editas->grabas. En HEX EDITOR veo DOS \r... -> Grabar en binario
 [X] Syntax no saca los textos entre comillas hasta que se cierran

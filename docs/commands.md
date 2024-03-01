@@ -566,3 +566,31 @@ El cuadro de texto se configura con un porrón de parámetros:
 ```
 
 Establece el delay del texto a "n" ticks. El valor por defecto es 4. Cuanto más, más lento. Hay 60 ticks en 1 segundo.
+
+# resp
+
+Permite mostrar un cuadro para elegir entre N respuestas, pensado para mantener conversaciones. Las respuestas se añaden al cuadro y al ejecutarse generará un número de 1 a N dependiendo de la respuesta elegida.
+
+```
+	resp config y c1 c2
+```
+
+Hay que tener en cuenta que si el número de opciones hace que el recuadro no quepa, éste se moverá verticalmente hasta que quepa. El recuadro siempre tomará el ancho de la pantalla con un márgen de 1 caracter por cada lado.
+
+```
+	resp reset
+```
+
+Eliminará todas las respuestas
+
+```
+	resp put "Este es el texto que se dice"
+```
+
+Añadirá una opción.
+
+```
+	resp run :label
+```
+
+generará saltos a `:label_N` con `N` = 1, 2... el número de la respuesta que el usuario pulse.

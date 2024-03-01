@@ -115,6 +115,7 @@ int lbasi_run_file (FILE *file) {
 	int res = 0;
 	int choice_res;
 	int run = 1;
+	int forcevbl = 0;
 
 	char line_buffer [LINE_BUFFER_SIZE];
 	char temp_buffer [256];
@@ -414,6 +415,34 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "fancy_cls") == 0) {
 			backend_fancy_cls ();
 			
+		} else if (strcmp (command_token, "resp") == 0) {
+			char *resps_command = get_token (1);
+			utils_tolower (resps_command);
+
+			if (strcmp (resps_command, "reset") == 0 || strcmp (resps_command, "limpia") == 0) {
+				resp_reset ();
+
+			} else if (strcmp (resps_command, "config") == 0) {
+				backend_resp_config (
+					flags_parse_value (get_token (2)),
+					flags_parse_value (get_token (3)),
+					flags_parse_value (get_token (4))
+				);
+
+			} else if (strcmp (resps_command, "put") == 0 || strcmp (resps_command, "pon") == 0) {
+				resp_add (get_token (2));
+			
+			} else if (strcmp (resps_command, "run") == 0) {
+				int resp = backend_resp_run ();
+				itoa (resp, string_convert_buffer, 10);
+
+				strcpy (temp_buffer, get_token (2));
+				strcat (temp_buffer, "_");
+				strcat (temp_buffer, string_convert_buffer);
+
+				lbasi_goto (file, temp_buffer);
+			}
+
 		}
 
 		// *** ACTIONS ***

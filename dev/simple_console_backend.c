@@ -354,3 +354,22 @@ void backend_shpal (void) {
 void backend_fancy_cls (void) {
 	// NO OP
 }
+
+void backend_resp_config (int y, int c1, int c2) {
+	// NO OP
+}
+
+int backend_resp_run (void) {
+	// Very simple implementation
+	printf ("RESPS: %d\n", resp_get_resps ());
+	for (int i = 0; i < resp_get_resps (); i ++) {
+		printf ("%d. %s\n", 
+			i + 1, 
+			resp_get_text (i)
+		);
+	}
+
+	int res = backend_read_option (10);
+	if (res == 99) return -1;
+	return res - 1;
+}

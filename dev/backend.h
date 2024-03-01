@@ -49,3 +49,5 @@ void backend_tb (char *text, char *title, int wt, int cbc);
 void backend_buf_char_delay (int d);
 void backend_shpal (void);
 void backend_fancy_cls (void);
+void backend_resp_config (int y, int c1, int c2);
+int backend_resp_run (void);
