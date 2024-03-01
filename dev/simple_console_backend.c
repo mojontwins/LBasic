@@ -390,6 +390,6 @@ void backend_wav_load (char *pathspec, char *wav, int loop, int channel) {
 	// NO OP
 }
 
-void backend_sound_stop (void) {
+void backend_sound_stop (int channel) {
 	// NO OP
 }

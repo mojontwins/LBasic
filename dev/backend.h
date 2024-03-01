@@ -55,4 +55,4 @@ void backend_midi_load (char *pathspec, char *mid, int loop);
 void backend_mod_load (char *pathspec, char *mod, int loop);
 void backend_music_stop (void);
 void backend_wav_load (char *pathspec, char *wav, int loop, int channel);
-void backend_sound_stop (void);
+void backend_sound_stop (int channel);

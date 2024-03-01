@@ -886,7 +886,7 @@ void backend_music_stop (void) {
 }
 
 void backend_wav_load (char *pathspec, char *wav, int loop, int channel) {
-	char *fullpath = compute_full_path (pathspec, mid);
+	char *fullpath = compute_full_path (pathspec, wav);
 
 	if (sound != NULL) free (sound);
 	sound = loadwav (fullpath);
