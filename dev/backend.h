@@ -51,3 +51,6 @@ void backend_shpal (void);
 void backend_fancy_cls (void);
 void backend_resp_config (int y, int c1, int c2);
 int backend_resp_run (void);
+void backend_midi_load (char *pathspec, char *mid, int loop);
+void backend_mod_load (char *pathspec, char *mod, int loop);
+void backend_music_stop (void);

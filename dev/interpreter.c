@@ -719,6 +719,24 @@ int lbasi_run_file (FILE *file) {
 			}
 		}
 
+		// *** SOUND ***
+
+		else if (strcmp (command_token, "music") == 0) {
+			char *music_command = get_token (1);
+			utils_tolower (music_command);
+
+			if (strcmp (music_command, "midi") == 0) {
+				backend_midi_load (main_path_spec, get_token (2), strcmp ("loop", get_token (3)) == 0);
+
+			} else if (strcmp (music_command, "mod") == 0) {
+				backend_mod_load (main_path_spec, get_token (2), strcmp ("loop", get_token (3)) == 0);
+
+			} else if (strcmp (music_command, "off") == 0) {
+				backend_music_stop ();
+
+			} 
+		}
+
 		// *** LEGACY ***
 
 		else if (strcmp (command_token, "<fin>") == 0) {

@@ -373,3 +373,15 @@ int backend_resp_run (void) {
 	if (res == 99) return -1;
 	return res - 1;
 }
+
+void backend_midi_load (char *pathspec, char *mid, int loop) {
+	// NO OP
+}
+
+void backend_mod_load (char *pathspec, char *mod, int loop) {
+	// NO OP
+}
+
+void backend_music_stop (void) {
+	// NO OP
+}

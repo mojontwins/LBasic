@@ -55,6 +55,8 @@ int resp_y = 25;
 int resp_c1 = 15;
 int resp_c2 = 0;
 
+struct music_t *mus = NULL;
+
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
@@ -853,6 +855,28 @@ void backend_fancy_cls (void) {
 
 		waitvbl ();
 	}
+}
+
+void backend_midi_load (char *pathspec, char *mid, int loop) {
+	char *fullpath = compute_full_path (pathspec, mid);
+
+	mus = loadmid (fullpath);
+	playmusic (mus, loop, 192);
+
+	free (fullpath);
+}
+
+void backend_mod_load (char *pathspec, char *mod, int loop) {
+	char *fullpath = compute_full_path (pathspec, mod);
+
+	mus = loadmod (fullpath);
+	playmusic (mus, loop, 192);
+
+	free (fullpath);
+}
+
+void backend_music_stop (void) {
+	if (musicplaying ()) stopmusic ();
 }
 
 void backend_shutdown (void) {

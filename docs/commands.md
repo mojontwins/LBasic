@@ -603,3 +603,11 @@ generará saltos a `:label_N` con `N` = 1, 2... el número de la respuesta que e
 
 Util si integras el intérprete en tu programa C. Esto llama a una función C `int extern (int a, int b)` que deberás implementar en `extern.h`. Si se especifica `r`, el valor numérico de la función se almacenará ahí.
 
+# music
+
+```
+	music midi "spec" [loop]
+	music mod "spec" [loop]
+	music off
+```
+
