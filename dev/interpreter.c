@@ -9,6 +9,8 @@
 #include "sys_utils.h"
 #include "interpreter.h"
 
+#include "extern.h"
+
 #define LINE_BUFFER_SIZE 2048
 #define LEGACY_BUFFER_SIZE 16
 #define DEFAULT_ATTEMPTS 5
@@ -226,6 +228,16 @@ int lbasi_run_file (FILE *file) {
 
 		} else if (strcmp (command_token, "cbc") == 0) {
 			backend_buf_char_delay (flags_parse_value (get_token (1)));
+
+		} else if (strcmp (command_token, "extern") == 0) {
+			int extern_result = extern_func (
+				flags_parse_value (get_token (1)),
+				flags_parse_value (get_token (2))
+			);
+
+			if (strlen (get_token (3)) > 0) {
+				flags_set (flags_parse_value (get_token (3)), extern_result);
+			}
 
 		}
 

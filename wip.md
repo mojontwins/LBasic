@@ -25,7 +25,7 @@
 	:label_name / :label_name_item / :label_name_action
 
 [ ] Controlar ESC en menús y zones para salir del juego <- reaprovechar TUI -- parametrizar cuadro de texto para que lo centre en cualquier resolución de pantalla!!! -> Ejecutar spec.END, si existe. Si no, salir.
-[ ] Flujo chain "file.ext", sin restricción. Se le añade "directory spec" al principcio.como a todo.
+[X] Flujo chain "file.ext", sin restricción. Se le añade "directory spec" al principcio.como a todo.
 [X] Caja de texto bulma
 [ ] Itegración "EXTERN N M" para que lo implemente el juego que sea
 [ ] Añadir un flag para que los comandos no esperen vbl, por lo general!
