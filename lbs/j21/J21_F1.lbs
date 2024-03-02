@@ -34,11 +34,21 @@ tbwc "Eso no parece que sirva para nada..." wt
 ret
 
 # todos los 'Hablar' fallan
+# Aqu¡ hay etiquetas asociadas a varios `item run`, pero `ret`
+# siempre volver  al sitio correcto.
+
 :puerta_pomo_hablar
 :puerta_puerta_hablar
 :puerta_timbre_hablar
 :puerta_c‚sped_hablar
 :puerta_pared_hablar
+:salon_chimenea_hablar
+:salon_cierro_hablar
+:cocina_alacena_hablar
+:cocina_alacena__hablar
+:cocina_grifo_hablar
+:cocina_ventana_hablar
+
 tbwc "­Vaya! ¨Otra vez hablando con tu amigo imaginario? ­Pues empezamos bien! ­Como te vean, van a pensar que no est s en tus cabales!"
 ret
 
@@ -120,11 +130,11 @@ pix "pix/YOLI1.PIX" dbl fancy
 
 tbwc "Ay, perdona, no te he dicho mi nombre. Me llamo Yolanda, pero me dicen Yoli. Soy una amiga de la infancia de Mar¡a." "Extra¤a"
 tbwc "Yo tambi‚n estoy pasando aqu¡ unos d¡as con ella... ­la casa es tan grande!" "Yoli"
-tbwc "Mar¡a me dijo que ten¡a que bajar al pueblo a comprar algunas cosas que le hac¡an falta. No creo que tarde mucho" "Yoli"
-tbwc "Mucho gusto conocerte, Yoli." "T£"
+tbwc "Mar¡a me dijo que ten¡a que bajar al pueblo a comprar algunas cosas que le hac¡an falta. No creo que tarde mucho." "Yoli"
+tbwc "Mucho gusto en conocerte, Yoli." "T£"
 tbwc "­Pero no te quedes ah¡ de pie! Cuando has llamado me has pillado yendo al jard¡n a tomar el sol." "Yoli"
 tbwc "¨Por qu‚ no vienes conmigo y charlamos un rato hasta que llegue Maria? ¨Te apetece?" "Yoli"
-tbwc "Claro, ser  agradable" "T£"
+tbwc "Claro, ser  agradable." "T£"
 
 :cocina_intro
 fancy_cls
@@ -139,8 +149,8 @@ pix "pix/YOLI1.PIX" dbl fancy
 
 tbwc "­Vaya, hombre! ­Ahora est  cerrada!" "Yoli"
 tbwc "¨No sabes donde est  la llave?" "T£"
-tbwc "Qu‚ va. Creo que he visto a Mar¡a guardarla por el sal¢n o por ah¡, pero no se d¢nde" "Yoli"
-tbwc "­Voy a buscarla" "T£"
+tbwc "Qu‚ va. Creo que he visto a Mar¡a guardarla por el sal¢n o por ah¡, pero no se d¢nde..." "Yoli"
+tbwc "­Voy a buscarla!" "T£"
 
 # Flags:
 let ventana 0
@@ -168,14 +178,6 @@ zones def "Ir a la piscina" *301 *0 *319 *199
 :cocina_run
 zones run :cocina :cocina_run
 tbwc "Eso no parece que sirva para nada..." wt
-ret
-
-# todos los 'Hablar' fallan
-:cocina_alacena_hablar
-:cocina_alacena__hablar
-:cocina_grifo_hablar
-:cocina_ventana_hablar
-tbwc "­Vaya! ¨Otra vez hablando con tu amigo imaginario? ­Pues empezamos bien! ­Como te vean, van a pensar que no est s en tus cabales!"
 ret
 
 :cocina_alacena_mirar
@@ -211,6 +213,7 @@ tbwc "Ahora no tienes sed. Ni quieres ensuciar un vaso."
 ret
 
 :cocina_ventana_mirar
+:salon_cierro_mirar
 tbwc "­Qu‚ paisaje tan bonito! Prados de verde c‚sped terminan en un acantilado que da a la playa. Las potentes olas del oc‚ano rompen con fuerza sobre la fina y dorada arena. Detr s de todo eso, en un islote, hay una central nuclear sobrevolada por una bandada de p jaros de tres cabezas."
 ret
 
@@ -244,7 +247,7 @@ tbwc "Qu‚ va... Parece que est  oxidada o algo. La manija se queda atascada." "T
 tbwc "A lo mejor con algo para lubricar... Busca por las alacenas, ­debe haber un poco de aceite por alg£n sitio!" "Yoli"
 fancy_cls
 tb config 1 20 78 4 0 7 15 0 8
-pix "pix/COCINA.pix" dbl fancy
+pix "pix/COCINA.PIX" dbl fancy
 ret 
 
 :vestibulo2_start
@@ -262,11 +265,85 @@ zones run :vestibulo2 :vestibulo2_run
 tbwc "Ah¡ no hay nada interesante y no est s para perder el tiempo"
 ret
 
+:escaleras
+tbwc "Mejor no. Mar¡a a£n no sabe que est s aqu¡ y no crees que sea buena idea ponerte a curiosear por toda la casa sin permiso."
+ret
+
 :salida
 tbwc "­Claro que s¡! ­Seguro que quieres irte ahora! Anda, vuelve y sigue buscando una forma de entrar en el patio..."
 ret
 
 :salon_start
+fancy_cls
+pix "pix/SALON.PIX" dbl fancy
+
+zones reset
+zones def "Ir al vest¡bulo" 0 *184 *319 *199 :vestibulo2_start
+zones def "L mpara" *24 *69 *54 *76 actions
+zones def "Chimenea" *210 *103 *268 *152 actions
+zones def "Mueble" *188 *50 *212 *140 actions
+zones def "Cierro" *67 *66 *139 *130 actions
+
+:salon_run
+zones run :salon :salon_run
+tbwc "Parece que eso no sirve de mucho ..."
+ret
+
+:salon_cierro_manipular
+:salon_cierro_inventario_aceite
+:salon_cierro_inventario_llave
+tbwc "El cierro no da al patio, as¡ que no te parece que sea interesante ponerte a juguetear con la puerta que conduce a ‚l ni perder m s tiempo haciendo tonter¡as."
+ret
+
+:salon_mueble_mirar
+tbwc "Se trata de un bonito mueble de maderas nobles, hecho a mano y de dise¤o. No parece mucho m s £til que la bazofia que tienen tus padres en el sal¢n, pero seguro que es mucho m s caro."
+ret
+
+:salon_mueble_hablar
+tbwc "Es un mueble muy caro, pero no es tan caro como para poder responderte."
+ret
+
+:salon_mueble_manipular
+items has "Llave" :mueble_con_llave
+
+tbwc "El mueble tiene un compartimento en la parte superior, pero est  firmemente cerrado y no eres capaz de abrirlo. Junto al cierre hay una ranura como para un llavec¡n"
+ret
+
+:mueble_con_llave
+tbwc "No hay nada m s que te interese o te sirva en el mueble."
+ret
+
+:salon_mueble_inventario_llavec¡n
+items has "Llave" :mueble_con_llave
+
+tbwc "Pruebas el llavec¡n en la ranura que hay junto al cierre del compartimento y lo abres. ­Dentro est  una llave vieja con todo el aspecto de ser la del patio! Te la guardas."
+items put "Llave"
+items remove "Llavec¡n"
+ret
+
+:salon_l mpara_mirar
+:salon_l mpara_manipular
+items has "Llave" :lampara_nada
+items has "Llavec¡n" :lampara_nada
+
+tbwc "Palpas por la parte superior, dentro del plaf¢n, y notas un peque¤o objeto. ­Es un llavec¡n! Lo guardas por si acaso."
+items put "Llavec¡n"
+ret
+
+:lampara_nada
+tbwc "Ya no hay m s llaves en la l mpara ni nada m s que pueda servirte de algo."
+ret
+
+:salon_chimenea_mirar
+tbwc "Aunque est  claro que esta casa se utiliza m s que nada para pasar las vacaciones de verano, tiene que ser muy agradable estar aqu¡ en invierno, junto a la chimenea, mientras fuera arrecia el temporal."
+ret
+
+:salon_chimenea_manipular
+tbwc "Hace mucho calor para encender un fuego ahora... Adem s, Yoli te espera en la cocina para que abras la puerta del patio, por si no lo recuerdas."
+ret
 
 :piscina_has_aceite
 tbwc "­Ahora s¡! Con las llaves y un poquito de aceite en la cerradura abres la puerta del patio."
+
+items remove "Aceite"
+items remove "Llave"
