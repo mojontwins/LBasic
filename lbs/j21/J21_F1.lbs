@@ -253,7 +253,7 @@ pix "pix/VESTIB.PIX" dbl fancy
 
 zones reset
 zones def "Salida" *0 *84 *27 *190 :salida
-zones def "Ir al sal¢n" *57 *98 *105 *180 :salon
+zones def "Ir al sal¢n" *57 *98 *105 *180 :salon_start
 zones def "Ir a la cocina" *130 *97 *179 *181 :cocina_start
 zones def "Escaleras" *202 *37 *290 *182 :escaleras
 
@@ -262,7 +262,11 @@ zones run :vestibulo2 :vestibulo2_run
 tbwc "Ah¡ no hay nada interesante y no est s para perder el tiempo"
 ret
 
+:salida
+tbwc "­Claro que s¡! ­Seguro que quieres irte ahora! Anda, vuelve y sigue buscando una forma de entrar en el patio..."
+ret
 
+:salon_start
 
 :piscina_has_aceite
 tbwc "­Ahora s¡! Con las llaves y un poquito de aceite en la cerradura abres la puerta del patio."
