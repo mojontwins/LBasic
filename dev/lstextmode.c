@@ -35,6 +35,8 @@ int buf_size;
 int buf_scrwidth = 80;
 int buf_scrheight = 25;
 
+int pixyoffset = 0;
+
 void lstextmode_init (void) {
 	font_ega14 = installuserfont_array (ega14_fnt);
 	font_atari8x8 = installuserfont_array (atari_fnt);
@@ -222,6 +224,11 @@ void buf_box (int x1, int y1, int x2, int y2) {
 		int w = (x2 - x1 + 1) * 8;
 		int h = (y2 - y1 + 1) * buf_char_height;
 
+		if (screenheight () > 240) {
+			y += buf_char_height - 8;
+			h -= 2 * (buf_char_height - 8);
+		}
+
 		setcolor (buf_c2);
 		bar (x, y, w, h);
 
@@ -261,14 +268,14 @@ void buf_scroll_up (int from, int to) {
 		char *temp_buf = malloc (byte_size);
 		unsigned char *buf = screenbuffer ();
 
-		memcpy (temp_buf, buf + from * buf_char_height * scr_w, byte_size);
+		memcpy (temp_buf, buf + (from * buf_char_height + pixyoffset) * scr_w, byte_size);
 
 		// Put at 8 * from - 8
-		memcpy (buf + (from - 1) * buf_char_height * scr_w, temp_buf, byte_size);
+		memcpy (buf + ((from - 1) * buf_char_height + pixyoffset) * scr_w, temp_buf, byte_size);
 
 		// Clear 8 * to to 8 * to + 7
 		setcolor (buf_c2);
-		bar (0, to * buf_char_height, scr_w, buf_char_height);
+		bar (0, to * buf_char_height + pixyoffset, scr_w, buf_char_height);
 
 		free (temp_buf);
 	}
@@ -311,16 +318,16 @@ void buf_scroll_up_window (int x1, int y1, int x2, int y2) {
 
 		// I've checked, blit works up to down, so I can be dirty and do this:
 		blit (
-			x1_p, y1_p, 
+			x1_p, y1_p + pixyoffset, 
 			screenbuffer (), 
 			screenwidth (), screenheight (), 
-			x1_p, y1_p + buf_char_height, 
+			x1_p, y1_p + buf_char_height + pixyoffset, 
 			width, height
 		);
 
 		// Clear bottom
 		setcolor (buf_c2);
-		bar (x1_p, y2 * buf_char_height, width, buf_char_height);
+		bar (x1_p, y2 * buf_char_height + pixyoffset, width, buf_char_height);
 
 		free (temp_buf);
 	}
@@ -417,10 +424,10 @@ void _buf_print (char *s, int scroll, int no_break, int clip_to_scroll, int char
 			}
 
 			setcolor (buf_c2);
-			if (buf_c2 < 256) bar (x1, y1, 8, buf_char_height);
+			if (buf_c2 < 256) bar (x1, y1 + pixyoffset, 8, buf_char_height);
 			substr [0] = c;
 			setcolor (buf_c1);
-			outtextxy (x1, y1, substr);
+			outtextxy (x1, y1 + pixyoffset, substr);
 
 			if (char_by_char) buf_char_by_char_delay ();
 
@@ -531,9 +538,11 @@ void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int
 			bar (x1p, y1p, wp, buf_char_height);
 			setcolor (tc1);
 			outtextxy (x1p + 8, y1p, title);
-			y1 ++;
 			h2 --;
+		} else {
+			pixyoffset = -8;
 		}
+
 
 		int y1p2 = y1 * buf_char_height;
 
@@ -546,6 +555,11 @@ void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int
 			waitvbl ();
 		}
 
+		if (dotitle == 0) {
+			y1 ++;
+			h --;
+		}
+		
 		int backup_x = buf_x;
 		int backup_y = buf_y;
 		int backup_c1 = buf_c1;
@@ -569,6 +583,8 @@ void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int
 		viewport_y1 = backup_viewport_y1; viewport_y2 = backup_viewport_y2;
 		buf_col1 = backup_col1; buf_col2 = backup_col2;
 	}
+
+	pixyoffset = 0;
 
 }
 
