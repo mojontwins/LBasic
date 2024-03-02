@@ -83,8 +83,8 @@ ret
 :yoli1_start
 fancy_cls
 pix "pix/YOLI1.PIX" dbl fancy
-
 tb config 50 9 29 6 0 7 255 0 8
+
 tbwc "Eh... ­Hola! ¨Y t£ quien eres?" "Extra¤a"
 tbwc "Ah, hola..." "T£"
 tbwc "Vaya... ¨Qui‚n es esta? ­Ya lo s‚! ­Me he equivocado de casa!" "T£ (pensando)"
@@ -103,7 +103,7 @@ tbwc "­Menos mal! Casi ibas a desfallecer por el calor. "
 
 pix "pix/VESTIB.PIX" dbl fancy
 
-zones clear
+zones reset
 zones def "Vest¡bulo" *0 *0 *319 *199 actions
 
 :vestibulo_run
@@ -128,7 +128,7 @@ tbwc "Claro, ser  agradable" "T£"
 
 :cocina_intro
 fancy_cls
-tb config 1 18 78 6 0 7 15 0 8
+tb config 1 20 78 4 0 7 15 0 8
 pix "pix/COCINA.pix" dbl fancy
 
 tbwc "Entr is por la primera puerta, que da a la cocina. No te da tiempo de deleitarte con los muebles de los a¤os ochenta: os dirig¡s directamente a la puerta que da a un jard¡n con una piscina. Por desgracia, parece que la puerta est  cerrada con llave..."
@@ -143,20 +143,14 @@ tbwc "Qu‚ va. Creo que he visto a Mar¡a guardarla por el sal¢n o por ah¡, pero n
 tbwc "­Voy a buscarla" "T£"
 
 # Flags:
-# 1 - llave
-# 2 - aceite
-
-let 1 0
-let 2 0
-let 3 0
-let 4 0
+let ventana 0
 
 :cocina_start
 fancy_cls
-tb config 1 18 78 6 0 7 15 0 8
+tb config 1 20 78 4 0 7 15 0 8
 pix "pix/COCINA.pix" dbl fancy
 
-zones clear
+zones reset
 zones def "Alacena" *0 *28 *36 *101 actions
 zones def "Alacena" *31 *33 *88 *75 actions
 zones def "Alacena" *176 *51 *194 *95 actions
@@ -166,12 +160,109 @@ zones def "Alacena" *0 *157 *49 *189 actions
 # El jugador no ver  el espacio pero genera otra etiqueta!
 zones def "Alacena " *127 *136 *167 *175 actions
 zones def "Grifo" *126 *108 *137 *122 actions
+zones def "Ventana" *94 *70 *158 *112 actions
 
-zones def "Vest¡bulo" *0 *190 *300 *199
-zones def "Piscina" *301 *0 *319 *199
+zones def "Ir al vest¡bulo" *0 *190 *300 *199 :vestibulo2_start
+zones def "Ir a la piscina" *301 *0 *319 *199
 
 :cocina_run
 zones run :cocina :cocina_run
 tbwc "Eso no parece que sirva para nada..." wt
 ret
 
+# todos los 'Hablar' fallan
+:cocina_alacena_hablar
+:cocina_alacena__hablar
+:cocina_grifo_hablar
+:cocina_ventana_hablar
+tbwc "­Vaya! ¨Otra vez hablando con tu amigo imaginario? ­Pues empezamos bien! ­Como te vean, van a pensar que no est s en tus cabales!"
+ret
+
+:cocina_alacena_mirar
+:cocina_alacena__mirar
+tbwc "Aunque la casa es muy lujosa y los materiales son los m s refinados, esto no deja de ser una alacena hortera de los a¤os ochenta, a juego con el resto de la casa."
+ret
+
+:cocina_alacena_manipular
+tbwc "Abres la puerta pero s¢lo encuentras todo tipo de cosas normales que ahora mismo no te sirven para nada."
+ret
+
+:cocina_alacena__manipular
+items has "Aceite" :cocina_alacena__aceite
+tbwc "En esta alacena hay un bote de aceite. Decides cogerlo, algo te dice que puede serte util"
+items put "Aceite"
+ret
+
+:cocina_alacena__aceite
+tbwc "Abres la puerta pero s¢lo encuentras todo tipo de cosas normales que ahora mismo no te sirven para nada."
+ret
+
+:cocina_alacena_inventario_aceite
+:cocina_alacena__inventario_aceite
+tbwc "No es necesario. La puerta de la alacena funciona perfectamente."
+ret
+
+:cocina_grifo_mirar
+tbwc "Este grifo monomando marca 'piedra' era la cosa m s moderna y m s chic que hab¡a en 1984. Ahora parece que gotea un poco."
+ret
+
+:cocina_grifo_manipular
+tbwc "Ahora no tienes sed. Ni quieres ensuciar un vaso."
+ret
+
+:cocina_ventana_mirar
+tbwc "­Qu‚ paisaje tan bonito! Prados de verde c‚sped terminan en un acantilado que da a la playa. Las potentes olas del oc‚ano rompen con fuerza sobre la fina y dorada arena. Detr s de todo eso, en un islote, hay una central nuclear sobrevolada por una bandada de p jaros de tres cabezas."
+ret
+
+# Esto no sirve para nada pero es un ejemplo tonto de variables
+
+:cocina_ventana_manipular
+eq %ventana 1 :cocina_ventana_cierra
+
+let ventana 1
+tbwc "Abres la ventana"
+ret
+
+:cocina_ventana_cierra
+let ventana 0
+tbwc "Cierras la ventana"
+ret
+
+:cocina_ir_a_la_piscina
+items has "Llave" :piscina_has_llave
+tbwc "Creo que a lo mejor no estabas prestando atenci¢n cuando Yoli te dijo que hac¡an falta unas llaves para abrir la puerta del patio que lleva a la piscina..."
+ret
+
+:piscina_has_llave
+items has "Aceite" :piscina_has_aceite
+tbwc "Introduces la llave en la cerradura. ­Perfecto, es la llave correcta! la giras un poco pero la manija parece atascada por el ¢xido"
+fancy_cls
+pix "pix/YOLI1.PIX" dbl fancy
+tb config 50 9 29 6 0 7 255 0 8
+tbwc "¨Qu‚ pasa? ¨No se abre?" "Yoli"
+tbwc "Qu‚ va... Parece que est  oxidada o algo. La manija se queda atascada." "T£"
+tbwc "A lo mejor con algo para lubricar... Busca por las alacenas, ­debe haber un poco de aceite por alg£n sitio!" "Yoli"
+fancy_cls
+tb config 1 20 78 4 0 7 15 0 8
+pix "pix/COCINA.pix" dbl fancy
+ret 
+
+:vestibulo2_start
+fancy_cls
+pix "pix/VESTIB.PIX" dbl fancy
+
+zones reset
+zones def "Salida" *0 *84 *27 *190 :salida
+zones def "Ir al sal¢n" *57 *98 *105 *180 :salon
+zones def "Ir a la cocina" *130 *97 *179 *181 :cocina_start
+zones def "Escaleras" *202 *37 *290 *182 :escaleras
+
+:vestibulo2_run
+zones run :vestibulo2 :vestibulo2_run
+tbwc "Ah¡ no hay nada interesante y no est s para perder el tiempo"
+ret
+
+
+
+:piscina_has_aceite
+tbwc "­Ahora s¡! Con las llaves y un poquito de aceite en la cerradura abres la puerta del patio."

@@ -458,6 +458,7 @@ typedef struct ZONE {
 	int x2;
 	int y2;
 	int type;
+	char label [LABEL_LEN];
 } ZONE;
 
 ZONE zones [MAX_ZONES];
@@ -486,7 +487,7 @@ void zones_reset (void) {
 	}
 }
 
-int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type) {
+int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type, unsigned char *label) {
 	if (zones_index < MAX_ZONES && strlen (text) < ZONE_TEXT_MAX_LENGTH) {
 		strcpy (zones [zones_index].text, text);
 		zones [zones_index].x1 = x1;
@@ -495,6 +496,9 @@ int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int typ
 		zones [zones_index].y2 = y2;
 		zones [zones_index].type = type;
 		zones_index ++;
+		//if (type == ZONE_TYPE_LABEL_DIRECT) {
+			strcpy (zones [zones_index].label, label);
+		//}
 		return 1;
 	}
 
@@ -538,6 +542,11 @@ char *zones_get_text (int index) {
 	return zones [index].text;
 }
 
+char *zones_get_label (int index) {
+	if (zones [index].type != ZONE_TYPE_LABEL_DIRECT) return NULL;
+	return zones [index].label;
+}
+
 int zones_find (int x, int y) {
 	for (int i = 0; i < zones_index; i ++) {
 		if (
@@ -556,6 +565,7 @@ int zones_get_type (int index) {
 }
 
 int zones_get_token_type (unsigned char *text) {
+	if (text [0] == ':') return ZONE_TYPE_LABEL_DIRECT;
 	if (strcmp (text, "actions") == 0) return ZONE_TYPE_ACTIONS;
 
 	return ZONE_TYPE_NORMAL;

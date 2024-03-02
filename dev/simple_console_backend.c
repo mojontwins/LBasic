@@ -277,13 +277,15 @@ int backend_zones_run (void) {
 	// Very simple implementation
 	printf ("ZONES: %d\n", zones_get_zones ());
 	for (int i = 0; i < zones_get_zones (); i ++) {
-		printf ("%d. %s %d %d %d %d\n", 
+		printf ("%d. %s %d %d %d %d {%d|%s}\n", 
 			i + 1, 
 			zones_get_text (i), 
 			zones_get_x1 (i), 
 			zones_get_y1 (i), 
 			zones_get_x2 (i), 
-			zones_get_y2 (i)
+			zones_get_y2 (i),
+			zones_get_type (i),
+			zones_get_label (i)
 		);
 	}
 

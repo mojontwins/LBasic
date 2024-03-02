@@ -120,17 +120,19 @@ int actions_get_type (int index);
 
 #define ZONE_TYPE_NORMAL 0
 #define ZONE_TYPE_ACTIONS 3
+#define ZONE_TYPE_LABEL_DIRECT 4
 
 void zones_reset (void);
 int zones_get_x1 (int index);
 int zones_get_y1 (int index);
 int zones_get_x2 (int index);
 int zones_get_y2 (int index);
-int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type);
+int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int type, unsigned char *label);
 void zones_reorganize (void);
 void zones_delete_item (unsigned char *item);
 int zones_get_zones (void);
 char *zones_get_text (int index);
+char *zones_get_label (int index);
 int zones_find (int x, int y);
 int zones_get_type (int index);
 int zones_get_token_type (unsigned char *text);

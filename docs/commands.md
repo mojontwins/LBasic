@@ -519,10 +519,10 @@ Normalmente para un juego las acciones se establecen al principio y no cambiará
 Borra todas las zonas 
 
 ```
-	zones def "texto" x1 y1 x2 y2 [actions]
+	zones def "texto" x1 y1 x2 y2 [actions|:label]
 ```
 
-Añade una zona con `texto` representando al rectángulo que va desde (x1, y1) hasta (x2, y2). Si se especifica `actions` esta zona desplegará el menú de acciones.
+Añade una zona con `texto` representando al rectángulo que va desde (x1, y1) hasta (x2, y2). Si se especifica `actions` esta zona desplegará el menú de acciones. Si, en cambio, se pone una etiqueta, el juego saltará directamente a esa etiqueta.
 
 ```
 	zones run :label :label_ret
@@ -535,6 +535,37 @@ Se espera a que el jugador seleccione una zona y desplegará los menús encadena
 ```
 
 Desactiva o activa (y configura) una barra de información que se deplegará mientras el usuario se mueve por la pantalla con el ratón, mostrando el texto de la zona activa.
+
+## En resumen
+
+Para entender los saltos que produce `zones run` veamos un ejemplo con todas las opciones:
+
+```
+	item puts "Calabaza"
+
+	actions put "Mirar"
+	actions put "Usar" items
+
+	zones def "Cuadro" 40 40 80 80
+	zones def "Ir al salón" 0 180 319 199 :salon
+	zones def "Cesta" 100 40 140 80 actions
+
+	:prueba_run
+
+	# El prefijo es ":prueba". Todos los saltos usarán ese prefijo.
+	# `ret` volverá a ":prueba_run"
+	zones run :prueba :prueba_run
+
+	# Si no pulsas en ningun sitio correcto o no hay nada para esa accion
+	# el script sigue ejecutandose, así que tenemos que volver a prueba_run
+	ret
+```
+
+* Si el usuario pulso en la zona entre (40, 40) y (80, 80), o sea, la zona "Cuadro", se saltará a `:prueba_cuadro` (el prefijo en `zones_run` y el nombre de la zona)
+* Si el usuario pulsó en la zona asociada a "Ir al salón" (entre (0 180) y (319 199)), se saltará a `:salon`
+* Si el usuario pulsó en la zona "Cesta" (entre (100, 40) y (140, 80)), se mostrará el menú de acciones:
+> * Si el usuario elige "mirar" se saltará a `:salon_cesta_mirar` (prefijo, zona, accion).
+> * Si el usuario elige "usar" se mostrará el menú de items. Si el usuario pulsa sober "Calabaza" se saltará a `:salon_cesta_usar_calabaza`, o sea, prefijo, zona, accion, item.
 
 # Text box
 

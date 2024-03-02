@@ -495,7 +495,8 @@ int lbasi_run_file (FILE *file) {
 					flags_parse_value (get_token (4)),
 					flags_parse_value (get_token (5)),
 					flags_parse_value (get_token (6)),
-					zones_get_token_type (get_token (7))
+					zones_get_token_type (get_token (7)),
+					get_token (7)
 				);
 
 			} else if (strcmp (zones_command, "run") == 0) {
@@ -510,46 +511,49 @@ int lbasi_run_file (FILE *file) {
 				if (zone == 999999) {
 					res = -1; run = 0;
 				} else if (zone >= 0) {
-
 					int type = zones_get_type (zone);
 
-					strcpy (temp_buffer, get_token (2)); 				// :label
-					strcat (temp_buffer, "_");                          // _
-					strcat (temp_buffer, zones_get_text (zone));        // ZONE
+					if (type == ZONE_TYPE_LABEL_DIRECT) {
+						strcpy (temp_buffer, zones_get_label (zone));
+					} else {
 
-					if (type == ZONE_TYPE_ACTIONS) {
+						strcpy (temp_buffer, get_token (2)); 				// :label
+						strcat (temp_buffer, "_");                          // _
+						strcat (temp_buffer, zones_get_text (zone));        // ZONE
 
-						// Display actions menu
-						int x = backend_zones_last_x ();
-						int y = backend_zones_last_y ();
+						if (type == ZONE_TYPE_ACTIONS) {
 
-						x -= backend_menu_get_w () / 2;
-						//y -= actions_get_actions () / 2;
+							// Display actions menu
+							int x = backend_zones_last_x ();
+							int y = backend_zones_last_y ();
 
-						int action = backend_actions_run (x, y);
-						if (action == 999999) {
-							res = -1; run = 0;
-						} else if (action >= 0) {
-							strcat (temp_buffer, "_");
-							strcat (temp_buffer, actions_get_action (action));
+							x -= backend_menu_get_w () / 2;
+							//y -= actions_get_actions () / 2;
 
-							// Get action type
-							int action_type = actions_get_type (action);
+							int action = backend_actions_run (x, y);
+							if (action == 999999) {
+								res = -1; run = 0;
+							} else if (action >= 0) {
+								strcat (temp_buffer, "_");
+								strcat (temp_buffer, actions_get_action (action));
 
-							// Show items?
-							if (action_type == ACTIONS_TYPE_ITEMS) {
-								int item = backend_inventory_run_xy (x, y);
-								if (item == 999999) {
-									res = -1; run = 0;
-								} else if (item >= 0) {
-									strcat (temp_buffer, "_");
-									strcat (temp_buffer, inventory_get_item (item));
+								// Get action type
+								int action_type = actions_get_type (action);
+
+								// Show items?
+								if (action_type == ACTIONS_TYPE_ITEMS) {
+									int item = backend_inventory_run_xy (x, y);
+									if (item == 999999) {
+										res = -1; run = 0;
+									} else if (item >= 0) {
+										strcat (temp_buffer, "_");
+										strcat (temp_buffer, inventory_get_item (item));
+									}
 								}
 							}
+
 						}
-
 					}
-
 					if (run) lbasi_goto (file, temp_buffer);
 				}
 			}
