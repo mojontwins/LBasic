@@ -495,10 +495,10 @@ int zones_add_item (unsigned char *text, int x1, int y1, int x2, int y2, int typ
 		zones [zones_index].x2 = x2;
 		zones [zones_index].y2 = y2;
 		zones [zones_index].type = type;
-		zones_index ++;
-		//if (type == ZONE_TYPE_LABEL_DIRECT) {
+		if (type == ZONE_TYPE_LABEL_DIRECT) {
 			strcpy (zones [zones_index].label, label);
-		//}
+		}
+		zones_index ++;
 		return 1;
 	}
 
