@@ -1,0 +1,25 @@
+print
+centra "Espacio / Tiempo"
+print
+centra "LBasic port demo"
+print
+centra "Pulsa una tecla"
+pause
+
+mode gfx
+font atari
+
+actions reset
+actions put "Pensar"
+actions put "Mirar"
+actions put "Hablar"
+actions put "Acci¢n"
+actions put "Items" items
+
+items reset
+items put "Reloj"
+
+menu config 32 20 8 3 1
+cbc 2
+
+chain "et_F1.lbs" 
