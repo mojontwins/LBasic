@@ -26,6 +26,7 @@ int backend_menu_c1 = 15;
 int backend_menu_c2 = 1;
 int backend_menu_w = 16;
 int backend_menu_selected = 0;
+int backend_menu_fixed = 0;
 
 int backend_talk_x = 0;
 int backend_talk_y = 0;
@@ -312,7 +313,6 @@ unsigned char backend_read_option (int num_choices) {
 			}
 		}
 	}
-
 	
 }
 
@@ -322,11 +322,11 @@ int backend_heartbeat (void) {
 	return shuttingdown ();
 }
 
-void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal) {
+void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal, int mask) {
 	char *fullpath = compute_full_path (pathspec, gif);
 
 	if (buf_getmode () != LS_MODE_TEXT) {
-		buf_gif_at (fullpath, x, y, load_pal);
+		buf_gif_at (fullpath, x, y, load_pal, mask);
 	}
 
 	free (fullpath);
@@ -406,12 +406,13 @@ void backend_ansibin (char *pathspec, char *filename) {
 	free (fullpath);
 }
 
-void backend_menu_config (int x, int y, int w, int c1, int c2) {
+void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed) {
 	backend_menu_x = x;
 	backend_menu_y = y;
 	backend_menu_w = w;
 	backend_menu_c1 = c1;
 	backend_menu_c2 = c2;
+	backend_menu_fixed = fixed;
 }
 
 void backend_talk_config (int x, int y, int w, int c1, int c2) {
@@ -492,12 +493,25 @@ int backend_menu_keys (
 	return res;
 }
 
+void backend_menu_show (void) {
+	int prev_x = buf_getx ();
+	int prev_y = buf_gety (); 
+	int prev_c1 = buf_getc1 ();
+	int prev_c2 = buf_getc2 ();
+	int backend_menu_options = menu_get_options ();
+	if (backend_menu_selected >= backend_menu_options) backend_menu_selected = backend_menu_options - 1;
+	buf_color (backend_menu_c1, backend_menu_c2);
+	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_menu_options);
+	backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
+}
+
 int backend_menu_run (void) {
 	int prev_x = buf_getx ();
 	int prev_y = buf_gety (); 
 	int prev_c1 = buf_getc1 ();
 	int prev_c2 = buf_getc2 ();
-	buf_sve ();
+	
+	if (!backend_menu_fixed) buf_sve ();
 
 	int done = 0;
 	int backend_menu_options = menu_get_options ();
@@ -521,7 +535,8 @@ int backend_menu_run (void) {
 
 	debuff_keys ();
 
-	buf_rec ();
+	if (!backend_menu_fixed) buf_rec ();
+	
 	buf_setxy (prev_x, prev_y);
 	buf_color (prev_c1, prev_c2);
 
@@ -834,10 +849,9 @@ void backend_shpal (void) {
 	}
 }
 
-void backend_fancy_cls (void) {
-	// Fuera adentro, rectangulitos. Sólo gráficos
-	int w = buf_getscrw ();	// 640
-	int h = buf_getscrh ();
+void backend_fancy_cls_box (int x1, int y1, int x2, int y2) {
+	int w = x2 - x1 + 1;
+	int h = y2 - y1 + 1;
 
 	int sqs = w == 640 ? 16 : 8; 	// 16
 
@@ -858,7 +872,11 @@ void backend_fancy_cls (void) {
 		}
 
 		waitvbl ();
-	}
+	}		
+}
+
+void backend_fancy_cls (void) {
+	backend_fancy_cls_box (0, 0, buf_getscrw () - 1, buf_getscrh () - 1);
 }
 
 void backend_midi_load (char *pathspec, char *mid, int loop) {

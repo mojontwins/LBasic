@@ -27,10 +27,12 @@
 [ ] Controlar ESC en menús y zones para salir del juego <- reaprovechar TUI -- parametrizar cuadro de texto para que lo centre en cualquier resolución de pantalla!!! -> Ejecutar spec.END, si existe. Si no, salir.
 [X] Flujo chain "file.ext", sin restricción. Se le añade "directory spec" al principcio.como a todo.
 [X] Caja de texto bulma
-[ ] Itegración "EXTERN N M" para que lo implemente el juego que sea
-[ ] Añadir un flag para que los comandos no esperen vbl, por lo general!
+[X] Itegración "EXTERN N M" para que lo implemente el juego que sea
+[-] Añadir un flag para que los comandos no esperen vbl, por lo general!
 [ ] print con N parámetros incluyendo flags `print "El valor introducido es " %perro " !"
-[ ] cajas de "talk" con 3 opciones para clickear / menus grandes  que generan 1 2 3 
+[/] cajas de "talk" con 3 opciones para clickear / menus grandes  que generan 1 2 3 [UNTESTED]
+[X] Añadir parámetros a fancy cls para eliminar solo una zona de la pantalla y no toda.
+[ ] Añadir fancy a PIC / CUT ?
 
 # Editor
 

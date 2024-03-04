@@ -19,7 +19,7 @@ actions put "Items" items
 items reset
 items put "Reloj"
 
-menu config 32 20 8 3 1
+menu config 32 20 8 3 1 fixed
 cbc 2
 
 chain "et_F1.lbs" 

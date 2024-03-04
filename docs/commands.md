@@ -101,7 +101,15 @@ Produce un pitido corto
 	cls
 ```
 
-Borra la zona de texto de la pantalla (ver `viewport`);
+Borra la zona de texto de la pantalla (ver `viewport` y `margins`);
+
+## fancy_cls
+
+```
+	fancy_cls [x1 y1 x2 y2]
+```
+
+Pensado para modos gráficos. Sin parámetros borra toda la pantalla con un bonito efecto. Con parámetros borra sólo un área. Las coordenadas van en pixels y en teoría deberían comprender un área de ancho y alto múltiplo de 8 (en baja resolución) o 16 (en alta resolución) pixels, por ejemplo `0 0 255 191`
 
 ## draw
 
@@ -322,10 +330,10 @@ Es equivalente a "PIC" de PRESENTS.EXE (Dr. Genius).
 ## cut
 
 ```
-	cut "pic.gif" x, y
+	cut "pic.gif" x y [t]
 ```
 
-Carga la imagen `pic.gif` en las coordenadas x, y.
+Carga la imagen `pic.gif` en las coordenadas x, y. Si se especifica `t` se utilizará como pixel transparente.
 
 Es equivalente a "CUT" de PRESENTS.EXE (Dr. Genius).
 
@@ -370,10 +378,16 @@ Añade al menú la opción con texto `texto`
 Quita del menú el la opción con texto `texto`
 
 ```
-	menu config x y w c1 c2
+	menu config x y w c1 c2 [fixed]
 ```
 
-Configura el menú para que aparezca en (x, y) con los colores (c1, c2), de anchura w
+Configura el menú para que aparezca en (x, y) con los colores (c1, c2), de anchura w. Si se especifica `fixed` al final, el menú se quedará en pantalla tras seleccionar uná opción en lugar de desaparecer. Esto es por si quieres tener el menú fijo en pantalla. En este caso, puedes / tendrás que ejecutar:
+
+```
+	menu show
+```
+
+Cada vez que borres la pantalla o la cubras con una imagen nueva, o hagas cualquier cosa que pueda sobrescribir el menú. **En otro caso no es necesario**.
 
 ```
 	menu run :label

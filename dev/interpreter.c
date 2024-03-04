@@ -357,7 +357,7 @@ int lbasi_run_file (FILE *file) {
 
 		else if (strcmp (command_token, "pic") == 0) {
 			// pic "pic.gif" seconds|kbd
-			backend_gif_at (main_path_spec, get_token (1), 0, 0, 1);
+			backend_gif_at (main_path_spec, get_token (1), 0, 0, 1, -1);
 
 			char *duration = get_token (2);
 			utils_tolower (duration);
@@ -371,7 +371,11 @@ int lbasi_run_file (FILE *file) {
 
 		} else if (strcmp (command_token, "cut") == 0) {
 			// cut "cut.gif" x y
-			backend_gif_at (main_path_spec, get_token (1), flags_parse_value (get_token(2)), flags_parse_value (get_token(3)), 1);
+			backend_gif_at (
+				main_path_spec, get_token (1), 
+				flags_parse_value (get_token (2)), flags_parse_value (get_token (3)), 1,
+				strlen (get_token (4)) ? flags_parse_value (get_token (4)) : -1				
+			);
 
 		} else if (strcmp (command_token, "sleep") == 0) {
 			// Wait 60 * seconds frames (can be float)
@@ -425,7 +429,16 @@ int lbasi_run_file (FILE *file) {
 
 			}
 		} else if (strcmp (command_token, "fancy_cls") == 0) {
-			backend_fancy_cls ();
+			if (strlen (get_token (1))) {
+				backend_fancy_cls_box (
+					flags_parse_value (get_token (1)),
+					flags_parse_value (get_token (2)),
+					flags_parse_value (get_token (3)),
+					flags_parse_value (get_token (4))
+				);
+			} else {
+				backend_fancy_cls ();
+			}
 			
 		} else if (strcmp (command_token, "resp") == 0) {
 			char *resps_command = get_token (1);
@@ -602,8 +615,12 @@ int lbasi_run_file (FILE *file) {
 					flags_parse_value (get_token (3)), 
 					flags_parse_value (get_token (4)), 
 					flags_parse_value (get_token (5)),
-					flags_parse_value (get_token (6))
+					flags_parse_value (get_token (6)),
+					strcmp (get_token (7), "fixed") == 0
 				);
+
+			} else if (strcmp (menu_command, "show") == 0) {
+				backend_menu_show ();
 
 			} else if (strcmp (menu_command, "run") == 0) {
 				int selected = backend_menu_run ();				

@@ -181,7 +181,7 @@ void backend_shutdown (void) {
 	// NO OP
 }
 
-void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal) {
+void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal, int mask) {
 	// NO OP
 }
 
@@ -213,11 +213,15 @@ void backend_set_mode (char *mode) {
 	// NO OP
 }
 
-void backend_menu_config (int x, int y, int w, int c1, int c2) {
+void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed) {
 	// NO OP
 }
 
 void backend_menu_set_selected (int selected) {
+	// NO OP
+}
+
+void backend_menu_show (void) {
 	// NO OP
 }
 
@@ -350,6 +354,10 @@ void backend_buf_char_delay (int d) {
 }
 
 void backend_shpal (void) {
+	// NO OP
+}
+
+void backend_fancy_cls_box (int x1, int y1, int x2, int y2) {
 	// NO OP
 }
 

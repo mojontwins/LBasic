@@ -741,7 +741,7 @@ void buf_pause (void) {
 	} while (*keys);
 }
 
-void buf_gif_at (char *gif, int x, int y, int do_setpal) {
+void buf_gif_at (char *gif, int x, int y, int do_setpal, int mask) {
 	// Wont load a gif bigger than the screen so...
 	char *gif_buffer;
 	char *pal_buffer = malloc (768);
@@ -749,7 +749,12 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal) {
 
 	gif_buffer = loadgif (gif, &w, &h, &p, pal_buffer);
 
-	blit (x, y, gif_buffer, w, h, 0, 0, w, h);
+	if (mask == -1) {
+		blit (x, y, gif_buffer, w, h, 0, 0, w, h);
+	} else {
+		maskblit (x, y, gif_buffer, w, h, 0, 0, w, h, mask);
+	}
+
 
 	if (do_setpal) {
 		char *pal_ptr = pal_buffer;
