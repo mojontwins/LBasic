@@ -298,8 +298,9 @@ int backend_zones_run (void) {
 	return res - 1;
 }
 
-void backend_talk_config (int x, int y, int w, int c1, int c2) {
+void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox, int oy, int om) {
 	// NO OP
+}
 }
 
 void backend_talk (char *s) {
@@ -401,5 +402,21 @@ void backend_wav_load (char *pathspec, char *wav, int loop, int channel) {
 }
 
 void backend_sound_stop (int channel) {
+	// NO OP
+}
+
+void backend_indicator_off (void) {
+	// NO OP
+}
+
+void backend_indicator_config (int x, int y, int c1, int c2, unsigned char c) {
+	// NO OP
+}
+
+void backend_sve () {
+	// NO OP
+}
+
+void backend_rec () {
 	// NO OP
 }

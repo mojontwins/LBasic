@@ -34,6 +34,11 @@ int backend_talk_c1 = 15;
 int backend_talk_c2 = 1;
 int backend_talk_w = 16;
 int backend_talk_selected = 0;
+int backend_talk_ox = 0;
+int backend_talk_oy = 0;
+int backend_talk_om = 255;
+char backend_talk_ovl [256];
+int backend_talk_ovl_on = 0;
 
 int backend_info_bar_y = -1; 	// -1 means OFF
 int backend_info_bar_c1 = 0;
@@ -60,6 +65,13 @@ struct music_t *mus = NULL;
 struct sound_t *sound = NULL;
 
 int cur_sound_channel = 0;
+
+int indicator_on = 0;
+int indicator_x = 0;
+int indicator_y = 0;
+int indicator_c1 = 7;
+int indicator_c2 = 0;
+unsigned char indicator_c = 16;
 
 void backend_init (void) {
 	lstextmode_init ();
@@ -154,12 +166,27 @@ void backend_color (int c1, int c2) {
 	buf_color (c1, c2);
 }
 
+void backend_indicator_off (void) {
+	indicator_on = 0;
+}
+
+void backend_indicator_config (int x, int y, int c1, int c2, unsigned char c) {
+	indicator_x = x;
+	indicator_y = y;
+	indicator_c1 = c1;
+	indicator_c2 = c2;
+	indicator_c = c;
+
+	indicator_on = 1;
+}
+
 void backend_pause (void) {
 	while (!backend_heartbeat ()) {
 		int c = *readchars ();
 		if (c == 0) break;
 	}
 
+	int ind = 0; int parp = 1;
 	keys_read ();
 	while (!backend_heartbeat ()) {
 		int c = *readchars ();
@@ -168,7 +195,17 @@ void backend_pause (void) {
 		keys_read ();
 		int keys_this_frame = keys_get_this_frame ();
 		if (keys_this_frame & MT_KEY_LBUTTON) break;
+
+		if (indicator_on) {
+			ind ++; if (ind == 30) {
+				ind = 0; parp ^= 1;
+			}
+
+			buf_char_abs (indicator_x, indicator_y, indicator_c1, indicator_c2, parp ? indicator_c : 0);
+		}
 	}
+
+	if (indicator_on) buf_char_abs (indicator_x, indicator_y, indicator_c1, indicator_c2, 0);
 }
 
 void backend_beep (void) {
@@ -415,12 +452,22 @@ void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed) {
 	backend_menu_fixed = fixed;
 }
 
-void backend_talk_config (int x, int y, int w, int c1, int c2) {
+void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox, int oy, int om) {
 	backend_talk_x = x;
 	backend_talk_y = y;
 	backend_talk_w = w;
 	backend_talk_c1 = c1;
 	backend_talk_c2 = c2;
+
+	if (ovl) {
+		strcpy (backend_talk_ovl, ovl);
+		backend_talk_ox = ox;
+		backend_talk_oy = oy;
+		backend_talk_om = om;
+		backend_talk_ovl_on = 1;
+	} else {
+		backend_talk_ovl_on = 0;
+	}
 }
 
 void backend_resp_config (int y, int c1, int c2) {
@@ -430,6 +477,10 @@ void backend_resp_config (int y, int c1, int c2) {
 }
 
 void backend_talk (char *who) {
+	if (backend_talk_ovl_on) {
+		buf_gif_at (backend_talk_ovl, backend_talk_ox, backend_talk_oy, 0, backend_talk_om);
+	}
+
 	backend_print_ghost (backend_talk_x, backend_talk_y, backend_talk_w, backend_talk_c1, backend_talk_c2, who);
 }
 
@@ -439,7 +490,7 @@ void backend_menu_set_selected (int selected) {
 
 void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int backend_menu_options) {
 	for (int i = 0; i < backend_menu_options; i ++) {
-		buf_setxy (x + 1, y + 1 + i);
+		
 		if (i == backend_menu_selected) {
 			buf_color (backend_menu_c2, backend_menu_c1);
 		} else {
@@ -449,7 +500,12 @@ void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int
 		unsigned char *option = get_option (i);
 		int l = strlen (option);
 		for (int j = 0; j < backend_menu_w - 2; j ++) {
-			buf_char (j < l ? option [j] : ' ');
+			buf_char_abs (
+				x + 1 + j, 
+				y + 1 + i, 
+				backend_menu_c1, backend_menu_c2, 
+				j < l ? option [j] : ' '
+			);
 		}
 	}
 }
@@ -503,6 +559,8 @@ void backend_menu_show (void) {
 	buf_color (backend_menu_c1, backend_menu_c2);
 	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_menu_options);
 	backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
+	buf_setxy (prev_x, prev_y);
+	buf_color (prev_c1, prev_c2);	
 }
 
 int backend_menu_run (void) {
@@ -919,6 +977,14 @@ void backend_wav_load (char *pathspec, char *wav, int loop, int channel) {
 
 void backend_sound_stop (int channel) {
 	stopsound (channel);
+}
+
+void backend_sve () {
+	buf_sve ();
+}
+
+void backend_rec () {
+	buf_rec ();
 }
 
 void backend_shutdown (void) {

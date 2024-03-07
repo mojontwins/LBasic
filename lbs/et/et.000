@@ -9,17 +9,21 @@ pause
 mode gfx
 font atari
 
-actions reset
-actions put "Pensar"
-actions put "Mirar"
-actions put "Hablar"
-actions put "Acci¢n"
-actions put "Items" items
+menu reset
+menu put "Pensar"
+menu put "Mirar"
+menu put "Acci¢n"
+menu put "Items" items
 
 items reset
 items put "Reloj"
 
-menu config 32 20 8 3 1 fixed
+menu config 32 19 8 3 1 fixed
 cbc 2
+viewport 20 24
+margins 0 31
+indicator 31 24 2 0 16
+talk config 0 19 10 2 0 "pic/ovl.gif" 0 152 4
+color 3 0
 
 chain "et_F1.lbs" 

@@ -61,3 +61,4 @@ int buf_to_char_coords_x (int x);
 int buf_to_char_coords_y (int y);
 void buf_tb (int x1, int y1, int w, int h, int c1, int c2, int tc1, int tc2, int f, char *title, char *text, int char_by_char);
 void buf_load_font_16 (char *font);
+void buf_char_abs (int x, int y, int c1, int c2, char c);

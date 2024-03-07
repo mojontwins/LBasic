@@ -341,6 +341,30 @@ void buf_scroll_up_if_needed (void) {
 	}
 }
 
+void buf_char_abs (int x, int y, int c1, int c2, char c) {
+	if (buf_mode == LS_MODE_TEXT) {
+		unsigned char *buf = screenbuffer ();
+		
+		int scr_w = screenwidth ();
+		int idx = (x + y * scr_w) * 2;
+		
+		buf [idx] = c;
+		buf [idx + 1] = c1 | (c2 << 4);
+
+	} else {
+		int x1 = 8 * x;
+		int y1 = buf_char_height * y;
+
+		unsigned char minibuf [2];
+		minibuf [0] = c; minibuf [1] = 0;
+
+		setcolor (c2);
+		if (c2 < 256) bar (x1, y1, 8, buf_char_height);
+		setcolor (c1);
+		outtextxy (x1, y1, minibuf);
+	}
+}
+
 void buf_char (char c) {
 	buf_scroll_up_if_needed ();
 	if (buf_mode == LS_MODE_TEXT) {
@@ -754,7 +778,6 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal, int mask) {
 	} else {
 		maskblit (x, y, gif_buffer, w, h, 0, 0, w, h, mask);
 	}
-
 
 	if (do_setpal) {
 		char *pal_ptr = pal_buffer;

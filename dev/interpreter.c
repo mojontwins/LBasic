@@ -165,6 +165,24 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "color") == 0) {
 			backend_color (atoi (get_token (1)), atoi (get_token (2)));
 
+		} else if (strcmp (command_token, "indicator") == 0) {
+			char *parameter = get_token (1);
+			utils_tolower (parameter);
+
+			if (strcmp (parameter, "off") == 0) {
+				backend_indicator_off ();
+
+			} else {
+				backend_indicator_config (
+					flags_parse_value (get_token (1)),
+					flags_parse_value (get_token (2)),
+					flags_parse_value (get_token (3)),
+					flags_parse_value (get_token (4)),
+					(unsigned char) flags_parse_value (get_token (5))
+				);
+
+			}
+
 		} else if (strcmp (command_token, "pause") == 0) {
 			backend_pause ();
 
@@ -222,6 +240,14 @@ int lbasi_run_file (FILE *file) {
 			
 		} else if (strcmp (command_token, "ww") == 0 || strcmp (command_token, "wordwrap") == 0) {
 			backend_wordwrap (get_token (1), (strcmp (get_token (2), "cbc") == 0));
+
+		} else if (strcmp (command_token, "wwc") == 0) {
+			backend_sve ();
+			backend_cls ();
+			if (strlen (get_token (2))) backend_talk (get_token (2));
+			backend_wordwrap (get_token (1), 1);
+			backend_pause ();
+			backend_rec ();
 
 		} else if (strcmp (command_token, "ansibin") == 0) {
 			backend_ansibin (main_path_spec, get_token (1));
@@ -364,10 +390,11 @@ int lbasi_run_file (FILE *file) {
 
 			if (strcmp (duration, "kbd") == 0) {
 				backend_pause ();
-			} else {
+			} else if (duration) {
 				// Wait 60 * seconds frames (can be float)
 				backend_wait_frames (60 * atof (duration));
 			}
+			continue;
 
 		} else if (strcmp (command_token, "cut") == 0) {
 			// cut "cut.gif" x y
@@ -376,6 +403,7 @@ int lbasi_run_file (FILE *file) {
 				flags_parse_value (get_token (2)), flags_parse_value (get_token (3)), 1,
 				strlen (get_token (4)) ? flags_parse_value (get_token (4)) : -1				
 			);
+			continue;
 
 		} else if (strcmp (command_token, "sleep") == 0) {
 			// Wait 60 * seconds frames (can be float)
@@ -728,15 +756,35 @@ int lbasi_run_file (FILE *file) {
 			utils_tolower (talk_command);
 
 			if (strcmp (talk_command, "config") == 0) {
-				backend_talk_config (
-					flags_parse_value (get_token (2)), 
-					flags_parse_value (get_token (3)), 
-					flags_parse_value (get_token (4)), 
-					flags_parse_value (get_token (5)),
-					flags_parse_value (get_token (6))
-				);
+				if (strlen (get_token (7))) {
+					strcpy (temp_buffer, main_path_spec);
+					strcat (temp_buffer, get_token (7));
+					backend_talk_config (
+						flags_parse_value (get_token (2)), 
+						flags_parse_value (get_token (3)), 
+						flags_parse_value (get_token (4)), 
+						flags_parse_value (get_token (5)),
+						flags_parse_value (get_token (6)),
+						temp_buffer,
+						flags_parse_value (get_token (8)),
+						flags_parse_value (get_token (9)),
+						flags_parse_value (get_token (10))
+					);
+				} else {
+					backend_talk_config (
+						flags_parse_value (get_token (2)), 
+						flags_parse_value (get_token (3)), 
+						flags_parse_value (get_token (4)), 
+						flags_parse_value (get_token (5)),
+						flags_parse_value (get_token (6)),
+						NULL, 0, 0, 0
+					);
+				}
+
+
 			} else {
 				backend_talk (get_token (1));
+
 			}
 		}
 

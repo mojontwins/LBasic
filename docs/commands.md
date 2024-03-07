@@ -38,6 +38,7 @@
 - items
 - talk
 - zones
+- indicator
 
 ## cursor|setxy x y
 
@@ -172,6 +173,12 @@ Establece el margen izquierdo y derecho para la impresión tipo "word wrap" (ver
 ```
 
 Escribe un texto con "word wrapping" y pasa a la linea siguiente. Este método ajusta las palabras del texto entre las columnas definidas en margins, de modo que si una palabra no cabe en una linea pasará a la siguiente. Es imporante emplear espacios tras la puntuación para que funcione de forma óptima. Si se añade `cbc` el texto se muestra caracter a caracter con un delay (interrumpible al pulsar una tecla).
+
+```
+	wwc "texto" ["personaje"]
+```
+
+Alias de `cls; talk "personaje"; ww "texto" cbc; pause; cls` que además restaura la pantalla. Pensado para visual novels.
 
 ## ansibin
 
@@ -491,10 +498,12 @@ Una pequeña utilidad para cuando hagas visual novels. Puedes poner quien habla 
 Escribe `personaje`. Puedes usar una cadena vacía.
 
 ```
-	talk config x y w c1 c2
+	talk config x y w c1 c2 [ovl.gif ox oy om]
 ```
 
-Configura el texto para que aparezca en (x, y) con los colores (c1, c2), de anchura w
+Configura el texto para que aparezca en (x, y) con los colores (c1, c2), de anchura w.
+
+Si se especifican los cuatro parámetros entre comillas, se cargará ovl.gif en (ox, oy) con máscara om antes de imprimir. Sirve para hacer marcos bonitos.
 
 ## Zones
 
@@ -665,3 +674,12 @@ Util si integras el intérprete en tu programa C. Esto llama a una función C `i
 
 channel = 0..15. Probablemente los primeros estén ocupados por el midi o el mod.
 
+# indicator
+
+Muestra un caracter parpadeante en el "pause".
+
+```
+	indicator off|x y c1 c2 c
+```
+
+Desactivar (off) o activar en x, y, con colores c1, c2, caracter c (codigo de CP437). Por defecto c es 16, que representa un triángulo que apunta a la derecha.

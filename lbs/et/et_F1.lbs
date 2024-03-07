@@ -1,0 +1,16 @@
+pic "pic/scene_001.gif"
+menu show
+
+wwc "En el prado cercano a la base Muttante hace bastante calor, aunque el sol no pega demasiado fuerte."
+
+wwc "Kinkss tiene hoy el d¡a libre y ha decidido aprovechar para hacer algo que estaba deseando hacer desde hace mucho tiempo: NADA."
+
+pic "pic/ET1_01.gif"
+menu show 
+
+#TODO: OVL AUTO
+
+wwc "Es el mejor de los d¡as... ­No se oyen ni los p jaros! Esta calma chicha es ideal para tumbarse, cerrar los ojos, y vegetar." "Kinkss"
+
+
+
