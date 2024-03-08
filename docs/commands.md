@@ -397,17 +397,19 @@ Configura el menú para que aparezca en (x, y) con los colores (c1, c2), de anch
 Cada vez que borres la pantalla o la cubras con una imagen nueva, o hagas cualquier cosa que pueda sobrescribir el menú. **En otro caso no es necesario**.
 
 ```
-	menu run :label
+	menu run :label :label_ret
 ```
 
 Muestra el menú y deja al usuario elegir una opción, y luego:
 
 - Si el usuario interrumpió el menú (ESC / 99 / etc) no hace nada! 
-- Si el usuario eligió una opción, saltará a la etiqueta :label_opcion (*) (**) 
+- Si el usuario eligió una opción, saltará a la etiqueta :label_opcion (*) (+) 
 - ¡Ojo! si la etiqueta no existe, no hará nada.
 
 (*) Se sustituirá los espacios por `_`, así una opción `COGER CAJA` saltará a `:label_coger_caja`
-(**) en las etiquetas no importa mayúsculas o minúsculas. Mejor no poner acentos (por ahora)
+(+) en las etiquetas no importa mayúsculas o minúsculas. Mejor no poner acentos (por ahora)
+
+- :label_ret especifica a qué etiqueta se salará con la orden "ret". Es util para volver a la linea que despliega el menú tras realizar una de las acciones.
 
 Ejemplo con rayitas de colores:
 

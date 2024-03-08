@@ -1,16 +1,69 @@
 pic "pic/scene_001.gif"
-menu show
 
+wwc "Septiembre de 1994 . . ."
 wwc "En el prado cercano a la base Muttante hace bastante calor, aunque el sol no pega demasiado fuerte."
-
 wwc "Kinkss tiene hoy el d¡a libre y ha decidido aprovechar para hacer algo que estaba deseando hacer desde hace mucho tiempo: NADA."
 
+fancy_cls 0 0 319 159
 pic "pic/ET1_01.gif"
-menu show 
-
-#TODO: OVL AUTO
 
 wwc "Es el mejor de los d¡as... ­No se oyen ni los p jaros! Esta calma chicha es ideal para tumbarse, cerrar los ojos, y vegetar." "Kinkss"
+wwc "Hmmm... Esta ma¤ana vi a Mayk muy preocupada..." "Kinkss"
 
+fancy_cls 0 0 319 159
+pic "pic/ET1_02.gif"
 
+menu reset
+menu put "Mirar"
+menu put "Pensar"
+menu put "Esperar"
+:pp1
+menu run :pp1r :pp1
+wwc "Pasa el tiempo . . ."
+ret
+
+:pp1_mirar
+wwc "Alg£n d¡a tendr¡a que irme a explorar ese bosque de pinos que rodea la base. Cinco a¤os aqu¡ y nunca he ido" "Kinkss"
+menu remove "Mirar"
+ret
+
+:pp1_pensar
+wwc "Creo que la vi saliendo muy temprano de la sala de exploraci¢n hiperemporal..." "Kinkss"
+wwc "Y luego se fue al despacho de la comandate y se tir¢ all¡ un buen rato." "Kinkss"
+wwc "Apenas me mir¢ cuando nos encontramos, y eso s¡ que es raro: Llevaba mi vestido nuevo." "Kinkss"
+
+menu reset
+menu put "Sala"
+menu put "Despacho"
+menu put "Saludo"
+menu put "Esperar"
+let cuenta 0
+:pp2
+menu run :pp2r :pp2
+wwc "Pasa el tiempo . . ."
+ret
+
+:pp2_sala
+wwc "En esa sala hay aparatos que nos ayudan a monitorizar otras ‚pocas y lugares... ­Parece ciencia ficci¢n!" "Kinkss"
+inc %cuenta
+menu remove "Sala"
+go :pp2_check_next
+
+:pp2_despacho
+wwc "Si estuvo hablando con la comandante, seguro que se trata de algo muy grave." "Kinkss"
+wwc "Ya se sabe que es mejor no molestar a la comandante por cualquier tontar¡a." "Kinkss"
+wwc "Un ataque terrorista, una fuga en nuestras c rceles temporales, un ataque del enemigo..." "Kinkss"
+inc %cuenta
+menu remove "Despacho"
+go :pp2_check_next
+
+:pp2_saludo
+wwc "Me preocupa, de verdad... Estaba como ausente. No es normal. ­Tengo que hablar con ella!"
+inc %cuenta
+menu remove "Saludo"
+go :pp2_check_next
+
+:pp2_check_next
+eq %cuenta 3 :pp3
+ret
 

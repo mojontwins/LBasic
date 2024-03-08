@@ -420,3 +420,7 @@ void backend_sve () {
 void backend_rec () {
 	// NO OP
 }
+
+int backend_shuttingdown (void) {
+	// NO OP
+}

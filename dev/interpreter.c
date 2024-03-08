@@ -117,7 +117,7 @@ int lbasi_run_file (FILE *file) {
 	int res = 0;
 	int choice_res;
 	int run = 1;
-	int forcevbl = 0;
+	int skipvbl = 0;
 
 	char line_buffer [LINE_BUFFER_SIZE];
 	char temp_buffer [256];
@@ -138,6 +138,8 @@ int lbasi_run_file (FILE *file) {
 	initial_label [0] = 0;
 
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
+		skipvbl = 0;
+		
 		// Tokenize line_buffer
 		parse_to_tokens (line_buffer);
 		if (get_num_tokens () == 0) continue;
@@ -248,6 +250,7 @@ int lbasi_run_file (FILE *file) {
 			backend_wordwrap (get_token (1), 1);
 			backend_pause ();
 			backend_rec ();
+			skipvbl = 1;
 
 		} else if (strcmp (command_token, "ansibin") == 0) {
 			backend_ansibin (main_path_spec, get_token (1));
@@ -651,6 +654,11 @@ int lbasi_run_file (FILE *file) {
 				backend_menu_show ();
 
 			} else if (strcmp (menu_command, "run") == 0) {
+				// Update ret label, if present
+				if (strlen (get_token (3))) {
+					strcpy (ret_label, get_token (3));
+				}
+
 				int selected = backend_menu_run ();				
 
 				if (selected == 999999) {
@@ -917,7 +925,11 @@ int lbasi_run_file (FILE *file) {
 		}
 
 		// Update screen, etc
-		if (backend_heartbeat ()) {
+		if (skipvbl) {
+			if (backend_shuttingdown ()) {
+				run = 0;
+			}
+		} else if (backend_heartbeat ()) {
 			run = 0;
 		}
 

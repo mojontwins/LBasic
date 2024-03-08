@@ -359,6 +359,10 @@ int backend_heartbeat (void) {
 	return shuttingdown ();
 }
 
+int backend_shuttingdown (void) {
+	return shuttingdown ();
+}
+
 void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal, int mask) {
 	char *fullpath = compute_full_path (pathspec, gif);
 

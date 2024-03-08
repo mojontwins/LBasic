@@ -9,17 +9,11 @@ pause
 mode gfx
 font atari
 
-menu reset
-menu put "Pensar"
-menu put "Mirar"
-menu put "Acci¢n"
-menu put "Items" items
-
 items reset
 items put "Reloj"
 
-menu config 32 19 8 3 1 fixed
-cbc 2
+menu config 32 19 8 3 1
+cbc 3
 viewport 20 24
 margins 0 31
 indicator 31 24 2 0 16
