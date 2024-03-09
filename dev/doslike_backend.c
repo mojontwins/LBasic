@@ -42,7 +42,9 @@ typedef struct BACKEND_TALK {
 	int ox;
 	int oy;
 	int om;
-	char ovl [512];
+	int ow;
+	int oh;
+	char *ovl_pixels;
 	int ovl_on;
 } BACKEND_TALK;
 
@@ -101,17 +103,19 @@ typedef struct BACKEND_BG {
 	int y;
 } BACKEND_BG;
 
-BACKEND_BG backend_bg_config;
+BACKEND_BG backend_bg_cfg;
 
 typedef struct BACKEND_INTERFACE {
-	int on,
-	char spec [513],
-	int x,
-	int y,
-	int m
+	int on;
+	char *interface_pixels;
+	int x;
+	int y;
+	int m;
+	int w;
+	int h;
 } BACKEND_INTERFACE;
 
-BACKEND_INTERFACE bakend_interface_config;
+BACKEND_INTERFACE backend_interface_cfg;
 
 int cur_sound_channel = 0;
 struct music_t *mus = NULL;
@@ -139,7 +143,7 @@ void backend_init (void) {
 	backend_talk.ox = 0;
 	backend_talk.oy = 0;
 	backend_talk.om = 255;
-	backend_talk.ovl [0] = 0;
+	backend_talk.ovl_pixels = NULL;
 	backend_talk.ovl_on = 0;
 
 	backend_info_bar.y = -1; 	// -1 means OFF
@@ -170,14 +174,16 @@ void backend_init (void) {
 	backend_indicator.c2 = 0;
 	backend_indicator.c = 16;
 
-	backend_bg_config.x = 0;
-	backend_bg_config.y = 0;
+	backend_bg_cfg.x = 0;
+	backend_bg_cfg.y = 0;
 
-	backend_interface_config.interface [0] = 0;
-	backend_interface_config.on = 0;
-	backend_interface_config.x = 0;
-	backend_interface_config.y = 0;
-	backend_interface_config.m = 0;
+	backend_interface_cfg.interface_pixels = 0;
+	backend_interface_cfg.on = 0;
+	backend_interface_cfg.x = 0;
+	backend_interface_cfg.y = 0;
+	backend_interface_cfg.m = 0;
+	backend_interface_cfg.w = 0;
+	backend_interface_cfg.h = 0;
 }
 
 int backend_get_break (void) {
@@ -558,6 +564,9 @@ void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed, int no
 }
 
 void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox, int oy, int om) {
+	char pal_dummy [768];
+	int p_dummy;
+
 	backend_talk.x = x;
 	backend_talk.y = y;
 	backend_talk.w = w;
@@ -565,7 +574,19 @@ void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox
 	backend_talk.c2 = c2;
 
 	if (ovl) {
-		strcpy (backend_talk.ovl, ovl);
+		// Just in case
+		if (backend_talk.ovl_pixels) {
+			free (backend_talk.ovl_pixels);
+		}
+
+		backend_talk.ovl_pixels = loadgif (
+			ovl, 
+			&backend_talk.ow,
+			&backend_talk.oh,
+			&p_dummy,
+			pal_dummy
+		);
+
 		backend_talk.ox = ox;
 		backend_talk.oy = oy;
 		backend_talk.om = om;
@@ -582,8 +603,15 @@ void backend_resp_config (int y, int c1, int c2) {
 }
 
 void backend_talk_do (char *who) {
-	if (backend_talk.ovl_on) {
-		buf_gif_at (backend_talk.ovl, backend_talk.ox, backend_talk.oy, 0, backend_talk.om);
+	if (backend_talk.ovl_on && backend_talk.ovl_pixels) {
+		maskblit (
+			backend_talk.ox, backend_talk.oy,
+			backend_talk.ovl_pixels,
+			backend_talk.ow, backend_talk.oh,
+			0, 0,
+			backend_talk.ow, backend_talk.oh,
+			backend_talk.om
+		);
 	}
 
 	backend_print_ghost (backend_talk.x, backend_talk.y, backend_talk.w, backend_talk.c1, backend_talk.c2, who);
@@ -594,21 +622,24 @@ void backend_menu_set_selected (int selected) {
 }
 
 void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int backend_menu_options) {
+	int c1, c2, w;
+
 	for (int i = 0; i < backend_menu_options; i ++) {
 		
 		if (i == backend_menu_selected) {
-			buf_color (backend_menu.c2, backend_menu.c1);
+			c1 = backend_menu.c2; c2 = backend_menu.c1;
 		} else {
-			buf_color (backend_menu.c1, backend_menu.c2);
+			c1 = backend_menu.c1; c2 = backend_menu.c2;
 		}
 		
 		unsigned char *option = get_option (i);
 		int l = strlen (option);
-		for (int j = 0; j < backend_menu.w - 2; j ++) {
+		w = backend_menu.noframe ? backend_menu.w : backend_menu.w - 2;
+		for (int j = 0; j < w; j ++) {
 			buf_char_abs (
-				x + 1 + j, 
+				x + (backend_menu.noframe == 0) + j, 
 				y + (backend_menu.noframe == 0) + i, 
-				backend_menu.c1, backend_menu.c2, 
+				c1, c2, 
 				j < l ? option [j] : ' '
 			);
 		}
@@ -1022,6 +1053,22 @@ void backend_shpal (void) {
 	}
 }
 
+void interface_show (void) {
+	if (backend_interface_cfg.on && backend_interface_cfg.interface_pixels) {
+		maskblit (
+			backend_interface_cfg.x,
+			backend_interface_cfg.y,
+			backend_interface_cfg.interface_pixels,
+			backend_interface_cfg.w,
+			backend_interface_cfg.h,
+			0, 0,
+			backend_interface_cfg.w,
+			backend_interface_cfg.h,
+			backend_interface_cfg.m
+		);
+	}
+}
+
 void backend_fancy_cls_box (int x1, int y1, int x2, int y2) {
 	int w = x2 - x1 + 1;
 	int h = y2 - y1 + 1;
@@ -1044,6 +1091,7 @@ void backend_fancy_cls_box (int x1, int y1, int x2, int y2) {
 			bar (w - (i + 1) * sqs, y * sqs, sqs, sqs);
 		}
 
+		interface_show ();
 		waitvbl ();
 	}		
 }
@@ -1103,39 +1151,50 @@ void backend_rec () {
 }
 
 void backend_bg_config (int x, int y) {
-	backend_bg_config.x = x;
-	backend_bg_config.y = y;
+	backend_bg_cfg.x = x;
+	backend_bg_cfg.y = y;
 }
 
 void backend_bg_do (char *pathspec, char *bg) {
 	if (buf_getmode () != LS_MODE_TEXT) {
 		char *fullpath = compute_full_path (pathspec, bg);
-		buf_gif_at (fullpath, backend_bg_config.x, backend_bg_config.y, 1, -1);
+		buf_gif_at (fullpath, backend_bg_cfg.x, backend_bg_cfg.y, 1, -1);
 		free (fullpath);
 
-		if (backend_interface_config.on) {
-			buf_gif_at (backend_interface_config.interface,
-				backend_interface_config.x,
-				backend_interface_config.y,
-				0
-				backend_interface_config.m
-			);
-		}
+		interface_show ();
 	}
 }
 
 void backend_interface_off (void) {
-	backend_interface_config.on = 0;
+	backend_interface_cfg.on = 0;
 }
 
 void backend_interface_config (char *interface, int x, int y, int m) {
-	strcpy (backend_interface_config.interface, interface);
-	backend_interface_config.on = 1;
-	backend_interface_config.x = x;
-	backend_interface_config.y = y;
-	backend_interface_config.m = m;
+	char pal_dummy [768]; // discard
+	int p_dummy;
+
+	// Just in case
+	if (backend_interface_cfg.interface_pixels) {
+		free (backend_interface_cfg.interface_pixels);
+	}
+
+	// Read pixels
+	backend_interface_cfg.interface_pixels = loadgif (
+		interface,
+		&backend_interface_cfg.w,
+		&backend_interface_cfg.h,
+		&p_dummy,
+		pal_dummy
+	);
+
+	backend_interface_cfg.on = 1;
+	backend_interface_cfg.x = x;
+	backend_interface_cfg.y = y;
+	backend_interface_cfg.m = m;
 }
 
 void backend_shutdown (void) {
+	free (backend_interface_cfg.interface_pixels);
+	free (backend_talk.ovl_pixels);
 	lstextmode_shutdown ();
 }

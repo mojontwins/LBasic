@@ -38,6 +38,25 @@
 [X] Menu config noframe
 [ ] Talk config retratos
 
+[ ] Hay un problema con los flags y los aliases y tal, deberia distinguirse entre lvalue y rvalue.
+
+Por ejemplo:
+add $4 $5 -> 
+$4 = $4 + $5
+flags [4] = flags [4] + flags [5];
+
+En la parte derecha puedo dejarlo tal y como está, resolviendo,
+Pero en la parte izquierda tendría que obtener "4".
+
+inc %cojin -> inc $2, idem,
+inc $2 -> necesito obtener "2"
+
+let $4 = 4, es más legible, necesito "4" (lvalue)
+let %cogin = 5, es más legible.
+
+¡Implementar bien esto!
+La función que hay que resuelve flags me sigue valiendo para "rvalue", pero no para "lvalue".
+
 # Editor
 
 [X] Save / Load

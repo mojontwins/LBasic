@@ -303,7 +303,7 @@ void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox
 }
 
 void backend_talk_do (char *who) {
-	backend_print (s);
+	backend_print (who);
 }
 
 void backend_bulma_lin (char *pathspec, char *lin) {

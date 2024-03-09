@@ -1,17 +1,24 @@
-pic "pic/scene_001.gif"
+# Usamos BG para poner el gr fico de fondo. Eso, adem s,
+# cargar  la interfaz encima (definida en et.000)
+bg "pic/scene_001.gif"
 
+# wwc borra el area de texto, carga el overlay y pone qui‚n habla (si se 
+# especifica en el segundo par metro), muestra el texto caracter a 
+# caracter, espera que pulsemos una tecla, y vuelve a restaurar la 
+# pantalla
 wwc "Septiembre de 1994 . . ."
+
 wwc "En el prado cercano a la base Muttante hace bastante calor, aunque el sol no pega demasiado fuerte."
 wwc "Kinkss tiene hoy el d¡a libre y ha decidido aprovechar para hacer algo que estaba deseando hacer desde hace mucho tiempo: NADA."
 
 fancy_cls 0 0 319 159
-pic "pic/ET1_01.gif"
+bg "pic/ET1_01.gif"
 
-wwc "Es el mejor de los d¡as... ­No se oyen ni los p jaros! Esta calma chicha es ideal para tumbarse, cerrar los ojos, y vegetar." "Kinkss"
+wwc "Es el mejor de los d¡as... ­No se oye ni a los p jaros! Esta calma chicha es ideal para tumbarse, cerrar los ojos, y vegetar." "Kinkss"
 wwc "Hmmm... Esta ma¤ana vi a Mayk muy preocupada..." "Kinkss"
 
 fancy_cls 0 0 319 159
-pic "pic/ET1_02.gif"
+bg "pic/ET1_02.gif"
 
 menu reset
 menu put "Mirar"
@@ -22,12 +29,12 @@ menu run :pp1r :pp1
 wwc "Pasa el tiempo . . ."
 ret
 
-:pp1_mirar
-wwc "Alg£n d¡a tendr¡a que irme a explorar ese bosque de pinos que rodea la base. Cinco a¤os aqu¡ y nunca he ido" "Kinkss"
+:pp1r_mirar
+wwc "Alg£n d¡a tendr¡a que irme a explorar ese bosque de pinos que rodea la base. Cinco a¤os aqu¡ y nunca he ido." "Kinkss"
 menu remove "Mirar"
 ret
 
-:pp1_pensar
+:pp1r_pensar
 wwc "Creo que la vi saliendo muy temprano de la sala de exploraci¢n hiperemporal..." "Kinkss"
 wwc "Y luego se fue al despacho de la comandate y se tir¢ all¡ un buen rato." "Kinkss"
 wwc "Apenas me mir¢ cuando nos encontramos, y eso s¡ que es raro: Llevaba mi vestido nuevo." "Kinkss"
@@ -43,21 +50,21 @@ menu run :pp2r :pp2
 wwc "Pasa el tiempo . . ."
 ret
 
-:pp2_sala
+:pp2r_sala
 wwc "En esa sala hay aparatos que nos ayudan a monitorizar otras ‚pocas y lugares... ­Parece ciencia ficci¢n!" "Kinkss"
 inc %cuenta
 menu remove "Sala"
 go :pp2_check_next
 
-:pp2_despacho
+:pp2r_despacho
 wwc "Si estuvo hablando con la comandante, seguro que se trata de algo muy grave." "Kinkss"
-wwc "Ya se sabe que es mejor no molestar a la comandante por cualquier tontar¡a." "Kinkss"
+wwc "Ya se sabe que es mejor no molestar a la comandante por cualquier tonter¡a." "Kinkss"
 wwc "Un ataque terrorista, una fuga en nuestras c rceles temporales, un ataque del enemigo..." "Kinkss"
 inc %cuenta
 menu remove "Despacho"
 go :pp2_check_next
 
-:pp2_saludo
+:pp2r_saludo
 wwc "Me preocupa, de verdad... Estaba como ausente. No es normal. ­Tengo que hablar con ella!"
 inc %cuenta
 menu remove "Saludo"
@@ -67,3 +74,26 @@ go :pp2_check_next
 eq %cuenta 3 :pp3
 ret
 
+:pp3
+wwc "Maykk y yo nos conocemos desde que entramos a la academia. Entonces no ‚ramos m s que unas ni¤as." "Kinkss"
+wwc "­Siempre le estoy diciendo que se lo toma todo demasiado en serio! Quiz  por eso le ha ido siempre tan bien, por otro lado... Y a mi tan normal." "Kinkss"
+wwc "Bueno, sea lo que sea que le tribula, espero que me lo cuente pronto." "Kinkss"
+
+menu reset
+menu put "Pensar"
+menu put "Esperar"
+:pp3
+menu run :pp3r :pp3
+wwc "Pasa el tiempo . . ."
+ret
+
+:pp3r_pensar
+wwc "Creo que la voy a llamar... No puede ser que est‚ yo aqu¡ toda relajada y la pobre comi‚ndose un marr¢n. O lo que sea." "Kinkss"
+wwc "Vaya, ¨Qu‚ es ese ruido?" "Kinkss"
+
+:pp3r_esperar
+wwc "De fondo puede oirse el murmullo hidr ulico de un deslizador de clase C, y parece que se acerca"
+wwc "En efecto: un deslizador aparece veloz desde detr s de las colinas y se detiene a pocos pasos de distancia"
+
+fancy_cls 0 0 319 159
+bg "pic/ET1_03.gif"
