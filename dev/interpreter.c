@@ -246,7 +246,7 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "wwc") == 0) {
 			backend_sve ();
 			backend_cls ();
-			if (strlen (get_token (2))) backend_talk (get_token (2));
+			if (strlen (get_token (2))) backend_talk_do (get_token (2));
 			backend_wordwrap (get_token (1), 1);
 			backend_pause ();
 			backend_rec ();
@@ -647,7 +647,8 @@ int lbasi_run_file (FILE *file) {
 					flags_parse_value (get_token (4)), 
 					flags_parse_value (get_token (5)),
 					flags_parse_value (get_token (6)),
-					strcmp (get_token (7), "fixed") == 0
+					token_exists ("fixed"),
+					token_exists ("noframe")
 				);
 
 			} else if (strcmp (menu_command, "show") == 0) {
@@ -791,7 +792,7 @@ int lbasi_run_file (FILE *file) {
 
 
 			} else {
-				backend_talk (get_token (1));
+				backend_talk_do (get_token (1));
 
 			}
 		}
@@ -823,6 +824,44 @@ int lbasi_run_file (FILE *file) {
 				backend_sound_stop (flags_parse_value (get_token (2)));
 
 			}
+		}
+
+		// *** BG & INTERFACE **
+		else if (strcmp (command_token, "bg") == 0) {
+			strcpy (temp_buffer, get_token (1));
+			utils_tolower (temp_buffer);
+
+			if (strcmp (temp_buffer, "config") == 0) {
+				backend_bg_config (
+					flags_parse_value (get_token (2)),
+					flags_parse_value (get_token (3))
+				);
+
+			} else {
+				backend_bg_do (main_path_spec, get_token (1));
+				continue;
+
+			}
+
+		} else if (strcmp (command_token, "interface") == 0) {
+			char *interface_command = get_token (1);
+			utils_tolower (interface_command);
+
+			if (strcmp (interface_command, "off") == 0) {
+				backend_interface_off ();
+
+			} else if (strcmp (interface_command, "config") == 0) {
+				strcpy (temp_buffer, main_path_spec);
+				strcat (temp_buffer, get_token (2));
+				
+				backend_interface_config (
+					temp_buffer,
+					flags_parse_value (get_token (3)),
+					flags_parse_value (get_token (4)),
+					flags_parse_value (get_token (5))
+				);
+			}
+
 		}
 
 		// *** LEGACY ***

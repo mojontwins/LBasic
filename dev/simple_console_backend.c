@@ -213,7 +213,7 @@ void backend_set_mode (char *mode) {
 	// NO OP
 }
 
-void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed) {
+void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed, int noframe) {
 	// NO OP
 }
 
@@ -301,9 +301,8 @@ int backend_zones_run (void) {
 void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox, int oy, int om) {
 	// NO OP
 }
-}
 
-void backend_talk (char *s) {
+void backend_talk_do (char *who) {
 	backend_print (s);
 }
 
@@ -422,5 +421,21 @@ void backend_rec () {
 }
 
 int backend_shuttingdown (void) {
+	// NO OP
+}
+
+void backend_bg_config (int x, int y) {
+	// NO OP
+}
+
+void backend_bg_do (char *pathspec, char *bg) {
+	// NO OP
+}
+
+void backend_interface_off (void) {
+	// NO OP
+}
+
+void backend_interface_config (char *interface, int x, int y, int m) {
 	// NO OP
 }

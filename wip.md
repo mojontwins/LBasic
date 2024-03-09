@@ -29,13 +29,13 @@
 [X] Caja de texto bulma
 [X] Itegración "EXTERN N M" para que lo implemente el juego que sea
 [-] Añadir un flag para que los comandos no esperen vbl, por lo general!
-[ ] print con N parámetros incluyendo flags `print "El valor introducido es " %perro " !"
+[ ] print con N parámetros incluyendo flags `print "El valor introducido es " %perro " !"`
 [/] cajas de "talk" con 3 opciones para clickear / menus grandes  que generan 1 2 3 [UNTESTED]
 [X] Añadir parámetros a fancy cls para eliminar solo una zona de la pantalla y no toda.
 [ ] Añadir fancy a PIC / CUT ?
 [ ] Formas de contar el número de elementos que hay en el menú, o el número de elementos que se ha quitado desde el último reset!
 [ ] Box manual
-[ ] Menu config noframe
+[X] Menu config noframe
 [ ] Talk config retratos
 
 # Editor

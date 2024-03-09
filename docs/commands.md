@@ -39,6 +39,7 @@
 - talk
 - zones
 - indicator
+- interface "spec.gif"
 
 ## cursor|setxy x y
 
@@ -344,6 +345,20 @@ Carga la imagen `pic.gif` en las coordenadas x, y. Si se especifica `t` se utili
 
 Es equivalente a "CUT" de PRESENTS.EXE (Dr. Genius).
 
+## bg
+
+```
+	bg config x y
+```
+
+Configura para que los "fondos" que se carguen con "bg" aparezcan siempre en `x, y`.
+
+```
+	bg "pic.gif"
+```
+
+Carga un fondo `pic.gif` y lo muestra en pantalla en laas coordenadas que se configuraron. Si se configuró `interface` (ver más abajo), se mostrará este interface encima de la imagen cargada.
+
 ## lin
 
 ```
@@ -385,7 +400,7 @@ Añade al menú la opción con texto `texto`
 Quita del menú el la opción con texto `texto`
 
 ```
-	menu config x y w c1 c2 [fixed]
+	menu config x y w c1 c2 [fixed] [noframe]
 ```
 
 Configura el menú para que aparezca en (x, y) con los colores (c1, c2), de anchura w. Si se especifica `fixed` al final, el menú se quedará en pantalla tras seleccionar uná opción en lugar de desaparecer. Esto es por si quieres tener el menú fijo en pantalla. En este caso, puedes / tendrás que ejecutar:
@@ -395,6 +410,8 @@ Configura el menú para que aparezca en (x, y) con los colores (c1, c2), de anch
 ```
 
 Cada vez que borres la pantalla o la cubras con una imagen nueva, o hagas cualquier cosa que pueda sobrescribir el menú. **En otro caso no es necesario**.
+
+Si pones `noframe` no se pintará un marco alrededor del menú y el texto de las opciones podrá ocupar todo `w` de ancho.
 
 ```
 	menu run :label :label_ret
@@ -685,3 +702,11 @@ Muestra un caracter parpadeante en el "pause".
 ```
 
 Desactivar (off) o activar en x, y, con colores c1, c2, caracter c (codigo de CP437). Por defecto c es 16, que representa un triángulo que apunta a la derecha.
+
+# interface
+
+```
+	interface off|config "spec.gif" x y mask
+```
+
+Si se define una imagen, se cargará automáticamente en `x` `y` usando los pixeles de color mask como transparente de forma automática tras cada "bg", superponiéndola.

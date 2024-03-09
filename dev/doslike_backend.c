@@ -20,64 +20,164 @@ char *full_line = "                                                             
 int show_status = 1;
 int forced_break = 0;
 
-int backend_menu_x = 0;
-int backend_menu_y = 0;
-int backend_menu_c1 = 15;
-int backend_menu_c2 = 1;
-int backend_menu_w = 16;
+typedef struct BACKEND_MENU {
+	int x;
+	int y;
+	int c1;
+	int c2;
+	int w;
+	int fixed;
+	int noframe;
+} BACKEND_MENU;
+
+BACKEND_MENU backend_menu;
 int backend_menu_selected = 0;
-int backend_menu_fixed = 0;
 
-int backend_talk_x = 0;
-int backend_talk_y = 0;
-int backend_talk_c1 = 15;
-int backend_talk_c2 = 1;
-int backend_talk_w = 16;
-int backend_talk_selected = 0;
-int backend_talk_ox = 0;
-int backend_talk_oy = 0;
-int backend_talk_om = 255;
-char backend_talk_ovl [256];
-int backend_talk_ovl_on = 0;
+typedef struct BACKEND_TALK {
+	int x;
+	int y;
+	int c1;
+	int c2;
+	int w;
+	int ox;
+	int oy;
+	int om;
+	char ovl [512];
+	int ovl_on;
+} BACKEND_TALK;
 
-int backend_info_bar_y = -1; 	// -1 means OFF
-int backend_info_bar_c1 = 0;
-int backend_info_bar_c2 = 0;
+BACKEND_TALK backend_talk;
 
-int zones_last_x = 0;
-int zones_last_y = 0;
+typedef struct BACKEND_INFO_BAR {
+	int y;
+	int c1;
+	int c2;
+} BACKEND_INFO_BAR;
 
-int tb_x = 1;
-int tb_y = 1;
-int tb_w = 78;
-int tb_h = 10;
-int tb_c1 = 15;
-int tb_c2 = 7;
-int tb_tc1 = 0;
-int tb_tc2 = 7;
-int tb_f = 8; 
+BACKEND_INFO_BAR backend_info_bar;
 
-int resp_y = 25;
-int resp_c1 = 15;
-int resp_c2 = 0;
+typedef struct BACKEND_ZONES {
+	int last_x;
+	int last_y;
+} BACKEND_ZONES;
 
-struct music_t *mus = NULL;
-struct sound_t *sound = NULL;
+BACKEND_ZONES backend_zones;
+
+typedef struct BACKEND_TB {
+	int x;
+	int y;
+	int w;
+	int h;
+	int c1;
+	int c2;
+	int tc1;
+	int tc2;
+	int f;
+} BACKEND_TB;
+
+BACKEND_TB backend_tb_cfg;
+
+typedef struct BACKEND_RESP {
+	int y;
+	int c1;
+	int c2;
+} BACKEND_RESP;
+
+BACKEND_RESP backend_resp;
+
+typedef struct BACKEND_INDICATOR {
+	int on;
+	int x;
+	int y;
+	int c1;
+	int c2;
+	unsigned char c;
+} BACKEND_INDICATOR;
+
+BACKEND_INDICATOR backend_indicator;
+
+typedef struct BACKEND_BG {
+	int x;
+	int y;
+} BACKEND_BG;
+
+BACKEND_BG backend_bg_config;
+
+typedef struct BACKEND_INTERFACE {
+	int on,
+	char spec [513],
+	int x,
+	int y,
+	int m
+} BACKEND_INTERFACE;
+
+BACKEND_INTERFACE bakend_interface_config;
 
 int cur_sound_channel = 0;
-
-int indicator_on = 0;
-int indicator_x = 0;
-int indicator_y = 0;
-int indicator_c1 = 7;
-int indicator_c2 = 0;
-unsigned char indicator_c = 16;
+struct music_t *mus = NULL;
+struct sound_t *sound = NULL;
 
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
 	buf_clscroll ();
 	setsoundbank (DEFAULT_SOUNDBANK_SB16);
+
+	backend_menu.x = 0;
+	backend_menu.y = 0;
+	backend_menu.c1 = 15;
+	backend_menu.c2 = 1;
+	backend_menu.w = 16;
+	backend_menu.fixed = 0;
+	backend_menu.noframe = 0;
+
+	backend_talk.x = 0;
+	backend_talk.y = 0;
+	backend_talk.c1 = 15;
+	backend_talk.c2 = 1;
+	backend_talk.w = 16;
+	backend_talk.ox = 0;
+	backend_talk.oy = 0;
+	backend_talk.om = 255;
+	backend_talk.ovl [0] = 0;
+	backend_talk.ovl_on = 0;
+
+	backend_info_bar.y = -1; 	// -1 means OFF
+	backend_info_bar.c1 = 0;
+	backend_info_bar.c2 = 0;
+
+	backend_zones.last_x = 0;
+	backend_zones.last_y = 0;
+
+	backend_tb_cfg.x = 1;
+	backend_tb_cfg.y = 1;
+	backend_tb_cfg.w = 78;
+	backend_tb_cfg.h = 10;
+	backend_tb_cfg.c1 = 15;
+	backend_tb_cfg.c2 = 7;
+	backend_tb_cfg.tc1 = 0;
+	backend_tb_cfg.tc2 = 7;
+	backend_tb_cfg.f = 8; 
+
+	backend_resp.y = 25;
+	backend_resp.c1 = 15;
+	backend_resp.c2 = 0;
+
+	backend_indicator.on = 0;
+	backend_indicator.x = 0;
+	backend_indicator.y = 0;
+	backend_indicator.c1 = 7;
+	backend_indicator.c2 = 0;
+	backend_indicator.c = 16;
+
+	backend_bg_config.x = 0;
+	backend_bg_config.y = 0;
+
+	backend_interface_config.interface [0] = 0;
+	backend_interface_config.on = 0;
+	backend_interface_config.x = 0;
+	backend_interface_config.y = 0;
+	backend_interface_config.m = 0;
 }
 
 int backend_get_break (void) {
@@ -167,17 +267,17 @@ void backend_color (int c1, int c2) {
 }
 
 void backend_indicator_off (void) {
-	indicator_on = 0;
+	backend_indicator.on = 0;
 }
 
 void backend_indicator_config (int x, int y, int c1, int c2, unsigned char c) {
-	indicator_x = x;
-	indicator_y = y;
-	indicator_c1 = c1;
-	indicator_c2 = c2;
-	indicator_c = c;
+	backend_indicator.x = x;
+	backend_indicator.y = y;
+	backend_indicator.c1 = c1;
+	backend_indicator.c2 = c2;
+	backend_indicator.c = c;
 
-	indicator_on = 1;
+	backend_indicator.on = 1;
 }
 
 void backend_pause (void) {
@@ -196,16 +296,16 @@ void backend_pause (void) {
 		int keys_this_frame = keys_get_this_frame ();
 		if (keys_this_frame & MT_KEY_LBUTTON) break;
 
-		if (indicator_on) {
+		if (backend_indicator.on) {
 			ind ++; if (ind == 30) {
 				ind = 0; parp ^= 1;
 			}
 
-			buf_char_abs (indicator_x, indicator_y, indicator_c1, indicator_c2, parp ? indicator_c : 0);
+			buf_char_abs (backend_indicator.x, backend_indicator.y, backend_indicator.c1, backend_indicator.c2, parp ? backend_indicator.c : 0);
 		}
 	}
 
-	if (indicator_on) buf_char_abs (indicator_x, indicator_y, indicator_c1, indicator_c2, 0);
+	if (backend_indicator.on) buf_char_abs (backend_indicator.x, backend_indicator.y, backend_indicator.c1, backend_indicator.c2, 0);
 }
 
 void backend_beep (void) {
@@ -447,45 +547,46 @@ void backend_ansibin (char *pathspec, char *filename) {
 	free (fullpath);
 }
 
-void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed) {
-	backend_menu_x = x;
-	backend_menu_y = y;
-	backend_menu_w = w;
-	backend_menu_c1 = c1;
-	backend_menu_c2 = c2;
-	backend_menu_fixed = fixed;
+void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed, int noframe) {
+	backend_menu.x = x;
+	backend_menu.y = y;
+	backend_menu.w = w;
+	backend_menu.c1 = c1;
+	backend_menu.c2 = c2;
+	backend_menu.fixed = fixed;
+	backend_menu.noframe = noframe;
 }
 
 void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox, int oy, int om) {
-	backend_talk_x = x;
-	backend_talk_y = y;
-	backend_talk_w = w;
-	backend_talk_c1 = c1;
-	backend_talk_c2 = c2;
+	backend_talk.x = x;
+	backend_talk.y = y;
+	backend_talk.w = w;
+	backend_talk.c1 = c1;
+	backend_talk.c2 = c2;
 
 	if (ovl) {
-		strcpy (backend_talk_ovl, ovl);
-		backend_talk_ox = ox;
-		backend_talk_oy = oy;
-		backend_talk_om = om;
-		backend_talk_ovl_on = 1;
+		strcpy (backend_talk.ovl, ovl);
+		backend_talk.ox = ox;
+		backend_talk.oy = oy;
+		backend_talk.om = om;
+		backend_talk.ovl_on = 1;
 	} else {
-		backend_talk_ovl_on = 0;
+		backend_talk.ovl_on = 0;
 	}
 }
 
 void backend_resp_config (int y, int c1, int c2) {
-	resp_y = y;
-	resp_c1 = c1;
-	resp_c2 = c2;
+	backend_resp.y = y;
+	backend_resp.c1 = c1;
+	backend_resp.c2 = c2;
 }
 
-void backend_talk (char *who) {
-	if (backend_talk_ovl_on) {
-		buf_gif_at (backend_talk_ovl, backend_talk_ox, backend_talk_oy, 0, backend_talk_om);
+void backend_talk_do (char *who) {
+	if (backend_talk.ovl_on) {
+		buf_gif_at (backend_talk.ovl, backend_talk.ox, backend_talk.oy, 0, backend_talk.om);
 	}
 
-	backend_print_ghost (backend_talk_x, backend_talk_y, backend_talk_w, backend_talk_c1, backend_talk_c2, who);
+	backend_print_ghost (backend_talk.x, backend_talk.y, backend_talk.w, backend_talk.c1, backend_talk.c2, who);
 }
 
 void backend_menu_set_selected (int selected) {
@@ -496,18 +597,18 @@ void backend_menu_display (int x, int y, unsigned char* (*get_option) (int), int
 	for (int i = 0; i < backend_menu_options; i ++) {
 		
 		if (i == backend_menu_selected) {
-			buf_color (backend_menu_c2, backend_menu_c1);
+			buf_color (backend_menu.c2, backend_menu.c1);
 		} else {
-			buf_color (backend_menu_c1, backend_menu_c2);
+			buf_color (backend_menu.c1, backend_menu.c2);
 		}
 		
 		unsigned char *option = get_option (i);
 		int l = strlen (option);
-		for (int j = 0; j < backend_menu_w - 2; j ++) {
+		for (int j = 0; j < backend_menu.w - 2; j ++) {
 			buf_char_abs (
 				x + 1 + j, 
-				y + 1 + i, 
-				backend_menu_c1, backend_menu_c2, 
+				y + (backend_menu.noframe == 0) + i, 
+				backend_menu.c1, backend_menu.c2, 
 				j < l ? option [j] : ' '
 			);
 		}
@@ -542,7 +643,7 @@ int backend_menu_keys (
 	}
 
 	int x = buf_to_char_coords_x (buf_get_mouse_x ()) - x0;
-	int y = buf_to_char_coords_y (buf_get_mouse_y ()) - y0 - 1;
+	int y = buf_to_char_coords_y (buf_get_mouse_y ()) - y0 - (backend_menu.noframe == 0);
 
 	if (x >= 0 && x <= w) {
 		if (y >= 0 && y <= backend_menu_options) {
@@ -560,9 +661,11 @@ void backend_menu_show (void) {
 	int prev_c2 = buf_getc2 ();
 	int backend_menu_options = menu_get_options ();
 	if (backend_menu_selected >= backend_menu_options) backend_menu_selected = backend_menu_options - 1;
-	buf_color (backend_menu_c1, backend_menu_c2);
-	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_menu_options);
-	backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
+	if (!backend_menu.noframe) {
+		buf_color (backend_menu.c1, backend_menu.c2);
+		buf_box (backend_menu.x, backend_menu.y, backend_menu.x + backend_menu.w - 1, backend_menu.y + 1 + backend_menu_options);
+	}
+	backend_menu_display (backend_menu.x, backend_menu.y, menu_get_option_text, backend_menu_options);
 	buf_setxy (prev_x, prev_y);
 	buf_color (prev_c1, prev_c2);	
 }
@@ -573,31 +676,33 @@ int backend_menu_run (void) {
 	int prev_c1 = buf_getc1 ();
 	int prev_c2 = buf_getc2 ();
 	
-	if (!backend_menu_fixed) buf_sve ();
+	if (!backend_menu.fixed) buf_sve ();
 
 	int done = 0;
 	int backend_menu_options = menu_get_options ();
 	if (backend_menu_selected >= backend_menu_options) backend_menu_selected = backend_menu_options - 1;
 
 	// Paint box
-	buf_color (backend_menu_c1, backend_menu_c2);
-	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_menu_options);
+	if (!backend_menu.noframe) {
+		buf_color (backend_menu.c1, backend_menu.c2);
+		buf_box (backend_menu.x, backend_menu.y, backend_menu.x + backend_menu.w - 1, backend_menu.y + 1 + backend_menu_options);
+	}
 
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		backend_menu_display (backend_menu_x, backend_menu_y, menu_get_option_text, backend_menu_options);
+		backend_menu_display (backend_menu.x, backend_menu.y, menu_get_option_text, backend_menu_options);
 
 		// Read keys
 		if (backend_menu_keys (
 			&backend_menu_selected, &done, backend_menu_options,
-			backend_menu_x, backend_menu_y, backend_menu_w
+			backend_menu.x, backend_menu.y, backend_menu.w
 		) == 999999) return 999999;
 	}
 
 	debuff_keys ();
 
-	if (!backend_menu_fixed) buf_rec ();
+	if (!backend_menu.fixed) buf_rec ();
 	
 	buf_setxy (prev_x, prev_y);
 	buf_color (prev_c1, prev_c2);
@@ -617,12 +722,14 @@ int _backend_inventory_run (int x, int y) {
 	if (backend_menu_selected >= backend_inventory_items) backend_menu_selected = backend_inventory_items - 1;
 
 	// Fix coords
-	x = utils_adjust_coords (x, 0, buf_get_scrwidth () - backend_menu_w);
+	x = utils_adjust_coords (x, 0, buf_get_scrwidth () - backend_menu.w);
 	y = utils_adjust_coords (y, 0, buf_get_scrheight () - backend_inventory_items - 2);
 
 	// Paint box
-	buf_color (backend_menu_c1, backend_menu_c2);
-	buf_box (x, y, x + backend_menu_w - 1, y + 1 + backend_inventory_items);
+	if (!backend_menu.noframe) {
+		buf_color (backend_menu.c1, backend_menu.c2);
+		buf_box (x, y, x + backend_menu.w - 1, y + 1 + backend_inventory_items);
+	}
 
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
@@ -631,7 +738,7 @@ int _backend_inventory_run (int x, int y) {
 
 		// Read keys
 		if (backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items,
-			x, y, backend_menu_w
+			x, y, backend_menu.w
 		) == 999999) return 999999;
 	}
 
@@ -645,7 +752,7 @@ int _backend_inventory_run (int x, int y) {
 }
 
 int backend_inventory_run (void) {
-	return _backend_inventory_run (backend_menu_x, backend_menu_y);
+	return _backend_inventory_run (backend_menu.x, backend_menu.y);
 }
 
 int backend_inventory_run_xy (int x, int y) {
@@ -664,17 +771,19 @@ int backend_exits_run (void) {
 	if (backend_menu_selected >= backend_exits_items) backend_menu_selected = backend_exits_items - 1;
 
 	// Paint box
-	buf_color (backend_menu_c1, backend_menu_c2);
-	buf_box (backend_menu_x, backend_menu_y, backend_menu_x + backend_menu_w - 1, backend_menu_y + 1 + backend_exits_items);
+	if (!backend_menu.noframe) {
+		buf_color (backend_menu.c1, backend_menu.c2);
+		buf_box (backend_menu.x, backend_menu.y, backend_menu.x + backend_menu.w - 1, backend_menu.y + 1 + backend_exits_items);
+	}
 
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
 		// Paint options (w/selected)
-		backend_menu_display (backend_menu_x, backend_menu_y, exits_get_option_text, backend_exits_items);
+		backend_menu_display (backend_menu.x, backend_menu.y, exits_get_option_text, backend_exits_items);
 
 		// Read keys
 		if (backend_menu_keys (&backend_menu_selected, &done, backend_exits_items,
-			backend_menu_x, backend_menu_y, backend_menu_w
+			backend_menu.x, backend_menu.y, backend_menu.w
 		) == 999999) return 999999;
 	}
 
@@ -699,12 +808,14 @@ int backend_actions_run (int x, int y) {
 	if (backend_menu_selected >= backend_actions_items) backend_menu_selected = backend_actions_items - 1;
 
 	// Fix coords
-	x = utils_adjust_coords (x, 0, buf_get_scrwidth () - backend_menu_w);
+	x = utils_adjust_coords (x, 0, buf_get_scrwidth () - backend_menu.w);
 	y = utils_adjust_coords (y, 0, buf_get_scrheight () - backend_actions_items - 2);
 
 	// Paint box
-	buf_color (backend_menu_c1, backend_menu_c2);
-	buf_box (x, y, x + backend_menu_w - 1, y + 1 + backend_actions_items);
+	if (!backend_menu.noframe) {
+		buf_color (backend_menu.c1, backend_menu.c2);
+		buf_box (x, y, x + backend_menu.w - 1, y + 1 + backend_actions_items);
+	}
 
 	keys_read ();
 	while (!done && !buf_heartbeat ()) {
@@ -713,7 +824,7 @@ int backend_actions_run (int x, int y) {
 
 		// Read keys
 		if (backend_menu_keys (&backend_menu_selected, &done, backend_actions_items,
-			x, y, backend_menu_w
+			x, y, backend_menu.w
 		) == 999999) return 999999;
 	}
 
@@ -731,7 +842,7 @@ int backend_resp_run (void) {
 	int h = buf_get_scrheight ();
 	int w = buf_get_scrwidth () - 2;
 	int backend_resp_items = resp_get_resps ();
-	int y = resp_y; if (y > h - 1 - backend_resp_items - 2) y = h - 1 - backend_resp_items - 2;
+	int y = backend_resp.y; if (y > h - 1 - backend_resp_items - 2) y = h - 1 - backend_resp_items - 2;
 
 	int prev_x = buf_getx ();
 	int prev_y = buf_gety (); 
@@ -743,7 +854,7 @@ int backend_resp_run (void) {
 	int selected = 0;
 
 	// Paint box
-	buf_color (resp_c1, resp_c2);
+	buf_color (backend_resp.c1, backend_resp.c2);
 	buf_box (1, y, 1 + w - 1, y + 1 + backend_resp_items);
 
 	keys_read ();
@@ -752,9 +863,9 @@ int backend_resp_run (void) {
 		for (int i = 0; i < backend_resp_items; i ++) {
 			buf_setxy (1 + 1, y + 1 + i);
 			if (i == selected) {
-				buf_color (resp_c2, resp_c1);
+				buf_color (backend_resp.c2, backend_resp.c1);
 			} else {
-				buf_color (resp_c1, resp_c2);
+				buf_color (backend_resp.c1, backend_resp.c2);
 			}
 			
 			unsigned char *option = resp_get_text (i);
@@ -787,9 +898,9 @@ int backend_show_info_bar (int zone) {
 	} else {
 		zone_text [0] = 0;
 	}
-
-	buf_setxy (0, backend_info_bar_y);
-	buf_color (backend_info_bar_c1, backend_info_bar_c2);
+// 
+	buf_setxy (0, backend_info_bar.y);
+	buf_color (backend_info_bar.c1, backend_info_bar.c2);
 	buf_char (' ');
 
 	int w = buf_get_scrwidth (); 
@@ -807,11 +918,11 @@ int backend_show_info_bar (int zone) {
 }
 
 int backend_zones_last_x (void) {
-	return buf_to_char_coords_x (zones_last_x);
+	return buf_to_char_coords_x (backend_zones.last_x);
 }
 
 int backend_zones_last_y (void) {
-	return buf_to_char_coords_y (zones_last_y);
+	return buf_to_char_coords_y (backend_zones.last_y);
 }
 
 int backend_zones_run (void) {
@@ -832,7 +943,7 @@ int backend_zones_run (void) {
 		zone = zones_find (mouse_x, mouse_y);
 
 		// Show
-		if (backend_info_bar_y >= 0) {
+		if (backend_info_bar.y >= 0) {
 			backend_show_info_bar (zone);
 		}
 
@@ -841,8 +952,8 @@ int backend_zones_run (void) {
 		int pad_this_frame = keys_get_this_frame ();
 		
 		if (pad_this_frame & MT_KEY_LBUTTON) {
-			zones_last_x = mouse_x;
-			zones_last_y = mouse_y;
+			backend_zones.last_x = mouse_x;
+			backend_zones.last_y = mouse_y;
 			done = 1;
 		}
 
@@ -865,27 +976,27 @@ void backend_fancy_font (char *f) {
 }
 
 void backend_set_info_bar (int y, int c1, int c2) {
-	backend_info_bar_y = y;
-	backend_info_bar_c1 = c1;
-	backend_info_bar_c2 = c2;
+	backend_info_bar.y = y;
+	backend_info_bar.c1 = c1;
+	backend_info_bar.c2 = c2;
 }
 
 int backend_menu_get_w (void) {
-	return backend_menu_w;
+	return backend_menu.w;
 }
 
 void backend_tb_config (int x, int y, int w, int h, int c1, int c2, int tc1, int tc2, int f) {
-	tb_x = x; tb_y = y; tb_w = w; tb_h = h;
-	tb_c1 = c1; tb_c2 = c2; tb_tc1 = tc1; tb_tc2 = tc2;
-	tb_f = f;
+	backend_tb_cfg.x = x; backend_tb_cfg.y = y; backend_tb_cfg.w = w; backend_tb_cfg.h = h;
+	backend_tb_cfg.c1 = c1; backend_tb_cfg.c2 = c2; backend_tb_cfg.tc1 = tc1; backend_tb_cfg.tc2 = tc2;
+	backend_tb_cfg.f = f;
 }
 
 void backend_tb (char *text, char *title, int wt, int cbc) {
 	if (wt) buf_sve ();
 
 	buf_tb (
-		tb_x, tb_y, tb_w, tb_h,
-		tb_c1, tb_c2, tb_tc1, tb_tc2, tb_f,
+		backend_tb_cfg.x, backend_tb_cfg.y, backend_tb_cfg.w, backend_tb_cfg.h,
+		backend_tb_cfg.c1, backend_tb_cfg.c2, backend_tb_cfg.tc1, backend_tb_cfg.tc2, backend_tb_cfg.f,
 		title, text, cbc
 	);
 
@@ -989,6 +1100,26 @@ void backend_sve () {
 
 void backend_rec () {
 	buf_rec ();
+}
+
+void backend_bg_config (int x, int y) {
+	backend_bg_config.x = x;
+	backend_bg_config.y = y;
+}
+
+void backend_bg_do (char *pathspec, char *bg) {
+	// NO OP
+}
+
+void backend_interface_off (void) {
+	backend_interface_config.on = 0;
+}
+
+void backend_interface_config (char *interface, int x, int y, int m) {
+	backend_interface_config.on = 1;
+	backend_interface_config.x = x;
+	backend_interface_config.y = y;
+	backend_interface_config.m = m;
 }
 
 void backend_shutdown (void) {
