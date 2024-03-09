@@ -1108,7 +1108,20 @@ void backend_bg_config (int x, int y) {
 }
 
 void backend_bg_do (char *pathspec, char *bg) {
-	// NO OP
+	if (buf_getmode () != LS_MODE_TEXT) {
+		char *fullpath = compute_full_path (pathspec, bg);
+		buf_gif_at (fullpath, backend_bg_config.x, backend_bg_config.y, 1, -1);
+		free (fullpath);
+
+		if (backend_interface_config.on) {
+			buf_gif_at (backend_interface_config.interface,
+				backend_interface_config.x,
+				backend_interface_config.y,
+				0
+				backend_interface_config.m
+			);
+		}
+	}
 }
 
 void backend_interface_off (void) {
@@ -1116,6 +1129,7 @@ void backend_interface_off (void) {
 }
 
 void backend_interface_config (char *interface, int x, int y, int m) {
+	strcpy (backend_interface_config.interface, interface);
 	backend_interface_config.on = 1;
 	backend_interface_config.x = x;
 	backend_interface_config.y = y;
