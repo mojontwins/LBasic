@@ -1,9 +1,9 @@
-let perro 2
-let 2 20
-let cabeza %perro
-let 4 $%perro
-let 5 $4
-let 6 $$4
+let %perro 2
+let $2 20
+let %cabeza %perro
+let $4 $%perro
+let $5 $4
+let $6 $$4
 
 write "Values "
 tell %perro 

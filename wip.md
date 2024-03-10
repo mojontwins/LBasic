@@ -52,7 +52,7 @@ inc %cojin -> inc $2, idem,
 inc $2 -> necesito obtener "2"
 
 let $4 = 4, es más legible, necesito "4" (lvalue)
-let %cogin = 5, es más legible.
+let %cojin = 5, es más legible.
 
 ¡Implementar bien esto!
 La función que hay que resuelve flags me sigue valiendo para "rvalue", pero no para "lvalue".

@@ -55,6 +55,7 @@ char *keywords [] = {
 	"cursor", "setxy", "print", "write", "center", "color", "pause", "beep",
 	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins",
 	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", "menu", "items",
+	"wwc", "fancy_cls", "tb", "tbwc", "bg", "zones", "pix",
 	NULL
 };
 
@@ -64,14 +65,14 @@ char *flags_keywords [] = {
 };
 
 char *branching_keywords [] = {
-	"go", "eq", "neq", "ge", "lt", "autogo",
+	"go", "eq", "neq", "ge", "lt", "autogo", "ret",
 	NULL
 };
 
 char *modifier_keywords [] = {
 	"cbc", "on", "off", "text", "gfx", "gfx_sq", "gfx_med", "gfx_hi",
 	"kbd", "reset", "limpia", "put", "pon", "remove", "quita", "config", "run", 
-	"has", "tiene", "hasnt", "notiene",
+	"has", "tiene", "hasnt", "notiene", "def",
 	NULL
 };
 
@@ -284,12 +285,26 @@ int find_color (unsigned char *s) {
 void syntax_hightlight (int bkg, unsigned char *s) {
 	// Generates several buf_print_ab if nice stuff detected.
 	// Rewriten in a much smarter way
+	int is_comment = 0;
+
 	parse_to_tokens_whitespace (s);
 
 	int num_tokens = get_num_tokens ();	
 	for (int i = 0; i < num_tokens; i ++) {
 		unsigned char *token = get_token (i);
-		buf_color (find_color (token), bkg);
+
+		// Detect comments early
+		if (is_comment) {
+			buf_color (3, bkg);
+		} else {
+			if (token [0] == '#') {
+				is_comment = 1;
+				buf_color (3, bkg);
+			} else {
+				buf_color (find_color (token), bkg);
+			}
+		}
+
 		buf_print_abs_clip_to_scroll (token);
 	}
 
@@ -500,7 +515,7 @@ int editor (void) {
 	int delete_line = 0;
 	
 	int line_length;
-	int cursor = 0;
+	int cursor = -1;
 	char *line_pointer = NULL;
 	unsigned char c;
 	char info_buf [16];
@@ -511,13 +526,18 @@ int editor (void) {
 
 	int editing = 1;
 	while (editing) {
-		sprintf (info_buf, "%04d:%02d", editor_current_line, cursor);
-		buf_setxy (73, 24);
-		buf_color (4, 7);
-		buf_print_abs (info_buf);
 
 		if (new_line) {
 			// Add new line.
+
+			// Hack to insert line before
+			int movedown = 0;
+			if (cursor == 0) {
+				editor_next_line --;
+				editor_current_line --;
+				movedown = 1;
+			}
+
 			// - If editor_last_line + 1 == editor_n_lines allocate more lines 
 			if (editor_last_line + 1 == editor_n_lines) lines_add_new ();
 
@@ -540,6 +560,8 @@ int editor (void) {
 
 			new_line = 0;
 			needs_saving = 1;
+
+			if (movedown) editor_current_line ++;
 		} 
 
 		if (line_change) {
@@ -575,6 +597,11 @@ int editor (void) {
 			delete_line = 0;
 			needs_saving = 1;
 		}
+
+		sprintf (info_buf, "%04d:%02d", editor_current_line, cursor);
+		buf_setxy (73, 24);
+		buf_color (4, 7);
+		buf_print_abs (info_buf);
 
 		line_pointer = editor_lines [editor_current_line];
 		if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);

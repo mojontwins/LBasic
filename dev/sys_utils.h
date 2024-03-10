@@ -20,6 +20,7 @@ void flags_clear (void);
 int flags_get (int index);
 void flags_set (int index, int value);
 int flags_parse_value (char *s);
+int flags_parse_lvalue (char *s);
 int flags_reset_aliases (void);
 int flags_find_alias (char *s);
 int flags_find_or_create_alias (char *s);
@@ -50,6 +51,7 @@ void menu_delete_item (unsigned char *item);
 int menu_get_options (void);
 unsigned char *menu_get_option_text (int index);
 int menu_get_option_type (int index);
+void menu_set_last_selected (int selected);
 
 /*
  * INVENTORY

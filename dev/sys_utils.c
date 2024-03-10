@@ -6,6 +6,10 @@
  * GENERAL
  */
 
+int menu_added;
+int menu_removed;
+int menu_last;
+
 void utils_tolower (char *s) {
 	char *p;
 	for (p = s; *p; ++p) {
@@ -53,7 +57,15 @@ int flags_parse_value (char *s) {
 	// *3 returns 6 (3x2)
 
 	if (strlen (s)) {
-		if (s [0] == '*') {
+		if (s [0] == '@') {
+			if (strcmp (s, "@LAST_MENU_OPTION") == 0) {
+				return menu_last;
+			} else if (strcmp (s, "@MENU_OPTIONS_ADDED") == 0) {
+				return menu_added;
+			} else if (strcmp (s, "@MENU_OPTIONS_REMOVED") == 0) {
+				return menu_removed;
+			}
+		} else if (s [0] == '*') {
 			return flags_parse_value (s + 1) * 2;
 		} else if (s [0] == '$') {
 			return flags_get (flags_parse_value (s + 1));
@@ -77,6 +89,23 @@ int flags_parse_value (char *s) {
 	}
 
 	return 0;
+}
+
+int flags_parse_lvalue (char *s) {
+	// Means one indirection less. 
+	// $4 -> 4, $$4 -> flags [4]
+	// %cat -> 4 , $%cat -> flags [4]
+
+	if (strlen (s)) {
+		if (s [0] == '$') {
+			return flags_parse_value (s + 1);
+		} else if (s [0] == '%') {
+			int i = flags_find_alias (s + 1);
+			if (i >= 0) return i;
+		} 
+	}
+
+	return -1;
 }
 
 int flags_reset_aliases (void) {
@@ -176,6 +205,9 @@ void menu_reset (void) {
 	for (int i = 0; i < MAX_MENU_ITEMS; i ++) {
 		menu_items [i].text [0] = 0;
 	}
+	menu_added = 0;
+	menu_removed = 0;
+	menu_last = -1;
 }
 
 int menu_get_token_type (unsigned char *text) {
@@ -189,6 +221,7 @@ void menu_add_item (unsigned char *item, int type) {
 	if (strlen (item) < MENU_ITEM_MAX_LENGTH) {
 		menu_items [menu_index].type = type;
 		strcpy (menu_items [menu_index ++].text, item);
+		menu_added ++;
 	}
 }
 
@@ -211,7 +244,10 @@ void menu_reorganize (void) {
 
 void menu_delete_item (unsigned char *item) {
 	for (int i = 0; i < menu_index; i ++) {
-		if (strcmp (item, menu_items [i].text) == 0) menu_items [i].text [0] = 0;
+		if (strcmp (item, menu_items [i].text) == 0) {
+			menu_items [i].text [0] = 0;
+			menu_removed ++;
+		}
 	}
 }
 
@@ -225,6 +261,10 @@ unsigned char *menu_get_option_text (int index) {
 
 int menu_get_option_type (int index) {
 	return menu_items [index].type;
+}
+
+void menu_set_last_selected (int selected) {
+	menu_last = selected;
 }
 
 /*

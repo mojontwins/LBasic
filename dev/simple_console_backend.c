@@ -173,7 +173,6 @@ void backend_try_again (char *string_try_again, int attempts) {
 }
 
 int backend_heartbeat (void) {
-	// NO ÔP
 	return 0;
 }
 
@@ -234,6 +233,7 @@ int backend_menu_run (void) {
 
 	int res = backend_read_option (10);
 	if (res == 99) return -1;
+ 
 	return res - 1;
 }
 
@@ -303,7 +303,10 @@ void backend_talk_config (int x, int y, int w, int c1, int c2, char *ovl, int ox
 }
 
 void backend_talk_do (char *who) {
-	backend_print (who);
+	if(strlen (who)) { 
+		backend_print (who);
+		backend_print ("> ");
+	}
 }
 
 void backend_bulma_lin (char *pathspec, char *lin) {
@@ -421,7 +424,7 @@ void backend_rec () {
 }
 
 int backend_shuttingdown (void) {
-	// NO OP
+	return 0;
 }
 
 void backend_bg_config (int x, int y) {
@@ -429,7 +432,7 @@ void backend_bg_config (int x, int y) {
 }
 
 void backend_bg_do (char *pathspec, char *bg) {
-	// NO OP
+	printf ("\nBG %s\n", bg);
 }
 
 void backend_interface_off (void) {

@@ -197,20 +197,22 @@ Este tipo de imagenes puede generarse con editores de texto Ansi como "Moebius" 
 	let flag valor
 ```
 
-Asigna a la flag `flag` el valor `valor`. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Asigna a la flag `flag` el valor `valor`. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Ver la sección sobre flags.
 
 LBasic soporta alias de forma transparente. Los alias se asignan a un número de flag y le dan una forma más amable de llamarlos. La asignación es automática:
 
 ```
-	let alias valor
+	let %alias valor
 ```
 
-Creará `alias` y le asignará valor al flag asociado. Para referenciar este flag (del que no sabemos el número) usaremos la forma `%alias`. Por ejemplo:
+Creará `%alias` y le asignará valor al flag asociado. Para referenciar este flag (del que no sabemos el número) usaremos la forma `%alias`. Por ejemplo:
 
 ```
-	let perro 5
+	let %perro 5
 	tell %perro
 ```
+
+Escribe 5. Internamente, habrá asignado 5 a un flag libre. Mezclar flags numéricos con alias es generalmente mala idea a menos que sepas qué estás haciendo.
 
 **Esta es la únia forma de crear aliases de flags**. Para usar en un input antes deberá ser creado con let, aunque se le asigne un valor que luego jamás vaya a usarse. **Los aliases podrán tener hasta 32 caracteres**, si son más largos no se registrarán y el script no funcionará.
 
@@ -220,7 +222,7 @@ Creará `alias` y le asignará valor al flag asociado. Para referenciar este fla
 	input flag
 ```
 
-Asigna a la flag `flag` el valor que introduzca el usuario. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Asigna a la flag `flag` el valor que introduzca el usuario. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Si se usa un alias (`#gato`) este debe estar ya creado con `let`. Ver la sección sobre flags.
 
 ## tell
 
@@ -228,7 +230,7 @@ Asigna a la flag `flag` el valor que introduzca el usuario. `flag` debe resolver
 	tell flag
 ```
 
-Escribe en pantalla el valor de la flag `flag` y deja el cursor donde está. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Escribe en pantalla el valor de la flag `flag` y deja el cursor donde está. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Ver la sección sobre flags.
 
 ## incc
 
@@ -236,7 +238,7 @@ Escribe en pantalla el valor de la flag `flag` y deja el cursor donde está. `fl
 	inc flag
 ```
 
-Incrementa en 1 el valor de la flag `flag`. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Incrementa en 1 el valor de la flag `flag`. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Ver la sección sobre flags.
 
 ## dec
 
@@ -244,7 +246,7 @@ Incrementa en 1 el valor de la flag `flag`. `flag` debe resolver a un número en
 	dec flag
 ```
 
-Decrementa en 1 el valor de la flag `flag`. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Decrementa en 1 el valor de la flag `flag`. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Ver la sección sobre flags.
 
 ## add
 
@@ -252,7 +254,7 @@ Decrementa en 1 el valor de la flag `flag`. `flag` debe resolver a un número en
 	add flag valor
 ```
 
-Suma `valor` al valor de `flag` y lo almacena en `flag`. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Suma `valor` al valor de `flag` y lo almacena en `flag`. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Ver la sección sobre flags.
 
 ## sub
 
@@ -260,7 +262,7 @@ Suma `valor` al valor de `flag` y lo almacena en `flag`. `flag` debe resolver a 
 	sub flag valor
 ```
 
-Resta `valor` del valor de `flag` y lo almacena en `flag`. `flag` debe resolver a un número entre 0 y 255. Ver la sección sobre flags.
+Resta `valor` del valor de `flag` y lo almacena en `flag`. `flag` debe resolver a un número entre 0 y 255, o sea, algo com `$7` o `#gato`. Ver la sección sobre flags.
 
 ## go
 
@@ -710,3 +712,12 @@ Desactivar (off) o activar en x, y, con colores c1, c2, caracter c (codigo de CP
 ```
 
 Si se define una imagen, se cargará automáticamente en `x` `y` usando los pixeles de color mask como transparente de forma automática tras cada "bg", superponiéndola.
+
+# Variables especiales
+
+Empiezan por '@' y son estas:
+
+* `@LAST_MENU_OPTION` devuelve el número de la última opción elegida en un menú, o -1 si no se eligió ninguna.
+* `@MENU_OPTIONS_ADDED` devuelve el número de opciones que se añadió tras un `menu reset`.
+* `@MENU_OPTIONS_REMOVED` devuelve el número de opciones que se eliminó tras un `menu_reset`.
+

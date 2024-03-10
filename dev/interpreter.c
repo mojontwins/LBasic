@@ -274,21 +274,23 @@ int lbasi_run_file (FILE *file) {
 
 		else if (strcmp (command_token, "let") == 0) {
 			int value = flags_parse_value (get_token (2));
-			int flag = 0;
+			int flag = -1;
+			char *lvalue = get_token (1);
 
-			// Using alias?
-			char c = get_token (1) [0];
-			if (c != '%' && c != '$' && (c < '0' || c > '9')) {
-				if (strlen (get_token (1)) < MAX_ALIAS_LENGTH) {
-					flag = flags_find_or_create_alias (get_token (1));
-				} 
+			// Using alias? -> create
+			char c = lvalue [0];
+			if (c == '%') {
+				if (strlen (lvalue) < MAX_ALIAS_LENGTH - 1) {
+					flag = flags_find_or_create_alias (lvalue + 1);
+				}  
 			} else {
-				flag = flags_parse_value (get_token (1));
+				flag = flags_parse_lvalue (lvalue);
 			}
 
 			flags_set (flag, value);
+
 		} else if (strcmp (command_token, "input") == 0) {
-			int flag = flags_parse_value (get_token (1));			
+			int flag = flags_parse_lvalue (get_token (1));			
 			itoa (backend_read_option (0), string_convert_buffer, 10);
 			int value = flags_parse_value (string_convert_buffer);
 
@@ -300,22 +302,30 @@ int lbasi_run_file (FILE *file) {
 			backend_print (string_convert_buffer);
 
 		} else if (strcmp (command_token, "inc") == 0) {
-			int flag = flags_parse_value (get_token (1));
-			flags_set (flag, flags_get (flag) + 1);
+			int flag = flags_parse_lvalue (get_token (1));
+			int value = flags_parse_value (get_token (1));
+
+			flags_set (flag, value + 1);
 
 		} else if (strcmp (command_token, "dec") == 0) {
-			int flag = flags_parse_value (get_token (1));
-			flags_set (flag, flags_get (flag) - 1);
+			int flag = flags_parse_lvalue (get_token (1));
+			int value = flags_parse_value (get_token (1));
+
+			flags_set (flag, value - 1);
 
 		} else if (strcmp (command_token, "add") == 0) {
-			int flag = flags_parse_value (get_token (1));
-			int value = flags_parse_value (get_token (1));
-			flags_set (flag, flags_get (flag) + value);
+			int flag = flags_parse_lvalue (get_token (1));
+			int value1 = flags_parse_value (get_token (1));
+			int value2 = flags_parse_value (get_token (2));
+
+			flags_set (flag, value1 + value2);
 
 		} else if (strcmp (command_token, "sub") == 0) {
-			int flag = flags_parse_value (get_token (1));
-			int value = flags_parse_value (get_token (1));
-			flags_set (flag, flags_get (flag) - value);
+			int flag = flags_parse_lvalue (get_token (1));
+			int value1 = flags_parse_value (get_token (1));
+			int value2 = flags_parse_value (get_token (2));
+
+			flags_set (flag, value1 - value2);
 
 		}
 
@@ -660,7 +670,8 @@ int lbasi_run_file (FILE *file) {
 					strcpy (ret_label, get_token (3));
 				}
 
-				int selected = backend_menu_run ();				
+				int selected = backend_menu_run ();
+				menu_set_last_selected (selected);
 
 				if (selected == 999999) {
 					res = -1; run = 0;

@@ -4,9 +4,10 @@ tb config 1 18 78 6 0 7 15 0 8
 # Esto carga la pantalla a doble pixel de forma fancy
 pix "pix/CHALET.PIX" dbl fancy
 
-# Esperamos dos minutos
+# Esperamos dos segundos
 sleep 2.0
 
+# Y mostramos nuestra primera caja de textos
 tbwc "Entusiasmado haces todos los preparativos. Te montas en tu viejo coche del 71 dispuesto a vivir muchas aventuras. Los nervios te juegan una mala pasada y te pierdes un par de veces... ­te haces un l¡o con los mapas! Por suerte, a media ma¤ana, consigues llegar a la direcci¢n que ven¡a en la carta. ­Es impresionante! Se trata de un chal‚ enorme en una urbanizaci¢n de super lujo..."
 
 sleep 1.0
@@ -22,6 +23,7 @@ pix "pix/PUERTA.PIX" dbl fancy
 
 # *N significa que la coordenada se multiplicar  por 2
 # (y as¡ casar  con los gr ficos a doble tama¤o)
+# Obviamente esto s¢lo tiene sentido en juegos as¡ (mis ports de cosas viejas)
 
 zones reset
 zones def "Pomo" *191 *65 *207 *83 actions
@@ -31,9 +33,23 @@ zones def "C‚sped" *0 *149 *319 *199 actions
 zones def "Pared" *0 *0 *104 *148 actions
 zones def "Pared" *211 *0 *319 *148 actions
 
+# Ahora dejamos que el usuario se mueva con el rat¢n por la pantalla.
+# Cuando haga click, se abrir  la serie de men£s correspondiente y se
+# generar  un `go` a la etiqueta correcta (ver el manual)
+
 :puerta_run
 zones run :puerta :puerta_run
+
+# Si no se puls¢ ning£n sitio o el sitio que se puls¢ no ten¡a `go`
+# correspondiente la ejecuci¢n sigue, sencillamente... As¡ no tienes
+# que programar respuestas para todas las combinaciones. Sencillamente
+# puedes hacer: 
+
 tbwc "Eso no parece que sirva para nada..." wt
+
+# El comando `ret` genera un `go` a la segunda etiqueta que especificamos 
+# en `zones run`, o sea, har¡a un `go :puerta_run`.
+
 ret
 
 # todos los 'Hablar' fallan
