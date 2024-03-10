@@ -101,3 +101,29 @@ wwc "En efecto: un deslizador aparece veloz desde detr s de las colinas y se det
 fancy_cls 0 0 319 159
 bg "pic/ET1_03.gif"
 
+wwc "­Hola, Xinkss!" "Maykk"
+wwc "Vengo de las oficinas de la ciudad. Ten¡a que solicitar unas autorizaciones de... Bah, cosas aburridas." "Maykk"
+
+wwc "­Hey, Maykk! ­Precisamente estaba pensando en ti! Me tienes un poco preocupada, la verdad" "Xinkss"
+wwc "Has estado muy rara toda la ma¤ana. Me da en la nariz que hay algo grave que te preocupa y por eso est s aqu¡, ¨verdad?" "Xinkss"
+
+wwc "Maykk sonr¡e levemente."
+
+wwc "La verdad es que tienes raz¢n, Xinkss. Puede que sea algo, o puede que no sea nada, pero a mi me preocupa" "Maykk"
+
+fancy_cls 0 0 319 159
+bg "pic/ET1_04.gif"
+
+wwc "¨De qu‚ se trata, Maykk? ­A mi puedes cont rmelo!" "Xinkss"
+
+wwc "­De hecho, amiga m¡a, vengo precisamente a cont rtelo porque necesito tu ayuda!" "Maykk"
+wwc "Ver s: estaba haciendo lecturas temporales en la sala de exploraci¢n hipertemporal cuando not‚ algo raro en las que vienen de Gren8" "Maykk"
+
+wwc "¨Gren8 no es ese peque¤o planetoide metido dentro de un bucle temporal donde desterramos a las terroristas m s peligrosas?" "Xinkss"
+
+fancy_cls 0 0 319 159
+bg "pic/ET1_03.gif"
+
+wwc "Exactamente. Gren8 est  dentro de un bucle temporal, atrapado en un corto instante de tiempo y, por tanto, aislado del resto del universo." "Maykk"
+wwc "Por eso lo empleamos como c rcel para casos perdidos." "Maykk"
+wwc "En teor¡a, la £nica forma de llegar a Gren8 es utilizando uno de nuestros extrusores de cuerdas, lo que en principio parece algo muy seguro..." "Maykk"
