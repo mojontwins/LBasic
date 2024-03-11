@@ -714,6 +714,17 @@ int lbasi_run_file (FILE *file) {
 
 					if (run) lbasi_goto (file, temp_buffer);
 				}
+
+			} else if (strcmp (menu_command, "has") == 0 || strcmp (items_command, "tiene") == 0) {
+				if (menu_has_item (get_token (2))) {
+					lbasi_goto (file, get_token (3));
+				}
+
+			} else if (strcmp (menu_command, "hasnt") == 0 || strcmp (items_command, "notiene") == 0) {
+				if (!menu_has_item (get_token (2))) {
+					lbasi_goto (file, get_token (3));
+				}
+
 			}
 		}
 

@@ -95,8 +95,8 @@ wwc "Creo que la voy a llamar... No puede ser que est‚ yo aqu¡ toda relajada y l
 wwc "Vaya, ¨Qu‚ es ese ruido?" "Kinkss"
 
 :pp3r_esperar
-wwc "De fondo puede oirse el murmullo hidr ulico de un deslizador de clase C, y parece que se acerca"
-wwc "En efecto: un deslizador aparece veloz desde detr s de las colinas y se detiene a pocos pasos de distancia"
+wwc "De fondo puede oirse el murmullo hidr ulico de un deslizador de clase C, y parece que se acerca . . ."
+wwc "En efecto: un deslizador aparece veloz desde detr s de las colinas y se detiene a pocos pasos de distancia."
 
 fancy_cls 0 0 319 159
 bg "pic/ET1_03.gif"
@@ -127,3 +127,66 @@ bg "pic/ET1_03.gif"
 wwc "Exactamente. Gren8 est  dentro de un bucle temporal, atrapado en un corto instante de tiempo y, por tanto, aislado del resto del universo." "Maykk"
 wwc "Por eso lo empleamos como c rcel para casos perdidos." "Maykk"
 wwc "En teor¡a, la £nica forma de llegar a Gren8 es utilizando uno de nuestros extrusores de cuerdas, lo que en principio parece algo muy seguro..." "Maykk"
+wwc "Pero siempre he pensado que mtere en el mismo sitio y a su libre albedr¡o a gente tan peligrosa era mala idea." "Maykk"
+
+fancy_cls 0 0 319 159
+bg "pic/ET1_04.gif"
+
+wwc "Veo a qu‚ te refieres. Atrapamos a poderosas activistas, cient¡ficos malignos, mutantes cabreadas... y juntamos a todo el mundo en un mismo sitio." "Xinkss"
+wwc "Pues eso. Y he notado valores en las mediciones que se salen de los rangos normales, Xinkss... Tengo una terrible sospecha." "Maykk"
+wwc "¨Es posible que est‚n desarrollando alguna tecnolog¡a que les permita modificar el continuo espacio-tiempo? ­As¡ lo parece, desde luego!" "Maykk"
+
+fancy_cls 0 0 319 159
+bg "pic/ET1_03.gif"
+
+wwc "­Las ondulaciones que est n registrando los instrumentos son claramente artificiales!" "Maykk"
+wwc "O eso creo yo, claro. A lo mejor se me est  yendo la pelota." "Maykk"
+wwc "Tengo miedo, Xinkss. Puede ser el principio de algo muy grave. All¡, aisladas en su bucle, cuentan con todo el tiempo del mundo." "Maykk"
+
+fancy_cls 0 0 319 159
+bg "pic/ET1_04.gif"
+
+wwc "Comprendo tu temor. Creo que habr¡a que hacer algo" "Xinkss"
+wwc "­Por lo menos hay que asomarse y ver qu‚ est  pasando! ¨Te apuntas?" "Maykk"
+wwc "¨Pero es que lo dudabas?" "Xinkss"
+wwc "Pues vayamos para la base. All¡ nos espera Hrio." "Maykk"
+wwc "¨Hrio? ­Bien! Eso significa maquinitas... Me encantan las maquinitas." "Xinkks"
+wwc "Por cierto, ¨y tu deslizador? ¨lo vas a dejar aqu¡?" "Xinkss"
+wwc "S¡, no pasa nada. Vayamos andando, luego vendr‚ a por ‚l. De todos modos no cabemos las dos..." "Maykk"
+
+fancy_cls
+
+:fase1_s1
+fancy_cls
+bg "pic/scene_001.gif"
+
+menu reset
+menu put "Mirar"
+
+:f1s1_r
+menu run :f1s1 :f1s1_r
+wwc ". . ."
+ret
+
+:f1s1_mirar
+menu has "Camino" :f1s1_mirar_m
+menu put "Camino"
+:f1s1_mirar_m
+wwc "Detr s de las lomas empieza el camino que baja hasta la explanada donde se encuentra la base."
+ret
+
+:f1s1_camino
+fancy_cls
+bg "pic/scene_002.gif"
+
+wwc "Vaya camino de pena." "Xinkss"
+wwc "No te quejes: es rural. Hay gente que paga por tirarse el d¡a andando por caminos de estos" "Maykk"
+wwc "­Cu nto mal hace no haberse criado en un pueblo!" "Xinkss"
+
+go :f1s1_camino_do
+
+:f1s1_camino_re
+fancy_cls
+bg "pic/scene_002.gif"
+
+:f1s1_camino_do

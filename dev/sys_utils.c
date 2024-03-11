@@ -267,6 +267,14 @@ void menu_set_last_selected (int selected) {
 	menu_last = selected;
 }
 
+int menu_has_item (unsigned char *item) {
+	for (int i = 0; i < menu_index; i ++) {
+		if (strcmp (item, menu_items [i].text) == 0) return 1;
+	}
+
+	return 0;
+}
+
 /*
  * INVENTORY
  */

@@ -434,6 +434,16 @@ Ejemplo con rayitas de colores:
 
 ![Ejemplo menus](https://github.com/mojontwins/LBasic/blob/master/docs/lbasic_menu.png?raw=true)
 
+```
+	menu has|tiene "item" :etiqueta
+```
+
+Salta a `:etiqueta` si `item` está en el menu.
+
+```
+	menu hasnt|notiene "item" :etiqueta
+```
+
 ## Items
 
 Estos son los comandos que sirven para llevar un inventario
