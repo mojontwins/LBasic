@@ -195,6 +195,7 @@ int labels_get_filepos (int index) {
 typedef struct MENU_ITEM {
 	unsigned char text [MENU_ITEM_MAX_LENGTH];
 	int type;
+	char label [LABEL_LEN];
 } MENU_ITEM;
 
 MENU_ITEM menu_items [MAX_MENU_ITEMS];
@@ -211,16 +212,23 @@ void menu_reset (void) {
 }
 
 int menu_get_token_type (unsigned char *text) {
+	if (text [0] == ':') return MENU_ITEM_TYPE_LABEL_DIRECT;
 	if (strcmp (text, "items") == 0) return MENU_ITEM_TYPE_ITEMS;
 	if (strcmp (text, "exits") == 0) return MENU_ITEM_TYPE_EXITS;
 
 	return MENU_ITEM_TYPE_NORMAL;
 }
 
-void menu_add_item (unsigned char *item, int type) {
+void menu_add_item (unsigned char *item, int type, unsigned char *label) {
 	if (strlen (item) < MENU_ITEM_MAX_LENGTH) {
 		menu_items [menu_index].type = type;
-		strcpy (menu_items [menu_index ++].text, item);
+		strcpy (menu_items [menu_index].text, item);
+		if (type == MENU_ITEM_TYPE_LABEL_DIRECT) {
+			strcpy (menu_items [menu_index].label, label);
+		} else {
+			menu_items [menu_index].label [0] = 0;
+		}
+		menu_index ++;
 		menu_added ++;
 	}
 }
@@ -261,6 +269,10 @@ unsigned char *menu_get_option_text (int index) {
 
 int menu_get_option_type (int index) {
 	return menu_items [index].type;
+}
+
+unsigned char *menu_get_label (int index) {
+	return menu_items [index].label;
 }
 
 void menu_set_last_selected (int selected) {

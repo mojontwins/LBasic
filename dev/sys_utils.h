@@ -44,14 +44,21 @@ int labels_get_filepos (int index);
 #define MAX_MENU_ITEMS 16
 #define MENU_ITEM_MAX_LENGTH 40
 
+#define MENU_ITEM_TYPE_NORMAL 0
+#define MENU_ITEM_TYPE_ITEMS 1
+#define MENU_ITEM_TYPE_EXITS 2
+#define MENU_ITEM_TYPE_LABEL_DIRECT 4
+
 void menu_reset (void);
-void menu_add_item (unsigned char *item, int type);
+void menu_add_item (unsigned char *item, int type, unsigned char *label);
 void menu_reorganize (void);
 void menu_delete_item (unsigned char *item);
 int menu_get_options (void);
 unsigned char *menu_get_option_text (int index);
 int menu_get_option_type (int index);
+unsigned char *menu_get_label (int index);
 void menu_set_last_selected (int selected);
+int menu_has_item (unsigned char *item);
 
 /*
  * INVENTORY
@@ -60,9 +67,6 @@ void menu_set_last_selected (int selected);
 #define MAX_INVENTORY_ITEMS 256
 #define INVENTORY_ITEM_MAX_LENGTH 40
 
-#define MENU_ITEM_TYPE_NORMAL 0
-#define MENU_ITEM_TYPE_ITEMS 1
-#define MENU_ITEM_TYPE_EXITS 2
 
 void inventory_reset (void);
 void inventory_set_max_items (int max_items);

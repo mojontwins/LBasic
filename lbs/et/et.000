@@ -22,4 +22,4 @@ indicator 30 24 2 0 16
 talk config 0 19 10 2 0 "pic/ovl.gif" 0 151 4
 color 3 0
 
-chain "et_F1.lbs" 
+chain "et_F1.lbs" :fase1_s1

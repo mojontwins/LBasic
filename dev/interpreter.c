@@ -644,7 +644,11 @@ int lbasi_run_file (FILE *file) {
 				if (
 					menu_get_options () < MAX_MENU_ITEMS && 
 					strlen (get_token (2)) < MENU_ITEM_MAX_LENGTH
-				) menu_add_item (get_token (2), menu_get_token_type (get_token (3)));
+				) menu_add_item (
+					get_token (2), 
+					menu_get_token_type (get_token (3)),
+					get_token (3)
+				);
 
 			} else if (strcmp (menu_command, "remove") == 0 || strcmp (menu_command, "quita") == 0) {
 				menu_delete_item (get_token (2));
@@ -679,48 +683,53 @@ int lbasi_run_file (FILE *file) {
 					int type = menu_get_option_type (selected);
 					int submenu;
 
-					strcpy (temp_buffer, get_token (2));
-					strcat (temp_buffer, "_");
+					if (type == MENU_ITEM_TYPE_LABEL_DIRECT) {
+						strcpy (temp_buffer, menu_get_label (selected));
 
-					switch (type) {
-						case MENU_ITEM_TYPE_ITEMS:
-							strcat (temp_buffer, "item_");
+					} else {
+						strcpy (temp_buffer, get_token (2));
+						strcat (temp_buffer, "_");
 
-							submenu = backend_inventory_run ();
-							if (submenu == 999999) {
-								res = -1; run = 0;
-							} else if (submenu >= 0) {
-								strcat (temp_buffer, inventory_get_item (submenu));
-							}
+						switch (type) {
+							case MENU_ITEM_TYPE_ITEMS:
+								strcat (temp_buffer, "item_");
 
-							break;
+								submenu = backend_inventory_run ();
+								if (submenu == 999999) {
+									res = -1; run = 0;
+								} else if (submenu >= 0) {
+									strcat (temp_buffer, inventory_get_item (submenu));
+								}
 
-						case MENU_ITEM_TYPE_EXITS:
+								break;
 
-							submenu = backend_exits_run ();
-							if (submenu == 999999) {
-								res = -1; run = 0;
-							} else if (submenu >= 0) {
-								strcpy (temp_buffer, exits_get_option_label (submenu));
-							}
+							case MENU_ITEM_TYPE_EXITS:
 
-							break;
+								submenu = backend_exits_run ();
+								if (submenu == 999999) {
+									res = -1; run = 0;
+								} else if (submenu >= 0) {
+									strcpy (temp_buffer, exits_get_option_label (submenu));
+								}
 
-						default:
-							strcat (temp_buffer, menu_get_option_text (selected));
+								break;
 
-							break;
+							default:
+								strcat (temp_buffer, menu_get_option_text (selected));
+
+								break;
+						}
 					}
 
 					if (run) lbasi_goto (file, temp_buffer);
 				}
 
-			} else if (strcmp (menu_command, "has") == 0 || strcmp (items_command, "tiene") == 0) {
+			} else if (strcmp (menu_command, "has") == 0 || strcmp (menu_command, "tiene") == 0) {
 				if (menu_has_item (get_token (2))) {
 					lbasi_goto (file, get_token (3));
 				}
 
-			} else if (strcmp (menu_command, "hasnt") == 0 || strcmp (items_command, "notiene") == 0) {
+			} else if (strcmp (menu_command, "hasnt") == 0 || strcmp (menu_command, "notiene") == 0) {
 				if (!menu_has_item (get_token (2))) {
 					lbasi_goto (file, get_token (3));
 				}

@@ -390,10 +390,10 @@ Estos son los comandos que controlan los menús de opciones con GOTO automático
 Borra todas las opciones del menú.
 
 ```
-	menu add|pon "texto"
+	menu add|pon "texto" [:custom_label]
 ```
 
-Añade al menú la opción con texto `texto`
+Añade al menú la opción con texto `texto`. Si se añade una etiqueta, elegir esta opción saltará a esa etiqueta en lugar de comportarse más abajo (ver `menu run` y la sección de inventario).
 
 ```
 	menu remove|quita "texto"

@@ -154,24 +154,37 @@ wwc "¨Hrio? ­Bien! Eso significa maquinitas... Me encantan las maquinitas." "Xin
 wwc "Por cierto, ¨y tu deslizador? ¨lo vas a dejar aqu¡?" "Xinkss"
 wwc "S¡, no pasa nada. Vayamos andando, luego vendr‚ a por ‚l. De todos modos no cabemos las dos..." "Maykk"
 
-fancy_cls
-
 :fase1_s1
+
+# 0 - inicial, 1 - conoce, 2 - ha estado
+let %camino 0
+let %bifurc 0
+
+:f1s1_lomas
 fancy_cls
 bg "pic/scene_001.gif"
 
 menu reset
 menu put "Mirar"
+menu put "Irse" exits
 
-:f1s1_r
-menu run :f1s1 :f1s1_r
+exits reset
+exits put "¨?"
+eq %camino 0 :f1s1_lomas_r
+exits remove "¨?"
+exits put "Camino" :f1s1_camino
+
+:f1s1_lomas_r
+menu run :f1s1_lomas :f1s1_lomas_r
 wwc ". . ."
 ret
 
-:f1s1_mirar
-menu has "Camino" :f1s1_mirar_m
-menu put "Camino"
-:f1s1_mirar_m
+:f1s1_lomas_mirar
+neq %camino 0 :f1s1_lomas_mirar_m
+exits put "Camino" :f1s1_camino
+let %camino 1
+
+:f1s1_lomas_mirar_m
 wwc "Detr s de las lomas empieza el camino que baja hasta la explanada donde se encuentra la base."
 ret
 
@@ -179,14 +192,36 @@ ret
 fancy_cls
 bg "pic/scene_002.gif"
 
+eq %camino 2 :f1s1_camino_do
+let %camino 2
+
 wwc "Vaya camino de pena." "Xinkss"
 wwc "No te quejes: es rural. Hay gente que paga por tirarse el d¡a andando por caminos de estos" "Maykk"
 wwc "­Cu nto mal hace no haberse criado en un pueblo!" "Xinkss"
 
-go :f1s1_camino_do
-
-:f1s1_camino_re
-fancy_cls
-bg "pic/scene_002.gif"
-
 :f1s1_camino_do
+menu reset
+menu put "Mirar"
+menu put "Irse" exits
+
+exits reset
+exits put "Lomas" :f1s1_lomas
+
+eq %bifurc 0 :f1s1_camino_r
+exits put "Bifurc." :f1s1_bifurc
+
+:f1s1_camino_r
+menu run :f1s1_camino :f1s1_camino_r
+wwc ". . ."
+ret
+
+:f1s1_camino_mirar
+neq %bifurc 0 :f1s1_camino_mirar_m
+exits put "Bifurc." :f1s1_bifurc
+let %bifurc 1
+
+:f1s1_camino_mirar_m
+wwc "Esta parte del camino comunica las lomas con una bifurcaci¢n que hay m s abajo. No hay nada interesante."
+ret
+
+:f1s1_bifurc
