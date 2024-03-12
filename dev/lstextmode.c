@@ -768,7 +768,7 @@ void buf_pause (void) {
 void buf_gif_at (char *gif, int x, int y, int do_setpal, int mask) {
 	// Wont load a gif bigger than the screen so...
 	char *gif_buffer;
-	char *pal_buffer = malloc (768);
+	char pal_buffer [768];
 	int w, h, p;
 
 	gif_buffer = loadgif (gif, &w, &h, &p, pal_buffer);
@@ -792,7 +792,6 @@ void buf_gif_at (char *gif, int x, int y, int do_setpal, int mask) {
 	}
 
 	free (gif_buffer);
-	free (pal_buffer);
 }
 
 // Assumes compatible video mode!

@@ -177,7 +177,7 @@ void backend_init (void) {
 	backend_bg_cfg.x = 0;
 	backend_bg_cfg.y = 0;
 
-	backend_interface_cfg.interface_pixels = 0;
+	backend_interface_cfg.interface_pixels = NULL;
 	backend_interface_cfg.on = 0;
 	backend_interface_cfg.x = 0;
 	backend_interface_cfg.y = 0;

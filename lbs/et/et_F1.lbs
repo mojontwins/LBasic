@@ -166,13 +166,13 @@ bg "pic/scene_001.gif"
 
 menu reset
 menu put "Mirar"
-menu put "Irse" exits
+menu put "Hablar"
 
 exits reset
-exits put "¨?"
-eq %camino 0 :f1s1_lomas_r
-exits remove "¨?"
 exits put "Camino" :f1s1_camino
+
+eq %camino 0 :f1s1_lomas_r
+menu put "Irse" exits
 
 :f1s1_lomas_r
 menu run :f1s1_lomas :f1s1_lomas_r
@@ -181,11 +181,20 @@ ret
 
 :f1s1_lomas_mirar
 neq %camino 0 :f1s1_lomas_mirar_m
-exits put "Camino" :f1s1_camino
+menu put "Irse" exits
+
 let %camino 1
 
 :f1s1_lomas_mirar_m
 wwc "Detr s de las lomas empieza el camino que baja hasta la explanada donde se encuentra la base."
+menu has "Irse" ret
+menu put "Irse" exits
+ret
+
+:f1s1_lomas_hablar
+wwc "­Pues se ha quedado un d¡a genial para ir a la base a empezar lo que puede convertirse en una misi¢n peligros¡sima!" "Xinkss"
+wwc "­D‚jate de bromas! ­Esto es serio!" "Maykk"
+menu remove "Hablar"
 ret
 
 :f1s1_camino
@@ -196,12 +205,13 @@ eq %camino 2 :f1s1_camino_do
 let %camino 2
 
 wwc "Vaya camino de pena." "Xinkss"
-wwc "No te quejes: es rural. Hay gente que paga por tirarse el d¡a andando por caminos de estos" "Maykk"
+wwc "No te quejes: es rural. Hay gente que paga por tirarse el d¡a andando por caminos de estos." "Maykk"
 wwc "­Cu nto mal hace no haberse criado en un pueblo!" "Xinkss"
 
 :f1s1_camino_do
 menu reset
 menu put "Mirar"
+menu put "Hablar"
 menu put "Irse" exits
 
 exits reset
@@ -224,4 +234,13 @@ let %bifurc 1
 wwc "Esta parte del camino comunica las lomas con una bifurcaci¢n que hay m s abajo. No hay nada interesante."
 ret
 
+:f1s1_camino_hablar
+wwc "¨Quieres seguir hablando de la vida rural y de la crisis de los urbanitas?" "Maykk"
+wwc "¨Por qu‚ siempre tienes que usar tantas palabras raras?" "Xinkss"
+wwc "Porque soy muy lista." "Maykk"
+menu remove "Hablar"
+ret
+
 :f1s1_bifurc
+fancy_cls
+bg "pic/scene_003.gif"

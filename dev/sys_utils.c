@@ -144,6 +144,12 @@ typedef struct LABEL {
 LABEL labels [MAX_LABELS];
 int cur_label = 0;
 
+unsigned char *ret_label = NULL;
+
+void labels_set_ret (unsigned char *ret) {
+	ret_label = ret;
+}
+
 void labels_clear (void) {
 	cur_label = 0;
 }
@@ -173,6 +179,10 @@ int labels_add (int file_pos, char *label) {
 }
 
 int labels_find (char *label) {
+	if (strcmp ("ret", label) == 0) {
+		label = ret_label;
+	}
+	
 	utils_tolower (label);
 	utils_nospaces (label);
 
@@ -422,7 +432,9 @@ void exits_reorganize (void) {
 
 void exits_delete_item (unsigned char *item) {
 	for (int i = 0; i < exits_index; i ++) {
-		if (strcmp (item, exits_items [i].text) == 0) exits_items [i].text [0] = 0;
+		if (strcmp (item, exits_items [i].text) == 0) {
+			exits_items [i].text [0] = 0;
+		}
 	}
 
 	exits_reorganize ();

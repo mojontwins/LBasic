@@ -32,6 +32,7 @@ int flags_find_or_create_alias (char *s);
 #define MAX_LABELS 1024
 #define LABEL_LEN 80
 
+void labels_set_ret (unsigned char *ret);
 void labels_clear (void);
 int labels_add (int file_pos, char *label);
 int labels_find (char *label);

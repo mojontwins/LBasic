@@ -129,6 +129,7 @@ int lbasi_run_file (FILE *file) {
 	ret_label [0] = 0;
 
 	lbasi_read_labels (file);
+	labels_set_ret (ret_label);
 
 	if (strlen (initial_label)) {
 		lbasi_goto (file, initial_label);
