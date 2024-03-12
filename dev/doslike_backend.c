@@ -191,7 +191,8 @@ int backend_get_break (void) {
 }
 
 char *compute_full_path (char *pathspec, char *filename) {
-	char *full_path = strdup (pathspec);
+	char *full_path = malloc (strlen (pathspec) + strlen (filename) + 1);
+	strcpy (full_path, pathspec);
 	strcat (full_path, filename);
 	return full_path;
 }
