@@ -266,7 +266,7 @@ void lstui_box (int x1, int y1, int x2, int y2, int double_frame, unsigned char 
 void lstui_fill (int x1, int y1, int w, int h, unsigned char attrib, unsigned char c) {
 	unsigned char *buf = screenbuffer ();
 	int scr_w_bytes = screenwidth () * 2;
-	int x2 = x1 + w; int y2 = y2 + h;
+	int x2 = x1 + w; int y2 = y1 + h;
 
 	for (int y = y1; y < y2; y ++) {
 		unsigned char *ptr = buf + y * scr_w_bytes + x1 * 2;
@@ -421,7 +421,13 @@ int lstui_input_update (int me) {
 
 	enum keycode_t* keys = controls [me].keys;
 	unsigned long long key; while (key = (unsigned long long) *keys ++) {
+		if (key == KEY_LEFT) {
+			if (cursor < 0) cursor --;
+		}
 
+		if (key == KEY_RIGHT) {
+			if (cursor < strlen (line_pointer)) cursor ++;
+		}
 	}
 	
 	while (cursor < scroll) { scroll --; }
