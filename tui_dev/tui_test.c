@@ -6,6 +6,7 @@ void main (void) {
 	int button1 = lstui_add (lstui_button (10, 10, 10, 3, "But Red"));
 	int button2 = lstui_add (lstui_button (20, 20, 20, 3, "Buton Blu"));
 	int button3 = lstui_add (lstui_button (50, 10, 10, 3, "Third"));
+	int caption = lstui_add (lstui_caption (0, 1, 80, 14, LSTUI_ALIGN_CENTER, "Esto va a salir centrado!"));
 
 	while (!shuttingdown ()) {
 		lstui_do ();

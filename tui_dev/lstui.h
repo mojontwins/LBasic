@@ -7,9 +7,12 @@
 	call `lstui_reset ();` before starting, and `lstui_shutdown ()` when you're
 	done.
 
-	create your controls, then add them to the list using `lstui_add (c)`.
+	create your controls, then add them to the list using `lstui_add (c)`, 
+	which will return an id as a handle.
 
 	in your loop, call `lstui_do ()` to update & handle controls in the list.
+
+	Use lstui_getstate (handle) or lstui_getdata (handle)
 */
 
 #include <stdlib.h>
@@ -34,6 +37,7 @@ typedef struct LSTUI_CONTROL {
 	int (*click_func)(int idx, int clicked); 	// Pointer to a function to handle click on this control
 	int (*render_func)(int idx, int focused);	// Pointer to a function to render this control
 	int state; 									// Stores basic state
+	int config;
 	char *input; 								// Serialized keyboard input (chars)
 	char *data; 								// Pointer to related data (input buffer, caption...)
 } LSTUI_CONTROL;
@@ -46,11 +50,14 @@ int lstui_do (void); 							// Iterates the controls and does stuff once
 int lstui_free (LSTUI_CONTROL c); 				// Frees a control
 int lstui_shutdown (void); 						// Cleans up everything
 
+// Handle existing controls
+
+int lstui_getstate (int control);
+char *lstui_getdata (int control);
+
 // Built-in controls
 
-// Get a new simple caption
-
-// Get a new button
+struct LSTUI_CONTROL lstui_caption (int x, int y, int w, int attrib, int align, char *caption);
 struct LSTUI_CONTROL lstui_button (int x, int y, int w, int h, char *caption);
 
 // Get a new text box
@@ -130,26 +137,35 @@ int lstui_do (void) {
 	}
 	right_click_was = b;
 
+	unsigned char const *chars = (unsigned char*) readchars ();
+
 	// Keep track of which control is focused
+	unsigned char const *chars_ptr = chars; char c;
+	while (c = *chars_ptr ++) {
+		if (c == '\t') {
+			focused_control ++;
+			if (focused_control == controls_number) focused_control = 0;
+		}
+	}
 
 	// For each control
 	for (int i = 0; i < controls_number; i ++) {
-		LSTUI_CONTROL c = controls [i];
-		int over_control = mx >= c.x && mx < c.x + c.w && my >= c.y && my < c.y + c.h;
+		LSTUI_CONTROL control = controls [i];
+		int over_control = mx >= control.x && mx < control.x + control.w && my >= control.y && my < control.y + control.h;
 
 		// Pass collected input
 
 		// Update function
-		if (c.update_func != NULL && focused_control == i) c.update_func (i);
+		if (control.update_func != NULL && focused_control == i) control.update_func (i);
 
 		// Hover function
-		if (c.hover_func != NULL) c.hover_func (i, over_control);
+		if (control.hover_func != NULL) control.hover_func (i, over_control);
 
 		// Click function
-		if (c.click_func != NULL) c.click_func (i, over_control && left_click);
+		if (control.click_func != NULL) control.click_func (i, over_control && left_click);
 
 		// Render function
-		if (c.render_func != NULL) c.render_func (i, focused_control == i);
+		if (control.render_func != NULL) control.render_func (i, focused_control == i);
 	}
 }
 
@@ -221,6 +237,30 @@ int lstui_box (int x1, int y1, int x2, int y2, int double_frame, int attrib) {
 }
 
 /*
+ * LSTUI_CAPTION
+ */
+
+// config is attrib | align << 8
+
+lstui_caption_render (int me, int focused) {
+	LSTUI_CONTROL c = controls [me];
+	lstui_caption_do (c.x, c.y + (c.h - 1) / 2, c.w, c.config >> 8, c.config & 0xff, c.data);
+}
+
+struct LSTUI_CONTROL lstui_caption (
+	int x, int y, int w, int attrib, int align, char *caption 
+) {
+	LSTUI_CONTROL c;
+	c.x = x; c.y = y; c.w = w; c.h = 1;
+	c.update_func = NULL;
+	c.hover_func = NULL;
+	c.click_func = NULL;
+	c.render_func = lstui_caption_render;
+	c.data = caption;
+	c.config = attrib | align << 8;
+}
+
+/*
  * LSTUI_BUTTON
  */
 
@@ -242,9 +282,10 @@ int lstui_button_click (int me, int clicked) {
 }
 
 int lstui_button_render (int me, int focused) {
-	int attrib = controls [me].state & LSTUI_STATE_HOVERED ? lstui_button_attrib_hovered : lstui_button_attrib;
-	lstui_box (controls [me].x, controls [me].y, controls [me].x + controls [me].w - 1, controls [me].y + controls [me].h - 1, focused, attrib);
-	lstui_caption_do (controls [me].x, controls [me].y + (controls [me].h - 1) / 2, controls [me].w, LSTUI_ALIGN_CENTER, attrib, controls [me].data);
+	LSTUI_CONTROL c = controls [me];
+	int attrib = c.state & LSTUI_STATE_HOVERED ? lstui_button_attrib_hovered : lstui_button_attrib;
+	lstui_box (c.x, c.y, c.x + c.w - 1, c.y + c.h - 1, focused, attrib);
+	lstui_caption_do (c.x, c.y + (c.h - 1) / 2, c.w, LSTUI_ALIGN_CENTER, attrib, c.data);
 }
 
 struct LSTUI_CONTROL lstui_button (
