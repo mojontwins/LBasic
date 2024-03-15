@@ -20,6 +20,11 @@ unsigned char iso_ext_to_cp437 [] = {
 	0xEB, 0xA4, 0x95, 0xA2, 0x93, 0x93, 0x94, 0xfa, 0xED, 0x97, 0xA3, 0x96, 0x81, 0x98, 0xc6, 0x98
 };
 
+unsigned char translate (char c) {
+	if (c < 0) return iso_ext_to_cp437 [128 + c];
+	return c;
+}
+
 unsigned char get_character_input (unsigned char const* chars) {	
 	char c;
 	while (c = *chars ++) {
