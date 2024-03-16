@@ -31,6 +31,8 @@
 #define LSTUI_BOX_SINGLE 					0
 #define LSTUI_BOX_DOUBLE 					1
 
+#define LSTUI_SIGNAL_NEXT 					32
+
 // Main structure used by controls. 
 
 typedef struct LSTUI_CONTROL {
@@ -62,9 +64,14 @@ int lstui_shutdown (void); 						// Cleans up everything
 int lstui_getstate (int control);
 char *lstui_getdata (int control);
 
+// Configure theme (lame)
+
+void lstui_colors_set_input_attribs (int normal, int focused);
+void lstui_colors_set_button_attribs (int normal, int hovered);
+
 // Built-in controls
 
-struct LSTUI_CONTROL lstui_caption (int x, int y, int w, int attrib, int align, char *caption);
+struct LSTUI_CONTROL lstui_caption (int x, int y, int w, int c1, int c2, int align, char *caption);
 struct LSTUI_CONTROL lstui_button (int x, int y, int w, int h, char *caption);
 struct LSTUI_CONTROL lstui_input (int x, int y, int w, int text_length, char *text);
 struct LSTUI_CONTROL lstui_box (int x, int y, int w, int h,	int c1, int c2, int frame);
@@ -72,6 +79,7 @@ struct LSTUI_CONTROL lstui_box (int x, int y, int w, int h,	int c1, int c2, int 
 // Get a new text box
 
 #ifdef LSTUI_CONTROL_IMPLEMENTATION
+#undef LSTUI_CONTROL_IMPLEMENTATION
 
 int controls_number = 0;
 int focused_control = 0;
@@ -84,6 +92,7 @@ LSTUI_CONTROL *controls;
 int mouse_x, mouse_y, mouse_b;
 int left_click_was = 0;
 int right_click_was = 0;
+int lstui_signal;
 
 int get_mouse_x (void) {
 	mouse_x = mousex ();
@@ -119,9 +128,8 @@ int lstui_add (LSTUI_CONTROL c) {
 	controls = realloc (controls, controls_number * sizeof (LSTUI_CONTROL));
 	
 	controls [index] = c;
-	controls [index].state = 0;
 
-	focused_control = index; 		// Which means no control is focused.
+	focused_control = controls_number; 		// Which means no control is focused.
 
 	return index;
 }
@@ -155,25 +163,31 @@ int lstui_do (void) {
 	unsigned char *chars = (unsigned char*) readchars ();
 
 	// Keep track of which control is focused
+	int current_focused = focused_control;
+
 	unsigned char *chars_ptr = chars; char c;
 	while (c = *chars_ptr ++) {
 		if (c == '\t') {
+			lstui_signal = LSTUI_SIGNAL_NEXT; 
+			break;
+		}
+	}
+
+	if (lstui_signal & LSTUI_SIGNAL_NEXT) {
+		do {
+			focused_control ++; 
 			if (focused_control >= controls_number) {
 				focused_control = 0;
-			} else {
-				focused_control ++;
 			}
-
-			while (focused_control < controls_number) {
-				if (controls [focused_control].focusable && !(controls [focused_control].state & LSTUI_STATE_DISABLED)) break;
-				focused_control ++;
-			}
-
-		}
+			if (controls [focused_control].focusable && !(controls [focused_control].state & LSTUI_STATE_DISABLED)) break;
+		} while (current_focused != focused_control);
 	}
 
 	// Encode additional data
 	enum keycode_t* keys = readkeys ();
+
+	// Reset signal
+	lstui_signal = 0;
 
 	// For each control
 	for (int i = 0; i < controls_number; i ++) {
@@ -183,12 +197,25 @@ int lstui_do (void) {
 		// Click gives focus!			
 		if (over_control && left_click && control.focusable) focused_control = i;
 
-		// Pass collected input
-		controls [i].input = chars;
-		controls [i].keys = keys;
 
 		// Update function
-		if (control.update_func != NULL && focused_control == i) control.update_func (i);
+		if (control.update_func != NULL && focused_control == i) {
+			// Pass collected input
+			controls [i].input = chars;
+			controls [i].keys = keys;
+
+			// Call update
+			control.update_func (i);
+
+			// Special signals
+			if (controls [i].signal & LSTUI_SIGNAL_NEXT) {
+				lstui_signal |= LSTUI_SIGNAL_NEXT;
+			}
+
+			// Just in case
+			controls [i].input = NULL;
+			controls [i].keys = NULL;
+		}
 
 		// Hover function
 		if (control.hover_func != NULL) control.hover_func (i, over_control);
@@ -200,6 +227,7 @@ int lstui_do (void) {
 
 		// Render function
 		if (control.render_func != NULL) control.render_func (i, focused_control == i);
+
 	}
 }
 
@@ -294,12 +322,13 @@ void lstui_fill (int x1, int y1, int w, int h, unsigned char attrib, unsigned ch
 	}
 }
 
-void lstui_copy_to_length (char *to, char *from, int l) {	
+int lstui_copy_to_length (char *to, char *from, int l) {	
 	int i, ll = strlen (from);
 	for (i = 0; i < l && i < ll; i ++) {
 		to [i] = from [i];
 	}
 	to [i] = 0;
+	return i;
 }
 
 /*
@@ -316,7 +345,8 @@ lstui_caption_render (int me, int focused) {
 }
 
 struct LSTUI_CONTROL lstui_caption (
-	int x, int y, int w, int attrib, int align, char *caption 
+	int x, int y, int w, 
+	int c1, int c2, int align, char *caption 
 ) {
 	LSTUI_CONTROL c;
 	c.x = x; c.y = y; c.w = w; c.h = 1;
@@ -325,8 +355,9 @@ struct LSTUI_CONTROL lstui_caption (
 	c.click_func = NULL;
 	c.render_func = lstui_caption_render;
 	c.data = caption;
+	int attrib = c1 | c2 << 4;
 	c.config = attrib | align << 8;
-	c.focusable = 0;
+	c.focusable = c.state = 0;
 
 	return c;
 }
@@ -383,6 +414,7 @@ struct LSTUI_CONTROL lstui_button (
 	c.render_func = lstui_button_render;
 	c.data = caption;
 	c.focusable = 1;
+	c.state = 0;
 
 	return c;
 }
@@ -401,10 +433,11 @@ int lstui_input_update (int me) {
 	char *line_pointer = controls [me].data;
 	int cursor = controls [me].state & 0xFFFF;
 	int scroll = controls [me].state >> 16;
+	controls [me].signal = 0;
 
 	// Process input
 	unsigned char *ptr = controls [me].input;
-	char c; while (c = *ptr ++) {
+	unsigned char c; while (c = *ptr ++) {
 		
 		c = translate (c);
 		if (c >= ' ') {
@@ -427,13 +460,16 @@ int lstui_input_update (int me) {
 
 		} else if (c == 8) {
 			// Delete
-			cursor = controls [me].state & 0xFFFF;
 			if (cursor) {
 				cursor --;
 				for (int i = cursor; i < strlen (line_pointer); i ++) {
 					line_pointer [i] = line_pointer [i + 1];
 				}
 			}
+		
+		} else if (c == 13) {
+			controls [me].signal = LSTUI_SIGNAL_NEXT;
+
 		}
 		
 	}
@@ -448,11 +484,11 @@ int lstui_input_update (int me) {
 			if (cursor < strlen (line_pointer)) cursor ++;
 		}
 	}
-	
+
 	while (cursor < scroll) { scroll --; }
 	while (cursor - scroll > controls [me].w) { scroll ++; }
 
-	controls [me].state = scroll << 16 | cursor;
+	controls [me].state = (scroll << 16) | cursor;
 
 	curson ();
 	gotoxy (controls [me].x + cursor - scroll, controls [me].y);
@@ -481,8 +517,7 @@ struct LSTUI_CONTROL lstui_input (
 	c.focusable = 1;
 
 	// Copy text
-	lstui_copy_to_length (c.data, text, text_length);
-	c.state = strlen (text);
+	c.state = lstui_copy_to_length (c.data, text, text_length);
 
 	return c;
 }
@@ -512,9 +547,23 @@ struct LSTUI_CONTROL lstui_box (
 	c.render_func = lstui_box_render;
 	c.data = NULL;
 	c.config = frame | ((c1 | c2 << 4) << 8);
-	c.focusable = 0;
+	c.focusable = c.state = 0;
 
 	return c;
+}
+
+/*
+ * Set colors
+ */
+
+void lstui_colors_set_input_attribs (int normal, int focused) {
+	lstui_input_attrib = normal;
+	lstui_input_attrib_focused = focused;
+}
+
+void lstui_colors_set_button_attribs (int normal, int hovered) {
+	lstui_button_attrib = normal;
+	lstui_button_attrib_hovered = hovered;
 }
 
 #endif

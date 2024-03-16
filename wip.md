@@ -36,9 +36,26 @@
 [ ] Formas de contar el número de elementos que hay en el menú, o el número de elementos que se ha quitado desde el último reset!
 [ ] Box manual
 [X] Menu config noframe
-[ ] Talk config retratos
+[ ] Talk config retratos, funciona así:
 
-[ ] Hay un problema con los flags y los aliases y tal, deberia distinguirse entre lvalue y rvalue.
+`portraits config x y ["prefijo"]` activa los retratos, que se cargarán de `prefijo` .
+
+`wwc "text" ["personaje" ["sufijo"]]`
+
+En el `wwc`, si los retratos están activados, se carga "prefijo/personaje.gif", con "personaje" el que se especifica como segundo parámetro de `wwc`. Si se añade un tercer parámetro, se cargará "prefijo/personaje_sufijo.gif", con `parametro` el valor que se especifique. 
+
+`portraits off` los desactiva.
+
+Por ejemplo
+
+```
+	portraits config 260 160 "pics/portraits/"
+	wwc "Se está muy bien aquí" "Xinkss" "2"
+```
+
+Mostrará el retrato en `pics/portraits/Xinkss_2.gif`.
+
+[X] Hay un problema con los flags y los aliases y tal, deberia distinguirse entre lvalue y rvalue.
 
 Por ejemplo:
 add $4 $5 -> 
