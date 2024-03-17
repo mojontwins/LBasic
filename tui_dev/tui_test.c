@@ -16,6 +16,7 @@ void main (void) {
 	int textbox2 = lstui_add (lstui_input (24, 9, 10, 10, ""));
 	int caption2 = lstui_add (lstui_caption (5, 7, 60, 10, 1, LSTUI_ALIGN_LEFT, ""));
 	int caption3 = lstui_add (lstui_caption (0, 24, 80, 15, 4, LSTUI_ALIGN_LEFT, buffer));
+	int checkbox = lstui_add (lstui_checkbox (5, 15, "Hasme el clik"));
 
 	lstui_setdata (caption2, lstui_getdata (textbox));
 	char *pcaption3 = lstui_getdata (caption3);

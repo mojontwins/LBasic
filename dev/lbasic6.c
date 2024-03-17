@@ -6,6 +6,9 @@
 
 #include "../dos-like/source/dos.h"
 
+#define LSTUI_CONTROL_IMPLEMENTATION
+#include "../tui_dev/lstui.h"
+
 #include "lstextmode.h"
 #include "interpreter.h"
 #include "conversion.h"
@@ -16,6 +19,7 @@
 #include "backend.h"
 #include "sys_utils.h"
 #include "lstokens.h"
+#include "wizards.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
 
@@ -383,6 +387,18 @@ void display_editor_lines (int cursor) {
 	}
 }
 
+void wizard_config_command (void) {
+	unsigned char *line_pointer;
+
+	line_pointer = editor_lines [editor_current_line];
+
+	// Parse line
+	line_pointer = wizards_parse (line_pointer);
+
+	// In case we realloc'ed this is mandatory
+	editor_lines [editor_current_line] = line_pointer;
+}
+
 void wizard_text_insert (int *cursor, int draw) {
 	unsigned char *line_pointer;
 	int action = 0;
@@ -651,6 +667,10 @@ int editor (void) {
 						}
 					}
 
+					break;
+
+				case '\t':
+					wizard_config_command ();
 					break;
 
 				case 27:

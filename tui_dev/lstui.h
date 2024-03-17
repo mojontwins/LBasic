@@ -68,6 +68,7 @@ char *lstui_getdata (int control);
 
 void lstui_colors_set_input_attribs (int normal, int focused);
 void lstui_colors_set_button_attribs (int normal, int hovered);
+void lstui_colors_set_checkbox_attribs (int normal, int focused);
 
 // Built-in controls
 
@@ -75,6 +76,7 @@ struct LSTUI_CONTROL lstui_caption (int x, int y, int w, int c1, int c2, int ali
 struct LSTUI_CONTROL lstui_button (int x, int y, int w, int h, char *caption);
 struct LSTUI_CONTROL lstui_input (int x, int y, int w, int text_length, char *text);
 struct LSTUI_CONTROL lstui_box (int x, int y, int w, int h,	int c1, int c2, int frame);
+struct LSTUI_CONTROL lstui_checkbox (int x, int y, char *caption);
 
 // Get a new text box
 
@@ -553,6 +555,54 @@ struct LSTUI_CONTROL lstui_box (
 }
 
 /*
+ * Default control: check box
+ */
+
+// state is 0|1
+
+int lstui_checkbox_attrib = 7 + 16;
+int lstui_checkbox_attrib_focused = 14;
+
+int lstui_checkbox_update (int me) {
+	unsigned char *ptr = controls [me].input;
+	unsigned char c; while (c = *ptr ++) {
+		if (c == ' ' || c == '\n') {
+			controls [me].state ^= 1;
+			return;
+		}
+	}
+}
+
+int lstui_checkbox_click (int me, int clicked) {
+	if (clicked) controls [me].state ^= 1;
+}
+
+int lstui_checkbox_render (int me, int focused) {
+	LSTUI_CONTROL c = controls [me];
+	lstui_caption_do (c.x, c.y, c.w, LSTUI_ALIGN_LEFT, 
+		focused ? lstui_checkbox_attrib_focused : lstui_checkbox_attrib, 
+		c.state ? "[\xFE]" : "[ ]"
+	);
+	lstui_caption_do (c.x + 4, c.y, strlen (c.data), LSTUI_ALIGN_LEFT, lstui_checkbox_attrib, c.data);
+}
+
+struct LSTUI_CONTROL lstui_checkbox (
+	int x, int y, char *caption
+) {
+	LSTUI_CONTROL c;
+	c.x = x; c.y = y; c.w = 3; c.h = 1;
+	c.update_func = lstui_checkbox_update;
+	c.hover_func = NULL;
+	c.click_func = lstui_checkbox_click;
+	c.render_func = lstui_checkbox_render;
+	c.data = caption;
+	c.focusable = 1;
+	c.state = 0;
+
+	return c;
+}
+
+/*
  * Set colors
  */
 
@@ -564,6 +614,11 @@ void lstui_colors_set_input_attribs (int normal, int focused) {
 void lstui_colors_set_button_attribs (int normal, int hovered) {
 	lstui_button_attrib = normal;
 	lstui_button_attrib_hovered = hovered;
+}
+
+void lstui_colors_set_checkbox_attribs (int normal, int focused) {
+	lstui_checkbox_attrib = normal;
+	lstui_checkbox_attrib_focused = focused;
 }
 
 #endif
