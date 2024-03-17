@@ -159,8 +159,23 @@ wwc "S¡, no pasa nada. Vayamos andando, luego vendr‚ a por ‚l. De todos modos no
 # 0 - inicial, 1 - conoce, 2 - ha estado
 let %camino 0
 let %bifurc 0
+let %bif_exits 0
 
-:f1s1_lomas
+# Este flag se usa para saber si tenemos que mostrar "Examinar"
+# en la bifurcaci¢n.
+let %bif_exam 0
+
+# Este flag se usa para saber si hemos examinado el candado de la
+# caseta. Si lo hemos hecho, se mostrar  la opci¢n de coger un trozo
+# de verja para forzarlo.
+let %candado 0
+
+# Este flag se usa para saber si hemos examinado la verja para que,
+# al examinar el candado, a Xinkss se le ocurra que puede forzarse 
+# usando uno de sus barrotes.
+let %verja 0
+
+:s_lomas
 fancy_cls
 bg "pic/scene_001.gif"
 
@@ -169,78 +184,199 @@ menu put "Mirar"
 menu put "Hablar"
 
 exits reset
-exits put "Camino" :f1s1_camino
+exits put "Camino" :s_camino
 
-eq %camino 0 :f1s1_lomas_r
+eq %camino 0 :s_lomas_r
 menu put "Irse" exits
 
-:f1s1_lomas_r
-menu run :f1s1_lomas :f1s1_lomas_r
+:s_lomas_r
+menu run :s_lomas :s_lomas_r
 wwc ". . ."
 ret
 
-:f1s1_lomas_mirar
-neq %camino 0 :f1s1_lomas_mirar_m
+:s_lomas_mirar
+neq %camino 0 :s_lomas_mirar_m
 menu put "Irse" exits
 
 let %camino 1
 
-:f1s1_lomas_mirar_m
+:s_lomas_mirar_m
 wwc "Detr s de las lomas empieza el camino que baja hasta la explanada donde se encuentra la base."
 menu has "Irse" ret
 menu put "Irse" exits
 ret
 
-:f1s1_lomas_hablar
+:s_lomas_hablar
 wwc "­Pues se ha quedado un d¡a genial para ir a la base a empezar lo que puede convertirse en una misi¢n peligros¡sima!" "Xinkss"
 wwc "­D‚jate de bromas! ­Esto es serio!" "Maykk"
 menu remove "Hablar"
 ret
 
-:f1s1_camino
+:s_camino
 fancy_cls
 bg "pic/scene_002.gif"
 
-eq %camino 2 :f1s1_camino_do
+eq %camino 2 :s_camino_do
 let %camino 2
 
 wwc "Vaya camino de pena." "Xinkss"
 wwc "No te quejes: es rural. Hay gente que paga por tirarse el d¡a andando por caminos de estos." "Maykk"
 wwc "­Cu nto mal hace no haberse criado en un pueblo!" "Xinkss"
 
-:f1s1_camino_do
+:s_camino_do
 menu reset
 menu put "Mirar"
 menu put "Hablar"
 menu put "Irse" exits
 
 exits reset
-exits put "Lomas" :f1s1_lomas
+exits put "Lomas" :s_lomas
 
-eq %bifurc 0 :f1s1_camino_r
-exits put "Bifurc." :f1s1_bifurc
+eq %bifurc 0 :s_camino_r
+exits put "Bifurc." :s_bifurc
 
-:f1s1_camino_r
-menu run :f1s1_camino :f1s1_camino_r
+:s_camino_r
+menu run :s_camino :s_camino_r
 wwc ". . ."
 ret
 
-:f1s1_camino_mirar
-neq %bifurc 0 :f1s1_camino_mirar_m
-exits put "Bifurc." :f1s1_bifurc
+:s_camino_mirar
+neq %bifurc 0 :s_camino_mirar_m
+exits put "Bifurc." :s_bifurc
 let %bifurc 1
 
-:f1s1_camino_mirar_m
+:s_camino_mirar_m
 wwc "Esta parte del camino comunica las lomas con una bifurcaci¢n que hay m s abajo. No hay nada interesante."
 ret
 
-:f1s1_camino_hablar
+:s_camino_hablar
 wwc "¨Quieres seguir hablando de la vida rural y de la crisis de los urbanitas?" "Maykk"
 wwc "¨Por qu‚ siempre tienes que usar tantas palabras raras?" "Xinkss"
 wwc "Porque soy muy lista." "Maykk"
 menu remove "Hablar"
 ret
 
-:f1s1_bifurc
+:s_bifurc
 fancy_cls
 bg "pic/scene_003.gif"
+
+# Aqu¡ podremos examinar varias cosas en un sub-men£. No hay
+# soporte para submen£s autom ticos que no sean el de items o 
+# el de salidas, as¡ que lo hacemos a mano.
+
+:s_bifurc_setup
+menu reset
+menu put "Mirar"
+menu put "Hablar"
+
+eq %bif_exam 0 :s_bifurc_s1
+menu put "Examinar"
+:s_bifurc_s1
+
+menu put "Irse" exits
+
+exits reset
+exits put "Camino" :s_camino
+
+eq %bif_exits 0 :s_bifurc_s2
+exits put "Mirador" :s_mirador
+exits put "Caseta" :s_caseta
+:s_bifurc_s2
+
+:s_bifurc_r
+menu run :s_bifurc :s_bifurc_r
+wwc ". . ."
+ret
+
+:s_bifurc_mirar
+wwc "El camino que viene de las lomas se bifurca en este punto."
+wwc "Tomando el desv¡o hacia la izquierda se llega a un mirador al borde del acantilado desde el que se puede ver el valle."
+wwc "El camino principal conduce a la base. Puedes ver una vieja caseta de herramientas m s adelante, en esa direcci¢n."
+wwc "Bajo un enorme  rbol hay una se¤al indicadora y los restos de una vieja verja met lica sobre un murete de ladrillos."
+let %bif_exam 1
+let %bif_exits 1
+go :s_bifurc_setup
+
+:s_bifurc_hablar
+wwc "Me encanta ese  rbol." "Maykk"
+wwc "¨El que est  detr s de la verja?" "Xinkss"
+wwc "S¡. tiene que tener por lo menos cien a¤os. ¨Has visto qu‚ nudos?" "Maykk"
+wwc "¨Sabes que esa verja es lo £nico que queda de una casa que hab¡a aqu¡, mucho antes de que se construyera la base?" "Xinkss"
+wwc "Por lo visto viv¡a una familia de h bitos extravagantes y ocurrieron cosas bastante turbias y desagradables..." "Xinkss"
+wwc "Hay mucha gente que cree que los cad veres de varios miembros de esa familia descansan entre las ra¡ces de este  rbol." "Xinkss"
+wwc "Qu‚ agradable, Xinkss..." "Maykk"
+let %bif_exam 1
+go :s_bifurc_setup
+
+:s_bifurc_examinar
+
+# Aqu¡ va nuestro men£ secundario. Como vemos no usamos ret,
+# sino que volveremos al men£ principal con go :s_bifurc_setup 
+# para que el men£ original vuelva a crearse.
+
+menu reset
+menu put " rbol"
+menu put "Se¤al"
+menu put "Verja"
+menu put "Nada"
+
+# Atenci¢n a como el "ret" lo establecemos a `:s_bifurc_setup`,  que es
+# donde se rellena el men£ principal.
+:s_bifurc_examinar_r
+menu run :s_bifurc_examinar :s_bifurc_examinar_r
+
+# Este ret vuelve a :s_bifurc_setup
+ret 
+
+:s_bifurc_examinar_ rbol
+wwc "Es una vieja encina llena de nudos. Debe tener al menos cien a¤os."
+ret
+
+:s_bifurc_examinar_se¤al
+wwc "La se¤al indica la direcci¢n que hay que seguir para ir a la base, algo bastante in£til ya que se puede ver desde aqu¡."
+ret
+
+:s_bifurc_examinar_verja
+
+# Cuando hay varias cosas que hacer relacionadas con lo mismo, lo mejor
+# es ir descartando las condiciones desde la £ltima a la primera. Lo £ltimo
+# que hay que hacer aqu¡ es obtener un barrote, as¡ que ser  lo primero que
+# comprobemos:
+
+# Si ya tenemos el barrote de verja en el inventario, no hay nada que hacer
+
+item hasnt "Barrote"  :s_bifurc_examinar_v1
+
+wwc "No hay nada m s en esta verja que pueda ser de utilidad."
+ret 
+
+:s_bifurc_examinar_v1
+
+# Si no sabemos que necesitamos un trozo de verja s¢lo daremos 
+# una descripci¢n, y usaremos un flag para indicar que hemos examinado
+# la verja...
+eq %candado 0 :s_bifurc_examinar_v2
+
+wwc "Es una vieja verja de hierro. Alguno de los barrotes parecen a punto de desprenderse."
+
+# Indicamos que ya hemos examinado la verja
+let %verja 1
+ret
+
+:s_bifurc_examinar_v2
+
+# Llegados aqu¡, sabemos que no tenemos el barrote, pero sabemos que 
+# necesitamos uno, as¡ que simplemente lo cogeremos.
+
+wwc "En efecto, algunos barrotes est n a punto de desprenderse. "
+wwc "Mira, Xinkss, este est  casi suelto..." "Maykk"
+wwc "­Aj ! ­Lo tengo!" "Maykk"
+
+item put "Barrote"
+
+wwc ""
+ret
+
+:s_mirador
+
+:s_caseta

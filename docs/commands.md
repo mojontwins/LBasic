@@ -492,6 +492,18 @@ Salta a `:etiqueta` si `item` NO está en el inventario.
 
 Añade una opción al menú con `texto` que, al seleccionarla, desplegará un menú con los items. La etiqueta generada finalmente por `menu run :label` será `:label_usar_ITEM`, con `ITEM` el item que se seleccione en el segundo menú.
 
+```
+	menu items auto "Objetos"
+```
+
+Si hay items en el inventario, se añade automáticamente una opción "Objetos" al menú.
+
+```
+	menu items off
+```
+
+Desactiva esto.
+
 ## Menú con salidas
 
 ```

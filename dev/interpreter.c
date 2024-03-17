@@ -735,6 +735,18 @@ int lbasi_run_file (FILE *file) {
 					lbasi_goto (file, get_token (3));
 				}
 
+			} else if (strcmp (menu_command, "items") == 0) {
+				char *menu_items_command = get_token (2);
+				utils_tolower (menu_items_command);
+
+				if (strcmp (menu_items_command, "auto") == 0) {
+					backend_menu_items_config (get_token (3));
+
+				} else if (strcmp (menu_items_command, "off") == 0) {
+					backend_menu_items_config (NULL);
+
+				}
+
 			}
 		}
 

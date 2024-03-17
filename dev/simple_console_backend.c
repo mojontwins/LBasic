@@ -9,6 +9,8 @@
 #include "sys_utils.h"
 
 int forced_break = 0;
+int menu_items_auto = 0;
+char menu_items [MENU_ITEM_MAX_LENGTH];
 
 void backend_init (void) {
 	printf ("LBASI - Backend simple - basic I/O\n");
@@ -224,7 +226,23 @@ void backend_menu_show (void) {
 	// NO OP
 }
 
+void backend_menu_items_config (char *item) {
+	if (item == NULL || strlen (item) == 0) {
+		menu_items_auto = 0;
+	} else {
+		strcpy (menu_items, item);
+		menu_items_auto = 1;
+	}
+}
+
 int backend_menu_run (void) {
+	// Auto add "items"
+	if (menu_items_auto) {
+		if (inventory_get_options () && !menu_has_item (menu_items)) {
+			menu_add_item (menu_items, MENU_ITEM_TYPE_ITEMS, NULL);
+		}
+	}
+
 	// Very simple implementation
 	printf ("MENU OPTIONS: %d\n", menu_get_options ());
 	for (int i = 0; i < menu_get_options (); i ++) {

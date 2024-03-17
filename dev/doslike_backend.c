@@ -121,6 +121,9 @@ int cur_sound_channel = 0;
 struct music_t *mus = NULL;
 struct sound_t *sound = NULL;
 
+int menu_items_auto = 0;
+char menu_items [MENU_ITEM_MAX_LENGTH];
+
 void backend_init (void) {
 	lstextmode_init ();
 	buf_color (7, 0);
@@ -702,7 +705,23 @@ void backend_menu_show (void) {
 	buf_color (prev_c1, prev_c2);	
 }
 
+void backend_menu_items_config (char *item) {
+	if (item == NULL || strlen (item) == 0) {
+		menu_items_auto = 0;
+	} else {
+		strcpy (menu_items, item);
+		menu_items_auto = 1;
+	}
+}
+
 int backend_menu_run (void) {
+	// Auto add "items"
+	if (menu_items_auto) {
+		if (inventory_get_options () && !menu_has_item (menu_items)) {
+			menu_add_item (menu_items, MENU_ITEM_TYPE_ITEMS, NULL);
+		}
+	}
+
 	int prev_x = buf_getx ();
 	int prev_y = buf_gety (); 
 	int prev_c1 = buf_getc1 ();

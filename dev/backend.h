@@ -20,6 +20,7 @@ void backend_menu_config (int x, int y, int w, int c1, int c2, int fixed, int no
 int backend_menu_get_w (void);
 int backend_menu_run (void);
 void backend_menu_show (void);
+void backend_menu_items_config (char *item);
 int backend_inventory_run (void);
 int backend_exits_run (void);
 int backend_actions_run (int x, int y);
