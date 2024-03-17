@@ -36,6 +36,7 @@
 // Main structure used by controls. 
 
 typedef struct LSTUI_CONTROL {
+	int type; 
 	int x, y; 									// top-left corner position
 	int w, h; 									// width / height
 	int (*update_func)(int idx); 				// Pointer to a function to update this control
@@ -77,6 +78,12 @@ struct LSTUI_CONTROL lstui_button (int x, int y, int w, int h, char *caption);
 struct LSTUI_CONTROL lstui_input (int x, int y, int w, int text_length, char *text);
 struct LSTUI_CONTROL lstui_box (int x, int y, int w, int h,	int c1, int c2, int frame);
 struct LSTUI_CONTROL lstui_checkbox (int x, int y, char *caption);
+
+#define LSTUI_CONTROL_TYPE_CAPTION 0
+#define LSTUI_CONTROL_TYPE_BUTTON 1
+#define LSTUI_CONTROL_TYPE_INPUT 2
+#define LSTUI_CONTROL_TYPE_BOX 3
+#define LSTUI_CONTROL_TYPE_CHECKBOX 4
 
 // Get a new text box
 
@@ -249,6 +256,14 @@ void lstui_setdata (int control, char *data) {
 	controls [control].data = data;
 }
 
+void lstui_gettype (int control) {
+	return controls [control].type;
+}
+
+void lstui_num_controls (void) {
+	return controls_number;
+}
+
 int lstui_free (LSTUI_CONTROL c) {
 	free (c.input);
 	free (c.data);
@@ -351,6 +366,8 @@ struct LSTUI_CONTROL lstui_caption (
 	int c1, int c2, int align, char *caption 
 ) {
 	LSTUI_CONTROL c;
+
+	c.type = LSTUI_CONTROL_TYPE_CAPTION;
 	c.x = x; c.y = y; c.w = w; c.h = 1;
 	c.update_func = NULL;
 	c.hover_func = NULL;
@@ -409,6 +426,8 @@ struct LSTUI_CONTROL lstui_button (
 	char *caption
 ) {
 	LSTUI_CONTROL c;
+
+	c.type = LSTUI_CONTROL_TYPE_BUTTON;
 	c.x = x; c.y = y; c.w = w, c.h = h;
 	c.update_func = lstui_button_update;
 	c.hover_func = lstui_button_hover;
@@ -509,6 +528,8 @@ struct LSTUI_CONTROL lstui_input (
 	int text_length, char *text
 ) {
 	LSTUI_CONTROL c;
+
+	c.type = LSTUI_CONTROL_TYPE_INPUT;
 	c.x = x; c.y = y; c.w = w; c.h = 1;
 	c.update_func = lstui_input_update;
 	c.hover_func = NULL;
@@ -542,6 +563,8 @@ struct LSTUI_CONTROL lstui_box (
 	int c1, int c2, int frame
 ) {
 	LSTUI_CONTROL c;
+	
+	c.type = LSTUI_CONTROL_TYPE_BOX;
 	c.x = x; c.y = y; c.w = w; c.h = h;
 	c.update_func = NULL;
 	c.hover_func = NULL;
@@ -590,6 +613,8 @@ struct LSTUI_CONTROL lstui_checkbox (
 	int x, int y, char *caption
 ) {
 	LSTUI_CONTROL c;
+
+	c.type = LSTUI_CONTROL_TYPE_CHECKBOX;
 	c.x = x; c.y = y; c.w = 3; c.h = 1;
 	c.update_func = lstui_checkbox_update;
 	c.hover_func = NULL;

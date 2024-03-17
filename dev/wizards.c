@@ -1,46 +1,80 @@
 #include "../tui_dev/lstui.h"
 #include "lstokens.h"
 
+#define MAX_CONTROLS 20
+int control_handles [MAX_CONTROLS];
+
 typedef struct WIZARD_FIELD {
 	char caption [40];
+	int rx, ry;
 	int width;
 	int text_width;
 } WIZARD_FIELD;
 
 WIZARD_FIELD fields_bg [] = {
-	{ "X", 2, 2 },
-	{ "Y", 2, 2 },
+	{ "#bg config", 0, 0, 40, 5 },
+	{ "X", 0, 0, 2, 2 },
+	{ "Y", 10, 0, 2, 2 },
 	{ NULL, 0, 0 }
 };
 
 WIZARD_FIELD fields_menu [] = {
-	{ "X", 2, 2 },
-	{ "Y", 2, 2 },
-	{ "Width", 2, 2 },
-	{ "--", 0, 0 },
-	{ "Color 1", 2, 2 },
-	{ "Color 2", 2, 2 },
-	{ "--", 0, 0 },
-	{ "Fixed?", 0, 0 },
-	{ "Noframe?", 0, 0 },
+	{ "#menu config", 0, 0, 40, 9 },
+	{ "X", 0, 0, 2, 2 },
+	{ "Y", 8, 0, 2, 2 },
+	{ "Width", 16, 0, 2, 2 },
+	{ "Color 1", 0, 2, 2, 2 },
+	{ "Color 2", 10, 2, 2, 2 },
+	{ "?fixed", 0, 4, 0, 0 },
+	{ "?noframe", 20, 4, 0, 0 },
 	{ NULL, 0, 0 } 
 };
 
 WIZARD_FIELD fields_talk [] = {
-	{ "X", 2, 2 },
-	{ "Y", 2, 2 },
-	{ "Width", 2, 2 },
-	{ "--", 0, 0 },
-	{ "Color 1", 2, 2 },
-	{ "Color 2", 2, 2 },
-	{ "--", 0, 0 },
-	{ "Overlay GIF", 40, 200 },
-	{ "--", 0, 0 },
-	{ "Ov. X", 2, 2 },
-	{ "Ov. Y", 2, 2 },
-	{ "Mask", 2, 2 },
+	{ "#talk config", 0, 0, 40, 11 },
+	{ "X", 0, 0, 2, 2 },
+	{ "Y", 8, 0, 2, 2 },
+	{ "Width", 16, 0, 2, 2 },
+	{ "Color 1", 0, 2, 2, 2 },
+	{ "Color 2", 10, 2, 2, 2 },
+	{ "Overlay GIF", 0, 4, 36, 200 },
+	{ "Ov. X", 0, 6, 2, 2 },
+	{ "Ov. Y", 8, 6, 2, 2 },
+	{ "Mask", 16, 6, 2, 2 },
 	{ NULL, 0, 0 }
 };
+
+void create_form (WIZARD_FIELD fields) {
+	int i = 0;
+	int ox = oy = 0;
+	while (fields [i].caption != NULL) {
+		int handle = -1;
+
+		if (fields [i].caption [0] == '#') {
+			// Initial box & setup
+			ox = 40 - fields [i].width / 2;
+			oy = 12 - fields [i].text_width / 2;
+
+			control_handles [i ++] = lstui_add (
+				lstui_box (ox, oy, fields [i].width, fields [i].text_width, 15, 1, LSTUI_BOX_DOUBLE)
+			);
+
+			control_handles [i ++] = lstui_add (
+				lstui_caption (ox + 1, oy + 1, fields [i].width - 2, 14, 0, LSTUI_ALIGN_CENTER, fields [i].caption + 1);
+			);
+
+		} else if (fields [i].caption [0] == '?') {
+			// Add a checkbox
+			handle = lstui_add (
+				lstui_
+			);
+
+		} else {
+			// Add a text box
+		}
+
+	}
+}
 
 char *wizards_bg (char *line) {
 	return line;
