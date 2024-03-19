@@ -51,11 +51,15 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	int token_n = token_from;
 	int ox = 0;
 	int oy = 0;
+	int ow = 0;
+	int oh;
 	while (fields [i].caption [0] != '-') {
 		if (fields [i].caption [0] == '#') {
 			// Initial box & setup
-			ox = 40 - fields [i].width / 2;
-			oy = 12 - fields [i].text_width / 2;
+			ow = fields [i].width;
+			oh = fields [i].text_width + 4;
+			ox = 40 - ow / 2;
+			oy = 12 - oh / 2;
 
 			lstui_add (
 				lstui_box (ox, oy, fields [i].width, fields [i].text_width, 15, 1, LSTUI_BOX_DOUBLE)
@@ -94,6 +98,13 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 		i ++;
 	}
+
+	int button_OK = lstui_add (
+		lstui_button (ox + 4, oy + oh - 4, 10, 3, "OK")
+	);
+	int button_Cancel = lstui_add (
+		lstui_button (ox + ow - 14, oy + oh - 4, 10, 3, "Cancelar")
+	);
 
 	int done = 0;
 	int rehash_line = 0;
