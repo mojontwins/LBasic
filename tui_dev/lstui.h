@@ -32,6 +32,7 @@
 #define LSTUI_BOX_DOUBLE 					1
 
 #define LSTUI_SIGNAL_NEXT 					32
+#define LSTUI_SIGNAL_ESC 					64
 
 // Main structure used by controls. 
 
@@ -63,7 +64,12 @@ int lstui_shutdown (void); 						// Cleans up everything
 // Handle existing controls
 
 int lstui_getstate (int control);
+void lstui_setstate (int control, int state);
 char *lstui_getdata (int control);
+void lstui_setdata (int control, char *data);
+int lstui_gettype (int control);
+int lstui_num_controls (void);
+int lstui_get_signal (void);
 
 // Configure theme (lame)
 
@@ -102,6 +108,10 @@ int mouse_x, mouse_y, mouse_b;
 int left_click_was = 0;
 int right_click_was = 0;
 int lstui_signal;
+
+int lstui_get_signal (void) {
+	return lstui_signal;
+}
 
 int get_mouse_x (void) {
 	mouse_x = mousex ();
@@ -170,7 +180,7 @@ int lstui_do (void) {
 	right_click_was = b;
 
 	unsigned char *chars = (unsigned char*) readchars ();
-
+	
 	// Keep track of which control is focused
 	int current_focused = focused_control;
 
@@ -179,6 +189,10 @@ int lstui_do (void) {
 		if (c == '\t') {
 			lstui_signal = LSTUI_SIGNAL_NEXT; 
 			break;
+		}
+
+		if (c == 27) {
+			lstui_signal = LSTUI_SIGNAL_ESC;
 		}
 	}
 
@@ -190,13 +204,13 @@ int lstui_do (void) {
 			}
 			if (controls [focused_control].focusable && !(controls [focused_control].state & LSTUI_STATE_DISABLED)) break;
 		} while (current_focused != focused_control);
+
+		// Reset signal
+		lstui_signal = 0;
 	}
 
 	// Encode additional data
 	enum keycode_t* keys = readkeys ();
-
-	// Reset signal
-	lstui_signal = 0;
 
 	// For each control
 	for (int i = 0; i < controls_number; i ++) {
@@ -256,11 +270,11 @@ void lstui_setdata (int control, char *data) {
 	controls [control].data = data;
 }
 
-void lstui_gettype (int control) {
+int lstui_gettype (int control) {
 	return controls [control].type;
 }
 
-void lstui_num_controls (void) {
+int lstui_num_controls (void) {
 	return controls_number;
 }
 
@@ -373,7 +387,7 @@ struct LSTUI_CONTROL lstui_caption (
 	c.hover_func = NULL;
 	c.click_func = NULL;
 	c.render_func = lstui_caption_render;
-	c.data = caption;
+	c.data = strdup (caption);
 	int attrib = c1 | c2 << 4;
 	c.config = attrib | align << 8;
 	c.focusable = c.state = 0;
@@ -433,7 +447,7 @@ struct LSTUI_CONTROL lstui_button (
 	c.hover_func = lstui_button_hover;
 	c.click_func = lstui_button_click;
 	c.render_func = lstui_button_render;
-	c.data = caption;
+	c.data = strdup (caption);
 	c.focusable = 1;
 	c.state = 0;
 
@@ -620,7 +634,7 @@ struct LSTUI_CONTROL lstui_checkbox (
 	c.hover_func = NULL;
 	c.click_func = lstui_checkbox_click;
 	c.render_func = lstui_checkbox_render;
-	c.data = caption;
+	c.data = strdup (caption);
 	c.focusable = 1;
 	c.state = 0;
 

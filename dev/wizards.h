@@ -1,2 +1,2 @@
 
-char *wizards_parse (*line);
+char *wizards_parse (char *line);
