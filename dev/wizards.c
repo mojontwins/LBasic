@@ -62,11 +62,11 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 			oy = 12 - oh / 2;
 
 			lstui_add (
-				lstui_box (ox, oy, fields [i].width, fields [i].text_width, 15, 1, LSTUI_BOX_DOUBLE)
+				lstui_box (ox, oy, ow, oh, 15, 1, LSTUI_BOX_DOUBLE)
 			);
 
 			lstui_add (
-				lstui_caption (ox + 1, oy + 1, fields [i].width - 2, 14, 0, LSTUI_ALIGN_CENTER, fields [i].caption + 1)
+				lstui_caption (ox + 1, oy + 1, ow - 2, 14, 0, LSTUI_ALIGN_CENTER, fields [i].caption + 1)
 			);
 
 			ox += 2; oy += 3;
@@ -100,10 +100,11 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	}
 
 	int button_OK = lstui_add (
-		lstui_button (ox + 4, oy + oh - 4, 10, 3, "OK")
+		lstui_button (ox + 2, oy + oh - 8, 10, 3, "OK")
 	);
+	
 	int button_Cancel = lstui_add (
-		lstui_button (ox + ow - 14, oy + oh - 4, 10, 3, "Cancelar")
+		lstui_button (ox + ow - 15, oy + oh - 8, 10, 3, "Cancelar")
 	);
 
 	int done = 0;
