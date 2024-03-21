@@ -3,6 +3,7 @@
 #include "lstokens.h"
 
 char *tokens [MAX_TOKENS];
+int indexes [MAX_TOKENS];
 int cur_token;
 
 int is_initialized = 0;
@@ -61,6 +62,8 @@ void parse_to_tokens (char *string) {
 	int in_quotes = 0;
 	int was_quoted = 1;
 
+	int was_whitespace = 1;
+
 	// Clear first
 	for (i = 0; i < MAX_TOKENS; i ++) {
 		tokens [i][0] = 0;
@@ -80,18 +83,26 @@ void parse_to_tokens (char *string) {
 				cur_token ++;
 				was_quoted = 0;
 			}
-		} else if (cur_char == 34) {
-			in_quotes = !in_quotes;
+			was_whitespace = 1;
 
-			if (in_quotes == 0 && cur_index > 0) {
-				tokens [cur_token ++][cur_index] = 0;
-				cur_index = 0;
-			} else was_quoted = 1;
 		} else {
-			tokens [cur_token][cur_index ++] = cur_char;
-			if (cur_index == TOKEN_MAX_LENGTH) {
-				tokens [cur_token ++][cur_index - 1] = 0;
-				cur_index = 0;
+			if (was_whitespace) {
+				was_whitespace = 0;
+				indexes [cur_token] = i;
+			}
+			if (cur_char == 34) {
+				in_quotes = !in_quotes;
+
+				if (in_quotes == 0 && cur_index > 0) {
+					tokens [cur_token ++][cur_index] = 0;
+					cur_index = 0;
+				} else was_quoted = 1;
+			} else {
+				tokens [cur_token][cur_index ++] = cur_char;
+				if (cur_index == TOKEN_MAX_LENGTH) {
+					tokens [cur_token ++][cur_index - 1] = 0;
+					cur_index = 0;
+				}
 			}
 		}
 
@@ -176,6 +187,10 @@ char *get_token (int i) {
 	}
 
 	return tokens [i];
+}
+
+int get_index (int i) {
+	return indexes [i];
 }
 
 char **get_tokens_from (int i) {

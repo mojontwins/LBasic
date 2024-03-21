@@ -4,45 +4,52 @@
 
 #define MAX_CONTROLS 20
 int control_handles [MAX_CONTROLS];
+int control_indexes [MAX_CONTROLS];
+
+#define CONTROL_TYPE_DISPLAY 0
+#define CONTROL_TYPE_BYVAL 1
+#define CONTROL_TYPE_BYNAME 2
+#define CONTROL_TYPE_STRING 3
 
 typedef struct WIZARD_FIELD {
 	char caption [40];
 	int rx, ry;
 	int width;
 	int text_width;
+	int type;
 } WIZARD_FIELD;
 
 WIZARD_FIELD fields_bg [] = {
-	{ "#bg config", 0, 0, 40, 5 },
-	{ "X", 0, 0, 2, 2 },
-	{ "Y", 18, 0, 2, 2 },
-	{ "-", 0, 0, 0, 0 }
+	{ "#bg config", 0, 0, 40, 5, CONTROL_TYPE_DISPLAY },
+	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Y", 18, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
 };
 
 WIZARD_FIELD fields_menu [] = {
-	{ "#menu config", 0, 0, 40, 9 },
-	{ "X", 0, 0, 2, 2 },
-	{ "Y", 8, 0, 2, 2 },
-	{ "Width", 16, 0, 2, 2 },
-	{ "Color 1", 0, 2, 2, 2 },
-	{ "Color 2", 18, 2, 2, 2 },
-	{ "?fixed", 0, 4, 0, 0 },
-	{ "?noframe", 20, 4, 0, 0 },
-	{ "-", 0, 0, 0, 0 } 
+	{ "#menu config", 0, 0, 40, 9, CONTROL_TYPE_DISPLAY },
+	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Y", 12, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Width", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 1", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 2", 18, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "?fixed", 0, 4, 0, 0, CONTROL_TYPE_BYNAME },
+	{ "?noframe", 20, 4, 0, 0, CONTROL_TYPE_BYNAME },
+	{ "-", 0, 0, 0, 0, 0 } 
 };
 
 WIZARD_FIELD fields_talk [] = {
-	{ "#talk config", 0, 0, 40, 11 },
-	{ "X", 0, 0, 2, 2 },
-	{ "Y", 8, 0, 2, 2 },
-	{ "Width", 16, 0, 2, 2 },
-	{ "Color 1", 0, 2, 2, 2 },
-	{ "Color 2", 18, 2, 2, 2 },
-	{ "Overlay GIF", 0, 4, 36, 200 },
-	{ "Ov. X", 0, 6, 2, 2 },
-	{ "Ov. Y", 8, 6, 2, 2 },
-	{ "Mask", 16, 6, 2, 2 },
-	{ "-", 0, 0, 0, 0 }
+	{ "#talk config", 0, 0, 40, 11, CONTROL_TYPE_DISPLAY },
+	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Y", 12, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Width", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 1", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 2", 18, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Overlay GIF", 0, 4, 36, 200, CONTROL_TYPE_STRING },
+	{ "Ov. X", 0, 6, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Ov. Y", 12, 6, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Mask", 24, 6, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
 };
 
 char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
@@ -53,6 +60,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	int oy = 0;
 	int ow = 0;
 	int oh;
+
 	while (fields [i].caption [0] != '-') {
 		if (fields [i].caption [0] == '#') {
 			// Initial box & setup
@@ -73,9 +81,10 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 		} else if (fields [i].caption [0] == '?') {
 			// Add a checkbox
-			control_handles [i] = lstui_add (
+			control_handles [handle_i] = lstui_add (
 				lstui_checkbox (ox + fields [i].rx, oy + fields [i].ry, fields [i].caption + 1)
 			);
+			control_indexes [handle_i] = i;
 
 			if (strlen (get_token (token_n))) {
 				lstui_setstate (control_handles [i], 1);
@@ -89,9 +98,10 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 				lstui_caption (ox + fields [i].rx, oy + fields [i].ry, strlen (fields [i].caption), 15, 1, LSTUI_ALIGN_LEFT, fields [i].caption)
 			);
 
-			control_handles [i] = lstui_add (
+			control_handles [handle_i] = lstui_add (
 				lstui_input (ox + fields [i].rx + 1 + strlen (fields [i].caption), oy + fields [i].ry, fields [i].width, fields [i].text_width, get_token (token_n))
 			);
+			control_indexes [handle_i] = i;
 
 			handle_i ++; token_n ++;
 		}
@@ -99,28 +109,63 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 		i ++;
 	}
 
-	int button_OK = lstui_add (
+	int button_ok = lstui_add (
 		lstui_button (ox + 2, oy + oh - 8, 10, 3, "OK")
 	);
-	
-	int button_Cancel = lstui_add (
-		lstui_button (ox + ow - 15, oy + oh - 8, 10, 3, "Cancelar")
+
+	int button_cancel = lstui_add (
+		lstui_button (ox + ow - 16, oy + oh - 8, 10, 3, "Cancelar")
 	);
 
 	int done = 0;
 	int rehash_line = 0;
-	while (!shuttingdown ()) {
+	while (!shuttingdown () && !done) {
 		lstui_do ();
 		if (lstui_get_signal () & LSTUI_SIGNAL_ESC) { done = 1; }
+		if (lstui_getstate (button_cancel) & LSTUI_STATE_CLICKED) { done = 1; }
+		if (lstui_getstate (button_ok) & LSTUI_STATE_CLICKED) { done = 1; rehash_line = 1; }
 
 		waitvbl ();
 	}
 
 	if (rehash_line) {
+		// First trim to header:
+		// THIS bit is not working!
+		line [get_index (token_from)] = 0;
+
 		// Make new line
+		for (int i = 0; i < handle_i; i ++) {
+			int type = fields [control_indexes [i]].type;
+			int handle = control_handles [i];
+			unsigned char *data = lstui_getdata (handle);
+
+			switch (type) {
+				case CONTROL_TYPE_BYVAL:
+					// Increase allocated: 1 byte (SPACE) + value length + 1 (null)
+					line = realloc (line, strlen (line) + 1 + strlen (data) + 1);
+					strcat (line, " ");
+					strcat (line, data);
+					break;
+
+				case CONTROL_TYPE_BYNAME:
+					// Increase allocated: 1 byte (SPACE) + name length + 1 (null)
+					line = realloc (line, strlen (line) + 1 + strlen (fields [control_indexes [i]].caption) - 1 + 1);
+					strcat (line, " ");
+					strcat (line, fields [control_indexes [i]].caption + 1);
+					break;
+
+				case CONTROL_TYPE_STRING:
+					// Increase allocated: 1 byte (SPACE) + value length + 2 (quotes) + 1 (null)
+					line = realloc (line, strlen (line) + 1 + strlen (data) + 2 + 1);
+					strcat (line, " \"");
+					strcat (line, data);
+					strcat (line, "\"");
+					break;
+			}
+		}
 	} 
 
-	return "QUeso";
+	return line;
 }
 
 char *wizards_bg (char *line) {

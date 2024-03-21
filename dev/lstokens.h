@@ -7,6 +7,7 @@ void parse_to_tokens (char *string);
 void parse_to_tokens_whitespace (char *string);
 int get_num_tokens (void);
 char *get_token (int i);
+int get_index (int i);
 char **get_tokens_from (int i);
 char **get_tokens (void);
 int token_exists (char *token);
