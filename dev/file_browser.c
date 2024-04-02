@@ -71,6 +71,7 @@ int select_file_spec (void) {
 	unsigned char c;
 	user_input [0] = 0;
 	int editing = 0;
+	int enable_mouse = 0;
 
 	if (file_spec == NULL) {
 		// Get cwd from exe location
@@ -93,8 +94,27 @@ int select_file_spec (void) {
 	}
 
 	curson ();
+	int mx = buf_get_mouse_x ();
+	int my = buf_get_mouse_y ();
 
 	while (!done && !buf_heartbeat()) {
+		if (enable_mouse == 0) {
+			int cmx = buf_get_mouse_x ();
+			int cmy = buf_get_mouse_y ();
+			if (cmx != mx || cmy != my) {
+				mx = cmx; my = cmy;
+				enable_mouse = 1;
+			}
+		}
+
+		if (enable_mouse) {
+			mx = buf_get_mouse_x ();
+			my = buf_get_mouse_y ();
+			if (my >= 2 && my < 22) {
+				selected_file = first_line_to_display + my - 2;
+			}
+		}
+
 		if (new_path) {
 			if (must_close) tinydir_close (&dir);
 			
@@ -127,6 +147,7 @@ int select_file_spec (void) {
 
 		int y = 2;
 		int idx = first_line_to_display;
+		int prev_mouse_selected = 0xff;
 
 		while (y < 22) {
 			if (idx >= dir.n_files) break;
@@ -213,6 +234,7 @@ int select_file_spec (void) {
 					cursor = strlen (user_input);
 				}
 				editing = 0;
+				enable_mouse = 0;
 			}
 
 			if (key == KEY_DOWN) {
@@ -224,9 +246,11 @@ int select_file_spec (void) {
 					cursor = strlen (user_input);
 				}
 				editing = 0;
+				enable_mouse = 0;
 			}
 
-			if (key == KEY_RETURN) {
+			if (key == KEY_RETURN || (buf_get_mouse_b(1) && enable_mouse)) {
+				enable_mouse = 0;
 				tinydir_file file;
 				tinydir_readfile_n (&dir, &file, selected_file);
 

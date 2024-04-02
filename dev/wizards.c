@@ -52,6 +52,8 @@ WIZARD_FIELD fields_talk [] = {
 	{ "-", 0, 0, 0, 0, 0 }
 };
 
+int success;
+
 char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	int i = 0;
 	int handle_i = 0;
@@ -208,6 +210,7 @@ char *wizards_zones (char *line) {
 }
 
 char *wizards_parse (char *line) {
+	success = 0;
 	lstui_reset ();
 
 	parse_to_tokens (line);
@@ -219,36 +222,49 @@ char *wizards_parse (char *line) {
 	// Find which wizard should we fire up
 	if (strcmp (arg, "config") == 0) {
 		if (strcmp (cmd, "bg") == 0) {
-			return wizards_bg (line);
+			line = wizards_bg (line);
+			success = 1;
 		
 		} else if (strcmp (cmd, "menu") == 0) {
-			return wizards_menu (line);
+			line = wizards_menu (line);
+			success = 1;
 
 		} else if (strcmp (cmd, "talk") == 0) {
-			return wizards_talk (line);
+			line = wizards_talk (line);
+			success = 1;
 
 		} else if (strcmp (cmd, "tb") == 0) {
-			return wizards_tb (line);
+			line = wizards_tb (line);
+			success = 1;
 
 		} else if (strcmp (cmd, "resp") == 0) {
-			return wizards_resp (line);
+			line = wizards_resp (line);
+			success = 1;
 
 		} else if (strcmp (cmd, "interface") == 0) {
-			return wizards_interface (line);
+			line = wizards_interface (line);
+			success = 1;
 
 		}
 	} else if (strcmp (cmd, "infobar") == 0) {
-		return wizards_infobar (line);
+		line = wizards_infobar (line);
+		success = 1;
 
 	} else if (strcmp (cmd, "indicator") == 0) {
-		return wizards_indicator (line);
+		line = wizards_indicator (line);
+		success = 1;
 
 	} else if (strcmp (cmd, "zones") == 0 && strcmp (arg, "def") == 0) {
-		return wizards_zones (line);
+		line = wizards_zones (line);
+		success = 1;
 
 	}
 
 	lstui_shutdown ();
 
 	return line;
+}
+
+int wizards_succeeded (void) {
+	return success;
 }

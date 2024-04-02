@@ -198,6 +198,7 @@ int mousex( void );
 int mousey( void );
 int mouserelx( void );
 int mouserely( void );
+int mousewheel ( void );
 
 #endif /* dos_h */
 
@@ -445,6 +446,7 @@ struct internals_t {
         int mouse_y;
         int mouse_relx;
         int mouse_rely;
+        int mouse_wheel_delta;
     } input;
 
     struct {
@@ -1752,6 +1754,11 @@ int mouserelx( void ) {
 
 int mouserely( void ) {
     return internals->input.mouse_rely;
+}
+
+
+int mousewheel (void) {
+    return internals->input.mouse_wheel_delta;
 }
 
 
@@ -3214,6 +3221,7 @@ static int app_proc( app_t* app, void* user_data ) {
         memset( chars, 0, sizeof( chars ) );
         float relx = 0;
         float rely = 0;
+        float wheelclicks = 0;
         app_input_t input = app_input( app );
         for( int i = 0; i < input.count; ++i ) {
             app_input_event_t* event = &input.events[ i ];
@@ -3257,10 +3265,13 @@ static int app_proc( app_t* app, void* user_data ) {
             } else if( event->type  == APP_INPUT_MOUSE_DELTA ) {
                 relx += event->data.mouse_delta.x;
                 rely += event->data.mouse_delta.y;
+            } else if (event->type == APP_INPUT_SCROLL_WHEEL ) {
+                wheelclicks = event->data.wheel_delta;
             }
         }
         internals->input.mouse_relx = (int)relx;
         internals->input.mouse_rely = (int)rely;
+        internals->input.mouse_wheel_delta = (int) wheelclicks;
 
         // Check if the close button on the window was clicked (or Alt+F4 was pressed)
         if( app_state == APP_STATE_EXIT_REQUESTED ) {

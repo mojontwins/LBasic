@@ -55,7 +55,6 @@ void parse_to_tokens (char *string) {
 
 	char *pt = string;
 	char cur_char;
-	int i;
 
 	cur_token = 0;
 	int cur_index = 0;
@@ -65,10 +64,11 @@ void parse_to_tokens (char *string) {
 	int was_whitespace = 1;
 
 	// Clear first
-	for (i = 0; i < MAX_TOKENS; i ++) {
+	for (int i = 0; i < MAX_TOKENS; i ++) {
 		tokens [i][0] = 0;
 	}
 
+	int i = 0;
 	do {
 		cur_char = *pt ++;
 
@@ -107,6 +107,55 @@ void parse_to_tokens (char *string) {
 		}
 
 		if (cur_token == MAX_TOKENS) break;
+		i ++;
+	} while (cur_char != 0);
+}
+
+void parse_to_tokens_plain (char *string) {
+	if (is_initialized == 0) {
+		lstokens_init ();
+	}
+
+	char *pt = string;
+	char cur_char;
+
+	cur_token = 0;
+	int cur_index = 0;
+
+	int was_whitespace = 1;
+
+	// Clear first
+	for (int i = 0; i < MAX_TOKENS; i ++) {
+		tokens [i][0] = 0;
+	}
+
+	int i = 0;
+	do {
+		cur_char = *pt ++;
+
+		if (cur_char == 0 || cur_char == '\r' || cur_char == '\n' || cur_char == ' ' || cur_char == '\t') {
+			if (cur_index > 0) {
+				tokens [cur_token][cur_index] = 0;
+				cur_index = 0;
+				cur_token ++;
+			}
+			was_whitespace = 1;
+
+		} else {
+			if (was_whitespace) {
+				was_whitespace = 0;
+				indexes [cur_token] = i;
+			}
+
+			tokens [cur_token][cur_index ++] = cur_char;
+			if (cur_index == TOKEN_MAX_LENGTH) {
+				tokens [cur_token ++][cur_index - 1] = 0;
+				cur_index = 0;
+			}			
+		}
+
+		if (cur_token == MAX_TOKENS) break;
+		i ++;
 	} while (cur_char != 0);
 }
 

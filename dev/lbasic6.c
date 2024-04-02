@@ -22,6 +22,7 @@
 #include "wizards.h"
 
 int menu_x [] = { 0, 9, 18, 27, 38 };
+int menu_f [] = { 7, 16, 25, 36, 45 };
 
 char menu_opt1 [] = " Editar ";
 char menu_opt2 [] = " Cargar ";
@@ -160,6 +161,22 @@ int menu (void) {
 
 		if (keys & MT_KEY_ENTER) {
 			menu_on = 0;
+		}
+
+		// Mouse
+
+		int x = buf_get_mouse_x ();
+		int y = buf_get_mouse_y ();
+		if (y == 0) {
+			for (int i = 0; i < 5; i ++) {
+				if (x >= menu_x [i] && x <= menu_f [i]) {
+					option = i; break;
+				}
+			}
+
+			if (buf_get_mouse_b (1) && x <= menu_f [4]) {
+				menu_on = 0;
+			}
 		}
 
 		waitvbl ();
@@ -387,7 +404,7 @@ void display_editor_lines (int cursor) {
 	}
 }
 
-void wizard_config_command (void) {
+int wizard_config_command (void) {
 	unsigned char *line_pointer;
 
 	line_pointer = editor_lines [editor_current_line];
@@ -397,6 +414,8 @@ void wizard_config_command (void) {
 
 	// In case we realloc'ed this is mandatory
 	editor_lines [editor_current_line] = line_pointer;
+
+	return wizards_succeeded ();
 }
 
 void wizard_text_insert (int *cursor, int draw) {
@@ -670,7 +689,22 @@ int editor (void) {
 					break;
 
 				case '\t':
-					wizard_config_command ();
+					if (!wizard_config_command ()) {
+						// Insert 4 spaces
+						line_pointer = realloc (line_pointer, (line_length + 5) * sizeof (char));
+						editor_lines [editor_current_line] = line_pointer;
+
+						for (int j = 0; j < 4; j ++) {
+							for (int i = line_length; i >= cursor; i --) {
+								line_pointer [i + 1] = line_pointer [i];
+							}
+
+							line_pointer [cursor] = ' ';					
+							cursor ++;
+						}
+
+						needs_saving = 1;
+					}
 					break;
 
 				case 27:
@@ -684,25 +718,81 @@ int editor (void) {
 		while (*keys) {
 			unsigned long long key = (unsigned long long) *keys;
 
-			if (key == KEY_LEFT) {
-				if (cursor > 0) cursor --;
-			}
+			if (keystate (KEY_CONTROL)) {
+				if (key == KEY_LEFT) {
+					// Find previous space in line, put the cursor behind
+					parse_to_tokens_plain (line_pointer);
+					int n = get_num_tokens ();
+					
+					for (int i = n - 1; i >= 0; i ++) {
+						if (cursor > get_index (i)) {
+							cursor = get_index (i);
+							break;
+						}
+					}
+				}
 
-			if (key == KEY_RIGHT) {
-				if (cursor < strlen (line_pointer)) cursor ++;
-			}
+				if (key == KEY_RIGHT) {
+					// Find the next non space in line, put the cursor there
+					parse_to_tokens_plain (line_pointer);
+					int n = get_num_tokens ();
 
-			if (key == KEY_UP) {
-				if (editor_current_line > 0) {
-					editor_next_line = editor_current_line - 1;
+					for (int i = 0; i < n; i ++) {
+						if (cursor < get_index (i)) {
+							cursor = get_index (i);
+							break;
+						}
+					}
+				}
+
+				if (key == KEY_UP) {
+					// Move up within current line;
+					cursor -= 80; if (cursor < 0) cursor = 0;
+				}
+
+				if (key == KEY_DOWN) {
+					// Move down within current line;
+					cursor += 80; if (cursor > strlen(line_pointer)) cursor = strlen (line_pointer);
+				}
+
+				if (key == KEY_HOME) {
+					editor_current_line = 0;
 					line_change = 1;
 				}
-			}
 
-			if (key == KEY_DOWN) {
-				if (editor_current_line < editor_last_line) {
-					editor_next_line = editor_current_line + 1;
+				if (key == KEY_END) {
+					editor_current_line = editor_last_line;
 					line_change = 1;
+				}
+			} else {
+				if (key == KEY_LEFT) {
+					if (cursor > 0) cursor --;
+				}
+
+				if (key == KEY_RIGHT) {
+					if (cursor < strlen (line_pointer)) cursor ++;
+				}
+
+				if (key == KEY_UP) {
+					if (editor_current_line > 0) {
+						editor_next_line = editor_current_line - 1;
+						line_change = 1;
+					}
+				}
+
+				if (key == KEY_DOWN) {
+					if (editor_current_line < editor_last_line) {
+						editor_next_line = editor_current_line + 1;
+						line_change = 1;
+					}
+				}
+
+				if (key == KEY_HOME) {
+					cursor = 0;
+				}
+
+				if (key == KEY_END) {
+					cursor = strlen (line_pointer);
 				}
 			}
 

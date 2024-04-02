@@ -83,11 +83,13 @@ La función que hay que resuelve flags me sigue valiendo para "rvalue", pero no 
 	[ ] Go 
 	[X] Print 
 	[ ] Color 
+	[ ] TUI Based for stuff with many parameters
 [X] RUN / RUN FROM / NEW
 [X] Editor DRAW
 [ ] Editor bulma draw (LIN)
 [ ] Editor zones->código
 [ ] Auto-generar etiquetas para zones->run
-[ ] AV PAG / RE PAG / HOME / END
+[/] AV PAG / RE PAG / HOME / END / CTRL + arrows
 [X] A veces se salva mal (creo que mezcla `\n` con `\r\n`), revisar. Cuando cargas->editas->grabas. En HEX EDITOR veo DOS \r... -> Grabar en binario
 [X] Syntax no saca los textos entre comillas hasta que se cierran
+[ ] Hacer que el ratón funcione en el menú superior
