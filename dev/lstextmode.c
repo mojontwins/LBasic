@@ -108,6 +108,10 @@ int buf_get_mouse_b (int button) {
 	return 0;
 }
 
+int buf_get_mouse_wheel (void) {
+	return mousewheel ();
+}
+
 int buf_to_char_coords_x (int x) {
 	return x >> 3;
 }

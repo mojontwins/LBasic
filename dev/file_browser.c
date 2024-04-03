@@ -14,6 +14,9 @@
 #endif
 #include "tinydir.h"
 
+#define MOVE_FILE_CURSOR_UP 1
+#define MOVE_FILE_CURSOR_DOWN 2
+
 char *file_spec = NULL;
 void clear_file_spec (void) {
 	free (file_spec);
@@ -72,6 +75,7 @@ int select_file_spec (void) {
 	user_input [0] = 0;
 	int editing = 0;
 	int enable_mouse = 0;
+	int move_file_cursor;
 
 	if (file_spec == NULL) {
 		// Get cwd from exe location
@@ -98,6 +102,8 @@ int select_file_spec (void) {
 	int my = buf_get_mouse_y ();
 
 	while (!done && !buf_heartbeat()) {
+		move_file_cursor = 0;
+
 		if (enable_mouse == 0) {
 			int cmx = buf_get_mouse_x ();
 			int cmy = buf_get_mouse_y ();
@@ -113,6 +119,13 @@ int select_file_spec (void) {
 			if (my >= 2 && my < 22) {
 				selected_file = first_line_to_display + my - 2;
 			}
+		}
+
+		int w = buf_get_mouse_wheel ();
+		if (w > 0) {
+			move_file_cursor = MOVE_FILE_CURSOR_UP;
+		} else if (w < 0) {
+			move_file_cursor = MOVE_FILE_CURSOR_DOWN;
 		}
 
 		if (new_path) {
@@ -226,27 +239,11 @@ int select_file_spec (void) {
 			unsigned long long key = (unsigned long long) *keys;
 
 			if (key == KEY_UP) {
-				if (selected_file > 0) selected_file --;
-				tinydir_file file;
-				tinydir_readfile_n (&dir, &file, selected_file);
-				if (!file.is_dir) {
-					strcpy (user_input, file.name);
-					cursor = strlen (user_input);
-				}
-				editing = 0;
-				enable_mouse = 0;
+				move_file_cursor = MOVE_FILE_CURSOR_UP;
 			}
 
 			if (key == KEY_DOWN) {
-				if (selected_file < dir.n_files - 1) selected_file ++;
-				tinydir_file file;
-				tinydir_readfile_n (&dir, &file, selected_file);
-				if (!file.is_dir) {
-					strcpy (user_input, file.name);
-					cursor = strlen (user_input);
-				}
-				editing = 0;
-				enable_mouse = 0;
+				move_file_cursor = MOVE_FILE_CURSOR_DOWN;
 			}
 
 			if (key == KEY_RETURN || (buf_get_mouse_b(1) && enable_mouse)) {
@@ -295,6 +292,30 @@ int select_file_spec (void) {
 			}
 
 			keys ++;
+		}
+
+		if (move_file_cursor == MOVE_FILE_CURSOR_UP) {
+			if (selected_file > 0) selected_file --;
+			tinydir_file file;
+			tinydir_readfile_n (&dir, &file, selected_file);
+			if (!file.is_dir) {
+				strcpy (user_input, file.name);
+				cursor = strlen (user_input);
+			}
+			editing = 0;
+			enable_mouse = 0;
+		}
+
+		if (move_file_cursor == MOVE_FILE_CURSOR_DOWN) {
+			if (selected_file < dir.n_files - 1) selected_file ++;
+			tinydir_file file;
+			tinydir_readfile_n (&dir, &file, selected_file);
+			if (!file.is_dir) {
+				strcpy (user_input, file.name);
+				cursor = strlen (user_input);
+			}
+			editing = 0;
+			enable_mouse = 0;
 		}
 
 	}

@@ -56,6 +56,9 @@ int needs_saving;			// Altered loaded program
 int last_option = 0;
 int first_line_to_display;
 
+int mouse_over_line;
+int mouse_over_line_y;
+
 char *keywords [] = {
 	"cursor", "setxy", "print", "write", "center", "color", "pause", "beep",
 	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins",
@@ -334,7 +337,9 @@ void syntax_hightlight (int bkg, unsigned char *s) {
 	}
 }
 
-void display_editor_lines (int cursor) {
+int display_editor_lines (int cursor) {
+	mouse_over_line = -1;
+
 	buf_color (7, 0);
 	buf_clscroll ();
 
@@ -369,6 +374,8 @@ void display_editor_lines (int cursor) {
 	if (editor_current_line < 0) return;
 	char *line_pointer = editor_lines [editor_current_line];
 
+	int mouse_y = buf_get_mouse_y ();
+
 	while (1) {
 		int line_no = first_line_to_display + i;
 		int bkg = line_no & 1 ? 8 : 0;
@@ -396,12 +403,20 @@ void display_editor_lines (int cursor) {
 			}
 		}
 
+		// Detect mouse
+		if (mouse_y < 24 && mouse_y > y) {
+			mouse_over_line = line_no;
+			mouse_over_line_y = y;
+		}
+
 		y += 1 + strlen (editor_lines [line_no]) / 80;
 
 		if (y > lastline) break;
 
 		i ++;
 	}
+
+	return 1;
 }
 
 int wizard_config_command (void) {
@@ -528,7 +543,10 @@ void wizard_text_insert (int *cursor, int draw) {
 }
 
 void editor_top () {
-	menu_show ();
+	buf_setxy (0, 0);
+	buf_color (7, 1);
+	buf_print_abs (" Editar                                             (C) LBasic Legacy 1994-2024 ");
+
 	buf_color (9, 7);
 	buf_setxy (menu_x [0], 0);
 	buf_print_abs (menu_opt [0]);
@@ -557,10 +575,14 @@ int editor (void) {
 
 	int editor_next_line = editor_n_lines;
 
+	editor_top ();
 	editor_bottom ();
 
 	int editing = 1;
 	while (editing) {
+
+		// Display	
+		display_editor_lines (cursor);
 
 		if (new_line) {
 			// Add new line.
@@ -834,12 +856,35 @@ int editor (void) {
 			++keys;
 		}
 
-		// Display
-		display_editor_lines (cursor);
+		// Mouse
+		if (buf_get_mouse_b (1) && mouse_over_line != -1) {
+			editor_next_line = mouse_over_line;
+
+			// Calculate where within line
+			int y_within_line = buf_get_mouse_y () - mouse_over_line_y;
+			cursor = y_within_line * 80 + buf_get_mouse_x ();
+			if (cursor > strlen (line_pointer)) cursor = strlen (line_pointer);
+
+			line_change = 1;
+		}
+
+		int w = buf_get_mouse_wheel ();
+		if (w > 0) {
+			if (editor_current_line > 0) {
+				editor_next_line = editor_current_line - 1;
+				line_change = 1;
+			}
+		} else if (w < 0) {
+			if (editor_current_line < editor_last_line) {
+				editor_next_line = editor_current_line + 1;
+				line_change = 1;
+			}
+		}
 
 		waitvbl ();
 	}
 
+	menu_show ();
 }
 
 void dialog_program_not_present (void) {

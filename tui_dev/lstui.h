@@ -139,6 +139,8 @@ int lstui_reset (void) {
 	if (controls_number) lstui_shutdown ();
 	controls_number = 0;
 	controls = NULL;
+	left_click_was = 1;
+	right_click_was = 1;
 }
 
 int lstui_add (LSTUI_CONTROL c) {
@@ -290,6 +292,8 @@ int lstui_shutdown (void) {
 		lstui_free (controls [i]);
 	}
 	free (controls);
+
+	controls_number = 0;
 
 	return 1;
 }
