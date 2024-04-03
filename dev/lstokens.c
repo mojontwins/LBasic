@@ -109,6 +109,7 @@ void parse_to_tokens (char *string) {
 		if (cur_token == MAX_TOKENS) break;
 		i ++;
 	} while (cur_char != 0);
+	indexes [cur_token] = i;
 }
 
 void parse_to_tokens_plain (char *string) {
@@ -157,6 +158,7 @@ void parse_to_tokens_plain (char *string) {
 		if (cur_token == MAX_TOKENS) break;
 		i ++;
 	} while (cur_char != 0);
+	indexes [cur_token] = i;
 }
 
 void parse_to_tokens_whitespace (char *string) {

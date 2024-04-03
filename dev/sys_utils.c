@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "sys_utils.h"
 
 /*
@@ -28,6 +29,19 @@ int utils_adjust_coords (int coord, int min, int max) {
 	if (coord < min) return min;
 	if (coord > max) return max;
 	return coord;
+}
+
+char *strndup (char *str, size_t chars) {
+    char *buffer;
+    int n;
+
+    buffer = (char *) malloc (chars + 1);
+    if (buffer) {
+        for (n = 0; n < chars && str[n] != 0; n++) buffer [n] = str [n];
+        buffer [n] = 0;
+    }
+
+    return buffer;
 }
 
 /*

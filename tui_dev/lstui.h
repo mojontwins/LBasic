@@ -279,13 +279,13 @@ int lstui_num_controls (void) {
 }
 
 int lstui_free (LSTUI_CONTROL c) {
-	free (c.input);
 	free (c.data);
 	return 1;
 }
 
 int lstui_shutdown (void) {
 	if (controls == NULL) return 0;
+
 	for (int i = 0; i < controls_number; i ++) {
 		lstui_free (controls [i]);
 	}

@@ -63,6 +63,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	int ow = 0;
 	int oh;
 
+	// TODO : PREFILL CONTROLS WITH EXISTING DATA!
 	while (fields [i].caption [0] != '-') {
 		if (fields [i].caption [0] == '#') {
 			// Initial box & setup
@@ -121,6 +122,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 	int done = 0;
 	int rehash_line = 0;
+	
 	while (!shuttingdown () && !done) {
 		lstui_do ();
 		if (lstui_get_signal () & LSTUI_SIGNAL_ESC) { done = 1; }
@@ -133,7 +135,10 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	if (rehash_line) {
 		// First trim to header:
 		// THIS bit is not working!
-		line [get_index (token_from)] = 0;
+		int l = get_index (token_from);
+		char *temp_line = strndup (line, l);
+		free (line);
+		line = temp_line;
 
 		// Make new line
 		for (int i = 0; i < handle_i; i ++) {
@@ -150,10 +155,12 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 					break;
 
 				case CONTROL_TYPE_BYNAME:
-					// Increase allocated: 1 byte (SPACE) + name length + 1 (null)
-					line = realloc (line, strlen (line) + 1 + strlen (fields [control_indexes [i]].caption) - 1 + 1);
-					strcat (line, " ");
-					strcat (line, fields [control_indexes [i]].caption + 1);
+					if (lstui_getstate (handle)) {
+						// Increase allocated: 1 byte (SPACE) + name length + 1 (null)
+						line = realloc (line, strlen (line) + 1 + strlen (fields [control_indexes [i]].caption) - 1 + 1);
+						strcat (line, " ");
+						strcat (line, fields [control_indexes [i]].caption + 1);
+					}
 					break;
 
 				case CONTROL_TYPE_STRING:
