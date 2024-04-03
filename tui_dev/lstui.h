@@ -67,6 +67,7 @@ int lstui_getstate (int control);
 void lstui_setstate (int control, int state);
 char *lstui_getdata (int control);
 void lstui_setdata (int control, char *data);
+void lstui_copydata (int control, char *data);
 int lstui_gettype (int control);
 int lstui_num_controls (void);
 int lstui_get_signal (void);
@@ -270,6 +271,10 @@ char *lstui_getdata (int control) {
 
 void lstui_setdata (int control, char *data) {
 	controls [control].data = data;
+}
+
+void lstui_copydata (int control, char *data) {
+	if (controls [control].data) strcpy (controls [control].data, data);
 }
 
 int lstui_gettype (int control) {

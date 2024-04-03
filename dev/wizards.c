@@ -20,26 +20,26 @@ typedef struct WIZARD_FIELD {
 } WIZARD_FIELD;
 
 WIZARD_FIELD fields_bg [] = {
-	{ "#bg config", 0, 0, 40, 5, CONTROL_TYPE_DISPLAY },
+	{ "bg config", 0, 0, 40, 5, CONTROL_TYPE_DISPLAY },
 	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Y", 18, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "-", 0, 0, 0, 0, 0 }
 };
 
 WIZARD_FIELD fields_menu [] = {
-	{ "#menu config", 0, 0, 40, 9, CONTROL_TYPE_DISPLAY },
+	{ "menu config", 0, 0, 40, 9, CONTROL_TYPE_DISPLAY },
 	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Y", 12, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Width", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Color 1", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Color 2", 18, 2, 2, 2, CONTROL_TYPE_BYVAL },
-	{ "?fixed", 0, 4, 0, 0, CONTROL_TYPE_BYNAME },
-	{ "?noframe", 20, 4, 0, 0, CONTROL_TYPE_BYNAME },
+	{ "fixed", 0, 4, 0, 0, CONTROL_TYPE_BYNAME },
+	{ "noframe", 20, 4, 0, 0, CONTROL_TYPE_BYNAME },
 	{ "-", 0, 0, 0, 0, 0 } 
 };
 
 WIZARD_FIELD fields_talk [] = {
-	{ "#talk config", 0, 0, 40, 11, CONTROL_TYPE_DISPLAY },
+	{ "talk config", 0, 0, 40, 11, CONTROL_TYPE_DISPLAY },
 	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Y", 12, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Width", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
@@ -65,7 +65,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 	// TODO : PREFILL CONTROLS WITH EXISTING DATA!
 	while (fields [i].caption [0] != '-') {
-		if (fields [i].caption [0] == '#') {
+		if (fields [i].type == CONTROL_TYPE_DISPLAY) {
 			// Initial box & setup
 			ow = fields [i].width;
 			oh = fields [i].text_width + 4;
@@ -77,20 +77,20 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 			);
 
 			lstui_add (
-				lstui_caption (ox + 1, oy + 1, ow - 2, 14, 0, LSTUI_ALIGN_CENTER, fields [i].caption + 1)
+				lstui_caption (ox + 1, oy + 1, ow - 2, 14, 0, LSTUI_ALIGN_CENTER, fields [i].caption)
 			);
 
 			ox += 2; oy += 3;
 
-		} else if (fields [i].caption [0] == '?') {
+		} else if (fields [i].type == CONTROL_TYPE_BYNAME) {
 			// Add a checkbox
 			control_handles [handle_i] = lstui_add (
-				lstui_checkbox (ox + fields [i].rx, oy + fields [i].ry, fields [i].caption + 1)
+				lstui_checkbox (ox + fields [i].rx, oy + fields [i].ry, fields [i].caption)
 			);
 			control_indexes [handle_i] = i;
 
 			if (strlen (get_token (token_n))) {
-				lstui_setstate (control_handles [i], 1);
+				lstui_setstate (control_handles [handle_i], 1);
 			}
 
 			handle_i ++; token_n ++;
@@ -105,6 +105,9 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 				lstui_input (ox + fields [i].rx + 1 + strlen (fields [i].caption), oy + fields [i].ry, fields [i].width, fields [i].text_width, get_token (token_n))
 			);
 			control_indexes [handle_i] = i;
+			if (token_n < get_num_tokens ()) {
+				lstui_copydata (control_handles [handle_i], get_token (token_n));
+			}
 
 			handle_i ++; token_n ++;
 		}
@@ -122,7 +125,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 	int done = 0;
 	int rehash_line = 0;
-	
+
 	while (!shuttingdown () && !done) {
 		lstui_do ();
 		if (lstui_get_signal () & LSTUI_SIGNAL_ESC) { done = 1; }
