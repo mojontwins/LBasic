@@ -70,7 +70,7 @@ void lstui_setdata (int control, char *data);
 void lstui_copydata (int control, char *data);
 int lstui_gettype (int control);
 int lstui_num_controls (void);
-int lstui_get_signal (void);
+int lstui_get_signal (int reset);
 
 // Configure theme (lame)
 
@@ -110,8 +110,10 @@ int left_click_was = 0;
 int right_click_was = 0;
 int lstui_signal;
 
-int lstui_get_signal (void) {
-	return lstui_signal;
+int lstui_get_signal (int reset) {
+	int signal = lstui_signal;
+	if (reset) lstui_signal = 0;
+	return signal;
 }
 
 int get_mouse_x (void) {

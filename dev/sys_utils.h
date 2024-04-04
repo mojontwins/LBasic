@@ -9,6 +9,7 @@ void utils_tolower (char *s);
 void utils_nospaces (char *s);
 int utils_adjust_coords (int coord, int min, int max);
 char *strndup (char *str, size_t chars);
+void rtrim (char *str);
 
 /*
  * FLAGS

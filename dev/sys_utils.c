@@ -44,6 +44,12 @@ char *strndup (char *str, size_t chars) {
     return buffer;
 }
 
+void rtrim (char *str) {
+	int n = strlen (str);
+	while (n >= 0 && str [n] <= ' ') n --;
+	str [n + 1] = 0; 
+}
+
 /*
  * FLAGS
  */

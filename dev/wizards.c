@@ -128,7 +128,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 	while (!shuttingdown () && !done) {
 		lstui_do ();
-		if (lstui_get_signal () & LSTUI_SIGNAL_ESC) { done = 1; }
+		if (lstui_get_signal (1) & LSTUI_SIGNAL_ESC) { done = 1; }
 		if (lstui_getstate (button_cancel) & LSTUI_STATE_CLICKED) { done = 1; }
 		if (lstui_getstate (button_ok) & LSTUI_STATE_CLICKED) { done = 1; rehash_line = 1; }
 
@@ -140,6 +140,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 		// THIS bit is not working!
 		int l = get_index (token_from);
 		char *temp_line = strndup (line, l);
+		rtrim (temp_line);
 		free (line);
 		line = temp_line;
 
@@ -162,7 +163,7 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 						// Increase allocated: 1 byte (SPACE) + name length + 1 (null)
 						line = realloc (line, strlen (line) + 1 + strlen (fields [control_indexes [i]].caption) - 1 + 1);
 						strcat (line, " ");
-						strcat (line, fields [control_indexes [i]].caption + 1);
+						strcat (line, fields [control_indexes [i]].caption);
 					}
 					break;
 

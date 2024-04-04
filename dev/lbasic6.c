@@ -36,6 +36,9 @@ char menu_opt5 [] = " Borrar ";
 #define OPTION_RUN 3
 #define OPTION_DEL 4
 
+#define SCROLL_DIRECTION_UP 1
+#define SCROLL_DIRECTION_DOWN 2
+
 char *menu_opt [] = { menu_opt1, menu_opt2, menu_opt3, menu_opt4, menu_opt5 };
 
 char menu_help1 [] = " Para hacer un programa                  ";
@@ -62,7 +65,7 @@ int mouse_over_line_y;
 char *keywords [] = {
 	"cursor", "setxy", "print", "write", "center", "color", "pause", "beep",
 	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins",
-	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", "menu", "items",
+	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", "menu", "items", "exits", 
 	"wwc", "fancy_cls", "tb", "tbwc", "bg", "zones", "pix",
 	NULL
 };
@@ -169,7 +172,7 @@ int menu (void) {
 		// Mouse
 
 		int x = buf_get_mouse_x ();
-		int y = buf_get_mouse_y ();
+		int y = mousey (); //buf_get_mouse_y ();
 		if (y == 0) {
 			for (int i = 0; i < 5; i ++) {
 				if (x >= menu_x [i] && x <= menu_f [i]) {
@@ -337,18 +340,20 @@ void syntax_hightlight (int bkg, unsigned char *s) {
 	}
 }
 
-int display_editor_lines (int cursor) {
-	mouse_over_line = -1;
+int display_editor_lines (int cursor, int scroll_until_no) {
 
 	buf_color (7, 0);
 	buf_clscroll ();
 
-	if (editor_lines == NULL) return;
+	if (editor_lines == NULL) return 0;
 
 	int y = 1;
 	int i = 0;
 	int cur_line_rendered = 0;
 	int lastline = 23;
+	int res = 0;
+	
+	mouse_over_line = -1;
 
 	// do a 1st pass to make sure current line is on display
 	while (1) {
@@ -380,11 +385,14 @@ int display_editor_lines (int cursor) {
 		int line_no = first_line_to_display + i;
 		int bkg = line_no & 1 ? 8 : 0;
 
+		// Used for AV PAG / RE PAG: true if line is displayed
+		if (line_no == scroll_until_no) res = 1;
+
 		if (line_no > editor_last_line) break;
 		
 		buf_setxy (0, y);
 		buf_color (7, bkg);
-		//buf_print_abs (editor_lines [line_no]);
+
 		syntax_hightlight (bkg, editor_lines [line_no]);
 
 		// Draw cursor?
@@ -416,7 +424,7 @@ int display_editor_lines (int cursor) {
 		i ++;
 	}
 
-	return 1;
+	return res;
 }
 
 int wizard_config_command (void) {
@@ -561,19 +569,37 @@ void editor_bottom () {
 	debuff_keys ();	
 }
 
+char *insert_char (char *line_pointer, int cursor, unsigned char c) {
+	// Insert a new character (end / middle)
+	int line_length = strlen (line_pointer);
+	
+	// Increment buffer size, move right part right 1 char, insert
+
+	line_pointer = realloc (line_pointer, (line_length + 2) * sizeof (char));
+	editor_lines [editor_current_line] = line_pointer;
+
+	for (int i = line_length; i >= cursor; i --) {
+		line_pointer [i + 1] = line_pointer [i];
+	}
+
+	line_pointer [cursor] = c;
+	return line_pointer;
+}
+
 int editor (void) {
 	// File is already loaded.
 	int new_line = 1;
 	int line_change = 0;
 	int delete_line = 0;
 	
-	int line_length;
 	int cursor = -1;
 	char *line_pointer = NULL;
 	unsigned char c;
 	char info_buf [16];
 
 	int editor_next_line = editor_n_lines;
+	int scroll_until_no = -1;
+	int scroll_direction = 0;
 
 	editor_top ();
 	editor_bottom ();
@@ -582,7 +608,34 @@ int editor (void) {
 	while (editing) {
 
 		// Display	
-		display_editor_lines (cursor);
+		int displayed_no = display_editor_lines (cursor, scroll_until_no);
+
+
+
+		if (scroll_direction) {
+			if (displayed_no) {
+				if (scroll_direction == SCROLL_DIRECTION_DOWN) {
+					if (editor_current_line == editor_last_line) {
+						scroll_direction = 0;
+						scroll_until_no = -1;
+					} else {
+						editor_next_line = editor_current_line + 1;
+						line_change = 1;
+					}
+				} else if(scroll_direction == SCROLL_DIRECTION_UP) {
+					if (editor_current_line == 0) {
+						scroll_direction = 0;
+						scroll_until_no = -1;
+					} else {
+						editor_next_line = editor_current_line - 1;
+						line_change = 1;
+					}
+				}
+			} else {
+				scroll_direction = 0;
+				scroll_until_no = -1;
+			}
+		}
 
 		if (new_line) {
 			// Add new line.
@@ -672,21 +725,9 @@ int editor (void) {
 		c = get_character_input (chars);
 
 		if (c >= ' ') {
-			// Insert a new character (end / middle)
-			line_length = strlen (line_pointer);
-			
-			// Increment buffer size, move right part right 1 char, insert
-
-			line_pointer = realloc (line_pointer, (line_length + 2) * sizeof (char));
-			editor_lines [editor_current_line] = line_pointer;
-
-			for (int i = line_length; i >= cursor; i --) {
-				line_pointer [i + 1] = line_pointer [i];
-			}
-
-			line_pointer [cursor] = c;
-			needs_saving = 1;
+			insert_char (line_pointer, cursor, c);
 			cursor ++;			
+			needs_saving = 1;
 		} else {
 			switch (c) {
 				case 8:
@@ -713,18 +754,12 @@ int editor (void) {
 				case '\t':
 					if (!wizard_config_command ()) {
 						// Insert 4 spaces
-						line_pointer = realloc (line_pointer, (line_length + 5) * sizeof (char));
-						editor_lines [editor_current_line] = line_pointer;
-
-						for (int j = 0; j < 4; j ++) {
-							for (int i = line_length; i >= cursor; i --) {
-								line_pointer [i + 1] = line_pointer [i];
-							}
-
-							line_pointer [cursor] = ' ';					
+						
+						for (int i = 0; i < 4; i ++) {
+							line_pointer = insert_char (line_pointer, cursor, ' ');
 							cursor ++;
 						}
-
+						
 						needs_saving = 1;
 					}
 					break;
@@ -769,12 +804,12 @@ int editor (void) {
 
 				if (key == KEY_UP) {
 					// Move up within current line;
-					cursor -= 80; if (cursor < 0) cursor = 0;
+					cursor -= 80; if (cursor < 0) cursor = 0; // TODO: Jump to prev line?
 				}
 
 				if (key == KEY_DOWN) {
 					// Move down within current line;
-					cursor += 80; if (cursor > strlen(line_pointer)) cursor = strlen (line_pointer);
+					cursor += 80; if (cursor > strlen(line_pointer)) cursor = strlen (line_pointer); // TODO: Jump to next line?
 				}
 
 				if (key == KEY_HOME) {
@@ -825,10 +860,14 @@ int editor (void) {
 
 			if (key == KEY_PRIOR) {
 				// Up until current line disappears, or line 0, then set
+				scroll_until_no = editor_current_line;
+				scroll_direction = SCROLL_DIRECTION_UP;
 			}
 
 			if (key == KEY_NEXT) {
 				// Down until current line disappears, or last line, then set
+				scroll_until_no = editor_current_line;
+				scroll_direction = SCROLL_DIRECTION_DOWN;
 			}
 
 			if (key == KEY_F4) {
@@ -881,7 +920,7 @@ int editor (void) {
 			}
 		}
 
-		waitvbl ();
+		if(!scroll_direction) waitvbl ();
 	}
 
 	menu_show ();
@@ -967,7 +1006,7 @@ void main (char argc, char *argv []) {
 		}
 
 		debuff_keys ();
-		display_editor_lines (-1);
+		display_editor_lines (-1, -1);
 	}
 
 	clear_file_spec ();
