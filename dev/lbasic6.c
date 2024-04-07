@@ -64,9 +64,9 @@ int mouse_over_line_y;
 
 char *keywords [] = {
 	"cursor", "setxy", "print", "write", "center", "color", "pause", "beep",
-	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins",
-	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", "menu", "items", "exits", 
-	"wwc", "fancy_cls", "tb", "tbwc", "bg", "zones", "pix",
+	"cls", "draw", "choice", "viewport", "attempts", "statusbar", "margins", "interace",
+	"ww", "wordwrap", "ansibin", "mode", "pic", "cut", "lin", "sleep", "menu", "items", "exits",  "resp",
+	"wwc", "fancy_cls", "tb", "tbwc", "bg", "zones", "pix", "cbc", "extern", "music", "sound", "indicator", 
 	NULL
 };
 
@@ -813,12 +813,12 @@ int editor (void) {
 				}
 
 				if (key == KEY_HOME) {
-					editor_current_line = 0;
+					editor_next_line = 0;
 					line_change = 1;
 				}
 
 				if (key == KEY_END) {
-					editor_current_line = editor_last_line;
+					editor_next_line = editor_last_line;
 					line_change = 1;
 				}
 			} else {

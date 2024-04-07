@@ -10,6 +10,7 @@ int control_indexes [MAX_CONTROLS];
 #define CONTROL_TYPE_BYVAL 1
 #define CONTROL_TYPE_BYNAME 2
 #define CONTROL_TYPE_STRING 3
+#define CONTROL_TYPE_CAPTION 4
 
 typedef struct WIZARD_FIELD {
 	char caption [40];
@@ -45,12 +46,73 @@ WIZARD_FIELD fields_talk [] = {
 	{ "Width", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Color 1", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "Color 2", 18, 2, 2, 2, CONTROL_TYPE_BYVAL },
-	{ "Overlay GIF", 0, 4, 36, 200, CONTROL_TYPE_STRING },
-	{ "Ov. X", 0, 6, 2, 2, CONTROL_TYPE_BYVAL },
-	{ "Ov. Y", 12, 6, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Overlay GIF", 0, 4, 24, 200, CONTROL_TYPE_STRING },
+	{ "Ov. X", 0, 6, 3, 3, CONTROL_TYPE_BYVAL },
+	{ "Ov. Y", 12, 6, 3, 3, CONTROL_TYPE_BYVAL },
 	{ "Mask", 24, 6, 2, 2, CONTROL_TYPE_BYVAL },
 	{ "-", 0, 0, 0, 0, 0 }
 };
+
+WIZARD_FIELD fields_tb [] = {
+	{ "tb config", 0, 0, 40, 11, CONTROL_TYPE_DISPLAY },
+	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Y", 9, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Width", 18, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Height", 27, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Main Color 1", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Main Color 2", 18, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Title Color 1", 0, 4, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Title Color 2", 18, 4, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Frame color", 0, 6, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
+};
+
+WIZARD_FIELD fields_resp [] = {
+	{ "resp config", 0, 0, 40, 5, CONTROL_TYPE_DISPLAY },
+	{ "Y", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 1", 9, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 2", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
+};
+
+WIZARD_FIELD fields_interface [] = {
+	{ "interface config", 0, 0, 40, 7, CONTROL_TYPE_DISPLAY },
+	{ "Spec. GIF", 0, 0, 26, 200, CONTROL_TYPE_STRING },
+	{ "X", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Y", 12, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Mask", 24, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
+};
+
+WIZARD_FIELD fields_infobar [] = {
+	{ "infobar", 0, 0, 40, 5, CONTROL_TYPE_DISPLAY },
+	{ "Y", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 1", 9, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 2", 24, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
+};
+
+WIZARD_FIELD fields_indicator [] = {
+	{ "bg config", 0, 0, 40, 7, CONTROL_TYPE_DISPLAY },
+	{ "X", 0, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Y", 18, 0, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 1", 0, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "Color 2", 9, 2, 2, 2, CONTROL_TYPE_BYVAL },
+	{ "ASCII", 24, 2, 3, 3, CONTROL_TYPE_BYVAL },
+	{ "-", 0, 0, 0, 0, 0 }
+};
+
+WIZARD_FIELD fields_zones [] = {
+	{ "zones def", 0, 0, 40, 8, CONTROL_TYPE_DISPLAY },
+	{ "X1", 0, 0, 3, 4, CONTROL_TYPE_BYVAL },
+	{ "Y1", 9, 0, 3, 4, CONTROL_TYPE_BYVAL },
+	{ "X2", 18, 0, 3, 4, CONTROL_TYPE_BYVAL },
+	{ "Y2", 27, 0, 3, 4, CONTROL_TYPE_BYVAL },
+	{ "Special", 0, 2, 28, 200, CONTROL_TYPE_BYVAL },
+	{ "Enter `actions` or a `:label`", 0, 3, 0, 0, CONTROL_TYPE_CAPTION },
+	{ "-", 0, 0, 0, 0, 0 }
+};
+
 
 int success;
 
@@ -116,11 +178,11 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	}
 
 	int button_ok = lstui_add (
-		lstui_button (ox + 2, oy + oh - 8, 10, 3, "OK")
+		lstui_button (ox + 2, oy + oh - 7, 10, 3, "OK")
 	);
 
 	int button_cancel = lstui_add (
-		lstui_button (ox + ow - 16, oy + oh - 8, 10, 3, "Cancelar")
+		lstui_button (ox + ow - 16, oy + oh - 7, 10, 3, "Cancelar")
 	);
 
 	int done = 0;
@@ -197,26 +259,32 @@ char *wizards_talk (char *line) {
 }
 
 char *wizards_tb (char *line) {
+	line = create_form (fields_tb, 2, line);
 	return line;
 }
 
 char *wizards_resp (char *line) {
+	line = create_form (fields_resp, 2, line);
 	return line;
 }
 
 char *wizards_interface (char *line) {
+	line = create_form (fields_interface, 2, line);
 	return line;
 }
 
 char *wizards_infobar (char *line) {
+	line = create_form (fields_infobar, 1, line);
 	return line;
 }
 
 char *wizards_indicator (char *line) {
+	line = create_form (fields_indicator, 1, line);
 	return line;
 }
 
 char *wizards_zones (char *line) {
+	line = create_form (fields_zones, 2, line);
 	return line;
 }
 
