@@ -11,6 +11,7 @@ int control_indexes [MAX_CONTROLS];
 #define CONTROL_TYPE_BYNAME 2
 #define CONTROL_TYPE_STRING 3
 #define CONTROL_TYPE_CAPTION 4
+#define CONTROL_TYPE_COLOR_PICKER 5
 
 typedef struct WIZARD_FIELD {
 	char caption [40];
@@ -109,10 +110,9 @@ WIZARD_FIELD fields_zones [] = {
 	{ "X2", 18, 0, 3, 4, CONTROL_TYPE_BYVAL },
 	{ "Y2", 27, 0, 3, 4, CONTROL_TYPE_BYVAL },
 	{ "Special", 0, 2, 28, 200, CONTROL_TYPE_BYVAL },
-	{ "Enter `actions` or a `:label`", 0, 3, 0, 0, CONTROL_TYPE_CAPTION },
+	{ "\xC0\xD9[actions|:label]", 0, 3, 0, 0, CONTROL_TYPE_CAPTION },
 	{ "-", 0, 0, 0, 0, 0 }
 };
-
 
 int success;
 
@@ -144,6 +144,10 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 
 			ox += 2; oy += 3;
 
+		} else if (fields [i].type == CONTROL_TYPE_CAPTION) {
+			lstui_add (
+				lstui_caption (ox + fields [i].rx, oy + fields [i].ry, strlen (fields [i].caption), 7, 1, LSTUI_ALIGN_LEFT, fields [i].caption)
+			);
 		} else if (fields [i].type == CONTROL_TYPE_BYNAME) {
 			// Add a checkbox
 			control_handles [handle_i] = lstui_add (
@@ -286,6 +290,18 @@ char *wizards_indicator (char *line) {
 char *wizards_zones (char *line) {
 	line = create_form (fields_zones, 2, line);
 	return line;
+}
+
+char *color_picker (char *data) {
+	// Accessed when focusing a CONTROL_TYPE_COLOR_PICKER control
+	// Pass a pointer to the text box data.
+	// 1st parse to a number to do initialization.
+	// Then draw the 16 colours color picker.
+	// Then build a new string with the number and write to *data
+}
+
+char *wizards_color (char *line) {
+
 }
 
 char *wizards_parse (char *line) {
