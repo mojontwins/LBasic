@@ -20,6 +20,10 @@ int backend_get_break (void) {
 	return forced_break;
 }
 
+void backend_resetbreak (void) {
+	forced_break = 0;
+}
+
 char *compute_full_path (char *pathspec, char *filename) {
 	char *full_path = strdup (pathspec);
 	strcat (full_path, filename);
@@ -458,5 +462,9 @@ void backend_interface_off (void) {
 }
 
 void backend_interface_config (char *interface, int x, int y, int m) {
+	// NO OP
+}
+
+void backend_resetshuttingdown (void) {
 	// NO OP
 }

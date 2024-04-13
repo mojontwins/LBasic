@@ -74,6 +74,37 @@ let %cojin = 5, es más legible.
 ¡Implementar bien esto!
 La función que hay que resuelve flags me sigue valiendo para "rvalue", pero no para "lvalue".
 
+[ ] Control de la salida.
+
+GOAL: Poder detectar cuando el usuario quiere salir para mostrar un menú desde que el usuario pueda ofrecer al jugador salir sin más o grabar la partida.
+
+Lo suyo es que se saltara aun bloque especial (.999 por ejemplo, o .end, o configurable) al detectarse un ESC en determinados momentos o cuando se pulsa el X de la ventana.
+
+Problema 1: Cuando saltar.
+Problema 2: Dónde volver.
+
+Sobre 1:
+	* ESC en un submenú debería interrumpir el menú.
+	* ESC en el menú principal - SI
+	* ESC en "selecting zones" - SI
+	* ESC en menú zones debería interrumpir el menú.
+	* ESC en WT/Pause - SI
+
+	* Necesito modificar el dos-like para poder controlar completamente la detección de pulsar en X de la ventana - poder desactivar el estado por ejemplo si se decide no salir. --- `resetshuttingdown`
+
+Sobre 2:
+	* Mi primera idea es añadir un comando especial "LOC" que decide cuando empieza la localización actual y que funciona como una etiqueta dinámica a la que se volverá al terminar 999 si no hay un END explícito o al escribir RETLOC.
+
+PROBLEMA: He puesto hostias para resetear el flag interno de pulsar "X" en dos-like pero parece que no sirvió para nada, internamente lanza sus historias para cerrar ?
+
+[ ] SAVE / LOAD state - graba todo: 
+	* Bloque actual (#).
+	* Nombre de archivo ejecutándose.
+	* Posición de LOC.
+	* Todos los flags.
+	* Todos los items.
+
+	Cargar un estado carga bloque actual y salta a LOC.
 # Editor
 
 [X] Save / Load

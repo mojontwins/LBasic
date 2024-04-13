@@ -42,7 +42,7 @@ void getpal( int index, int* r, int* g, int* b );
 int getpal_i (int index);
 
 int shuttingdown( void );
-
+void resetshuttingdown ( void );
 
 void cputs( char const* string );
 void textcolor( int color );
@@ -560,10 +560,12 @@ static void internals_destroy( void ) {
 
 
 int shuttingdown( void ) {
-
     return thread_atomic_int_load( &internals->exit_flag );
 }
 
+void resetshuttingdown ( void ) {
+    thread_atomic_int_store( &internals->exit_flag, 0 );
+}
 
 void setvideomode( enum videomode_t mode ) {
     thread_mutex_lock( &internals->mutex );

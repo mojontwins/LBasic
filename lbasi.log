@@ -1,0 +1,7 @@
+# Running interpreter: lbs/ch_tes/ch_test.000
++ Exit interpreter res=8
+# Running interpreter: lbs/ch_tes/ch_test.lbs
+> Saved loc: 112
+@ go :first_loc_cambiar success
++ Exit interpreter res=-1
+# Running interpreter: lbs/ch_tes/ch_test.999

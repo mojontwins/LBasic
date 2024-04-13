@@ -193,6 +193,10 @@ int backend_get_break (void) {
 	return forced_break;
 }
 
+void backend_resetbreak (void) {
+	forced_break = 0;
+}
+
 char *compute_full_path (char *pathspec, char *filename) {
 	char *full_path = malloc (strlen (pathspec) + strlen (filename) + 1);
 	strcpy (full_path, pathspec);
@@ -473,6 +477,10 @@ int backend_shuttingdown (void) {
 	return shuttingdown ();
 }
 
+void backend_resetshuttingdown (void) {
+	resetshuttingdown ();
+}
+
 void backend_gif_at (char *pathspec, char *gif, int x, int y, int load_pal, int mask) {
 	char *fullpath = compute_full_path (pathspec, gif);
 
@@ -748,7 +756,10 @@ int backend_menu_run (void) {
 		if (backend_menu_keys (
 			&backend_menu_selected, &done, backend_menu_options,
 			backend_menu.x, backend_menu.y, backend_menu.w
-		) == 999999) return 999999;
+		) == 999999) {
+			forced_break = 1;
+			return 999999;
+		}
 	}
 
 	debuff_keys ();
@@ -790,7 +801,10 @@ int _backend_inventory_run (int x, int y) {
 		// Read keys
 		if (backend_menu_keys (&backend_menu_selected, &done, backend_inventory_items,
 			x, y, backend_menu.w
-		) == 999999) return 999999;
+		) == 999999) {
+			forced_break = 1;
+			return 999999;
+		}
 	}
 
 	debuff_keys ();
@@ -835,7 +849,10 @@ int backend_exits_run (void) {
 		// Read keys
 		if (backend_menu_keys (&backend_menu_selected, &done, backend_exits_items,
 			backend_menu.x, backend_menu.y, backend_menu.w
-		) == 999999) return 999999;
+		) == 999999) {
+			forced_break = 1;
+			return 999999;
+		}
 	}
 
 	debuff_keys ();
@@ -876,7 +893,10 @@ int backend_actions_run (int x, int y) {
 		// Read keys
 		if (backend_menu_keys (&backend_menu_selected, &done, backend_actions_items,
 			x, y, backend_menu.w
-		) == 999999) return 999999;
+		) == 999999) {
+			forced_break = 1;
+			return 999999;
+		}
 	}
 
 	debuff_keys ();
@@ -929,7 +949,10 @@ int backend_resp_run (void) {
 		// Read keys
 		if (backend_menu_keys (&selected, &done, backend_resp_items,
 			1, y, w
-		) == 999999) return 999999;
+		) == 999999) {
+			forced_break = 1;
+			return 999999;
+		}
 	}
 
 	debuff_keys ();

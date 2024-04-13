@@ -1,0 +1,14 @@
+cls
+print "SALIR?"
+menu reset
+menu put "Salir"
+menu put "No"
+
+:exit_m
+menu run :exit :exit_m
+ret
+
+:exit_salir
+end
+
+:exit_no

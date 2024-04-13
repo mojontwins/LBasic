@@ -125,7 +125,6 @@ char *create_form (WIZARD_FIELD fields [], int token_from, char *line) {
 	int ow = 0;
 	int oh;
 
-	// TODO : PREFILL CONTROLS WITH EXISTING DATA!
 	while (fields [i].caption [0] != '-') {
 		if (fields [i].type == CONTROL_TYPE_DISPLAY) {
 			// Initial box & setup

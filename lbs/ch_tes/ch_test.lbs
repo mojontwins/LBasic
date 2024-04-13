@@ -1,0 +1,39 @@
+# To test END / exit traps, etc.
+mode gfx
+menu config 30 0 10 7 1 
+
+:first_loc
+
+# Save return point
+loc
+
+cls
+print "Esta es la localizacion 1"
+menu reset
+menu put "Cambiar"
+menu put "No hace nada"
+
+:first_loc_m
+menu run :first_loc :first_loc_m
+ret
+
+:first_loc_cambiar
+
+:second_loc
+
+# Save return point
+loc
+
+cls
+print "Esta es la localizacion 2"
+menu reset
+menu put "Cambiar"
+menu put "No hace nada"
+
+:second_loc_m
+menu run :second_loc :second_loc_m
+ret
+
+:second_loc_cambiar
+go :first_loc
+

@@ -12,12 +12,16 @@
 #include "lstokens.h"
 #include "interpreter.h"
 
+#define DEBUGLOG_IMPLEMENTATION
+#include "debuglog.h"
+
 void main (char argc, char *argv []) {
 	int res;
 	int autoboot;
 	char *spec;
 
 	lstokens_init ();
+	log_init ("lbasi.log");
 	
 	if (argc == 1) {
 		spec = strdup ("boot");
@@ -61,4 +65,5 @@ void main (char argc, char *argv []) {
 
 	lstokens_free ();
 	free (spec);
+	log_close ();
 }

@@ -10,6 +10,7 @@
 #include "interpreter.h"
 
 #include "extern.h"
+#include "debuglog.h"
 
 #define LINE_BUFFER_SIZE 2048
 #define LEGACY_BUFFER_SIZE 16
@@ -29,7 +30,12 @@ int clr_statusbar_2;
 
 char main_path_spec [256];
 char next_file [256];
+char cur_file [256];
 char initial_label [LABEL_LEN];
+int return_loc = 0;
+
+// Set to 0 for release!
+int debug = 1;
 
 /*
 
@@ -90,8 +96,17 @@ void lbasi_goto (FILE *file, char *label) {
 	if (label_index >= 0) {
 		int label_filepos = labels_get_filepos (label_index);
 
+		if (debug) log ("@ go %s success\n", label);
 		fseek (file, label_filepos, SEEK_SET);
-	}
+	} else if (debug) log ("@ go %s FAILED\n", label);
+}
+
+void lbasi_goto_loc (FILE *file, int loc) {
+	fseek (file, loc, SEEK_SET);
+}
+
+int lbasi_save_loc (FILE *file) {
+	return ftell (file);
 }
 
 void lbasi_read_labels (FILE *file) {
@@ -131,7 +146,15 @@ int lbasi_run_file (FILE *file) {
 	lbasi_read_labels (file);
 	labels_set_ret (ret_label);
 
+	if (return_loc) {
+		if (debug) log ("! Jumping to saved loc: %d\n", return_loc);
+		lbasi_goto_loc (file, return_loc);
+	}
+
+	return_loc = 0;
+
 	if (strlen (initial_label)) {
+		if (debug) log ("! Jumping to initial label: %s\n", initial_label);
 		lbasi_goto (file, initial_label);
 	}
 
@@ -148,6 +171,20 @@ int lbasi_run_file (FILE *file) {
 		// Execute
 		command_token = get_token (0);
 		utils_tolower (command_token);
+
+		// Save curent loc return point
+		if (strcmp (command_token, "loc") == 0) {
+			return_loc = lbasi_save_loc (file);
+			if (debug) log ("> Saved loc: %d\n", return_loc);
+		}
+
+		// Force exit
+		if (strcmp (command_token, "end") == 0) {
+			run = 0;
+			res = 1;
+		}
+
+		// ---
 
 		if (strcmp (command_token, "cursor") == 0 || strcmp (command_token, "setxy") == 0) {
 			backend_setxy (atoi (get_token (1)), atoi (get_token (2)));
@@ -555,6 +592,7 @@ int lbasi_run_file (FILE *file) {
 				);
 
 			} else if (strcmp (zones_command, "run") == 0) {
+				int do_jump = 1;
 
 				// Update ret label, if present
 				if (strlen (get_token (3))) {
@@ -564,14 +602,16 @@ int lbasi_run_file (FILE *file) {
 				int zone = backend_zones_run ();
 
 				if (zone == 999999) {
-					res = -1; run = 0;
+					// Exit trap will be dealt with later.
+					do_jump = 0;
+
 				} else if (zone >= 0) {
 					int type = zones_get_type (zone);
 
 					if (type == ZONE_TYPE_LABEL_DIRECT) {
 						strcpy (temp_buffer, zones_get_label (zone));
-					} else {
 
+					} else {
 						strcpy (temp_buffer, get_token (2)); 				// :label
 						strcat (temp_buffer, "_");                          // _
 						strcat (temp_buffer, zones_get_text (zone));        // ZONE
@@ -587,7 +627,9 @@ int lbasi_run_file (FILE *file) {
 
 							int action = backend_actions_run (x, y);
 							if (action == 999999) {
-								res = -1; run = 0;
+								// Exit trap will be dealt with later
+								do_jump = 0;
+
 							} else if (action >= 0) {
 								strcat (temp_buffer, "_");
 								strcat (temp_buffer, actions_get_action (action));
@@ -599,17 +641,20 @@ int lbasi_run_file (FILE *file) {
 								if (action_type == ACTIONS_TYPE_ITEMS) {
 									int item = backend_inventory_run_xy (x, y);
 									if (item == 999999) {
-										res = -1; run = 0;
+										// Exit trap will be dealt with later
+										do_jump = 0;
+
 									} else if (item >= 0) {
 										strcat (temp_buffer, "_");
 										strcat (temp_buffer, inventory_get_item (item));
+
 									}
 								}
 							}
 
 						}
 					}
-					if (run) lbasi_goto (file, temp_buffer);
+					if (do_jump) lbasi_goto (file, temp_buffer);
 				}
 			}
 
@@ -670,6 +715,8 @@ int lbasi_run_file (FILE *file) {
 				backend_menu_show ();
 
 			} else if (strcmp (menu_command, "run") == 0) {
+				int do_jump = 1;
+
 				// Update ret label, if present
 				if (strlen (get_token (3))) {
 					strcpy (ret_label, get_token (3));
@@ -679,7 +726,9 @@ int lbasi_run_file (FILE *file) {
 				menu_set_last_selected (selected);
 
 				if (selected == 999999) {
-					res = -1; run = 0;
+					// Exit trap will be dealt with later
+					do_jump = 0;
+
 				} else if (selected >= 0) {
 					int type = menu_get_option_type (selected);
 					int submenu;
@@ -697,7 +746,9 @@ int lbasi_run_file (FILE *file) {
 
 								submenu = backend_inventory_run ();
 								if (submenu == 999999) {
-									res = -1; run = 0;
+									// Exit trap will be dealt with later
+									do_jump = 0;
+
 								} else if (submenu >= 0) {
 									strcat (temp_buffer, inventory_get_item (submenu));
 								}
@@ -708,9 +759,12 @@ int lbasi_run_file (FILE *file) {
 
 								submenu = backend_exits_run ();
 								if (submenu == 999999) {
-									res = -1; run = 0;
+									// Exit trap will be dealt with later
+									do_jump = 0;
+
 								} else if (submenu >= 0) {
 									strcpy (temp_buffer, exits_get_option_label (submenu));
+
 								}
 
 								break;
@@ -722,7 +776,7 @@ int lbasi_run_file (FILE *file) {
 						}
 					}
 
-					if (run) lbasi_goto (file, temp_buffer);
+					if (do_jump) lbasi_goto (file, temp_buffer);
 				}
 
 			} else if (strcmp (menu_command, "has") == 0 || strcmp (menu_command, "tiene") == 0) {
@@ -1010,19 +1064,29 @@ int lbasi_run_file (FILE *file) {
 		// Update screen, etc
 		if (skipvbl) {
 			if (backend_shuttingdown ()) {
+				res = -1;
 				run = 0;
+
+				backend_resetshuttingdown ();
 			}
 		} else if (backend_heartbeat ()) {
+			res = -1;
 			run = 0;
+
+			backend_resetshuttingdown ();
 		}
 
 		if (backend_get_break ()) {
+			res = -1;
 			run = 0;
+
+			backend_resetbreak ();
 		}
 	}
 
 	lstokens_free ();
 
+	if (debug) log ("+ Exit interpreter res=%d\n", res);
 	return res;
 }
 
@@ -1098,8 +1162,11 @@ int lbasi_run (char *spec, int autoboot) {
 			sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 		}
 
-		if ((file = fopen (filename, "r")) != NULL) {			
+		if ((file = fopen (filename, "r")) != NULL) {
 			update_path_spec (filename);
+
+			// Remember cur file
+			strcpy (cur_file, filename);
 
 			if (!backend_on) {
 				backend_init ();
@@ -1110,15 +1177,46 @@ int lbasi_run (char *spec, int autoboot) {
 
 			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
+			if (debug) log ("# Running interpreter: %s\n", filename);
 			res = lbasi_run_file (file);
 			fclose (file);
 			
 			if (res < 0) {
-				playing = 0;
+				int remember_loc = return_loc;
+				return_loc = 0;
+
+				// Trap for BREAK - run .999
+				sprintf (filename, "%s.%03d", spec, 999);
+				sprintf (str_status_top, "LBASIC: %s, BLOQUE: EXIT", spec, cur_block);
+
+				if ((file = fopen (filename, "r")) != NULL) {
+					update_path_spec (filename);
+					backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
+					
+					if (debug) log ("# Running interpreter: %s\n", filename);
+					res = lbasi_run_file (file);
+					fclose (file);
+
+					if (res < 0 || res == 1) {
+						playing = 0;
+
+					} else {
+						// Re-run and jump to loc
+						strcpy (next_file, cur_file);
+						return_loc = remember_loc;
+
+					}
+				}
+
 			} else switch (res) {
 				case 0:
 					// Next block
 					cur_block ++;
+					break;
+
+				case 1:
+					// END
+					playing = 0;
 					break;
 
 				case 8:

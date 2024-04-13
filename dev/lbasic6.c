@@ -21,6 +21,9 @@
 #include "lstokens.h"
 #include "wizards.h"
 
+#define DEBUGLOG_IMPLEMENTATION
+#include "debuglog.h"
+
 int menu_x [] = { 0, 9, 18, 27, 38 };
 int menu_f [] = { 7, 16, 25, 36, 45 };
 
@@ -957,6 +960,8 @@ void run_from (int from) {
 }
 
 void main (char argc, char *argv []) {
+	log_init ("lbasic6.log");
+	
 	lstextmode_init ();
 	cursoff ();
 	
@@ -1012,4 +1017,5 @@ void main (char argc, char *argv []) {
 	clear_file_spec ();
 	lstokens_free ();
 	lstextmode_shutdown ();
+	log_close ();
 }
