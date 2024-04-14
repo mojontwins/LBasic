@@ -468,3 +468,11 @@ void backend_interface_config (char *interface, int x, int y, int m) {
 void backend_resetshuttingdown (void) {
 	// NO OP
 }
+
+void backend_setexitbuttonenable (int enable) {
+	// NO OP
+}
+
+void backend_forceshutdown (void) {
+	// NO OP
+}

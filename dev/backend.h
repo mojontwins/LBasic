@@ -70,3 +70,5 @@ void backend_bg_config (int x, int y);
 void backend_bg_do (char *pathspec, char *bg);
 void backend_interface_off (void);
 void backend_interface_config (char *interface, int x, int y, int m);
+void backend_setexitbuttonenable (int enable);
+void backend_forceshutdown (void);

@@ -1,6 +1,9 @@
 # To test END / exit traps, etc.
 mode gfx
 menu config 30 0 10 7 1 
+menu reset
+menu put "Cambiar"
+menu put "No hace nada"
 
 :first_loc
 
@@ -9,9 +12,6 @@ loc
 
 cls
 print "Esta es la localizacion 1"
-menu reset
-menu put "Cambiar"
-menu put "No hace nada"
 
 :first_loc_m
 menu run :first_loc :first_loc_m
@@ -26,9 +26,6 @@ loc
 
 cls
 print "Esta es la localizacion 2"
-menu reset
-menu put "Cambiar"
-menu put "No hace nada"
 
 :second_loc_m
 menu run :second_loc :second_loc_m

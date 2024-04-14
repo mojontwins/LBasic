@@ -20,6 +20,14 @@ void main (char argc, char *argv []) {
 	int autoboot;
 	char *spec;
 
+	// This is extremely dangerous, as I'm overriding the [X] button
+	// to close the window. I want to trap that event from then interpreter
+	// so the "EXIT" module in the program is executed. App close will be
+	// forced programaticly when we are ready!
+	#ifdef DOSLIKE
+		setexitbuttonenable (0);
+	#endif
+
 	lstokens_init ();
 	log_init ("lbasi.log");
 	
@@ -41,21 +49,23 @@ void main (char argc, char *argv []) {
 			// Exit
 			break;
 
-		case 1:
-			printf ("LBAS Interpreter v0.1.20240201\n");
-			printf ("Spec %s does not exist\n", spec);
-			break;
+		#ifndef DOSLIKE
+			case 1:
+				// Will only run on console backend mode
+				printf ("LBAS Interpreter v0.1.20240201\n");
+				printf ("Spec %s does not exist\n", spec);
+				break;
 
-		case 2: 
-			// Show usage
-			printf ("LBAS Interpreter v0.1.20240201\n");
-			printf (" $ lbasi <spec> - run <spec>.000, <spec>.001, etc\n");
-			printf (" $ lbasi        - use <spec> = boot\n");
-			break;
+			case 2: 
+				// Will only run on console backend mode
+				// Show usage
+				printf ("LBAS Interpreter v0.1.20240201\n");
+				printf (" $ lbasi <spec> - run <spec>.000, <spec>.001, etc\n");
+				printf (" $ lbasi        - use <spec> = boot\n");
+				break;
+		#endif
 
 		case 4:
-	
-
 			break;
 
 		case 5:
@@ -66,4 +76,8 @@ void main (char argc, char *argv []) {
 	lstokens_free ();
 	free (spec);
 	log_close ();
+
+	#ifdef DOSLIKE
+		forceshutdown ();
+	#endif
 }

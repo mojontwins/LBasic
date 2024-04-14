@@ -1236,6 +1236,14 @@ void backend_interface_config (char *interface, int x, int y, int m) {
 	backend_interface_cfg.m = m;
 }
 
+void backend_setexitbuttonenable (int enable) {
+	setexitbuttonenable (enable);
+}
+
+void backend_forceshutdown (void) {
+	backend_forceshutdown ();
+}
+
 void backend_shutdown (void) {
 	free (backend_interface_cfg.interface_pixels);
 	free (backend_talk.ovl_pixels);

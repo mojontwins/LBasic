@@ -743,3 +743,12 @@ Empiezan por '@' y son estas:
 * `@MENU_OPTIONS_ADDED` devuelve el número de opciones que se añadió tras un `menu reset`.
 * `@MENU_OPTIONS_REMOVED` devuelve el número de opciones que se eliminó tras un `menu_reset`.
 
+# Controlar la salida del juego
+
+Al pulsar ESC en algunos controles (por ejemplo en un submenú, en un `pause` o eligiendo zona con el ratón) o al pulsar el botón [X] para cerrar la ventana, el programa se interrumpirá y se ejecutará tu **rutina de salida**.
+
+Tu **rutina de salida** no es más que el bloque '999' de tu juego. Si este bloque no existe, el programa simplemente terminará. Si existe, se ejecutará y ahí podrás controlar tú la salida, por ejemplo haciendo que el jugador tenga que confirmar que realmente quiere salir u ofreciendo la opción para grabar la partida.
+
+Aquí es donde se complica un poco: si hay bloque '999' **tu programa sólo terminará si se ejecuta el comando `end`**. Si el bloque '999' termina su ejecución (se llega al final del script), se volverá al bloque que se estuviera ejecutando antes de pulsar ESC o [X] en la ventana y se saltará a la ubicación del **último comando `loc`** ejecutado.
+
+`loc` servirá para ir marcando al motor donde empieza la localización actual, de forma que se pueda volver a ese punto de forma segura.

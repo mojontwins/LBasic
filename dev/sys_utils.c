@@ -317,6 +317,27 @@ int menu_has_item (unsigned char *item) {
 	return 0;
 }
 
+// To make backups
+
+MENU_ITEM *backup_menu_items = NULL;
+int backup_menu_index = 0;
+
+void menu_create_backup (void) {
+	if (backup_menu_items) free (backup_menu_items);
+	backup_menu_items = malloc (sizeof (MENU_ITEM) * menu_index);
+	memcpy (backup_menu_items, menu_items, sizeof (MENU_ITEM) * menu_index);
+	backup_menu_index = menu_index;
+}
+
+void menu_restore_backup (void) {
+	memcpy (menu_items, backup_menu_items, sizeof (MENU_ITEM) * backup_menu_index);
+	menu_index = backup_menu_index;
+}
+
+void menu_destroy_backup (void) {
+	if (backup_menu_items) free (backup_menu_items);
+}
+
 /*
  * INVENTORY
  */
@@ -661,6 +682,27 @@ int zones_get_token_type (unsigned char *text) {
 	if (strcmp (text, "actions") == 0) return ZONE_TYPE_ACTIONS;
 
 	return ZONE_TYPE_NORMAL;
+}
+
+// To make backups
+
+ZONE *backup_zones = NULL;
+int backup_zones_index = 0;
+
+void zones_create_backup (void) {
+	if (backup_zones) free (backup_zones);
+	backup_zones = malloc (sizeof (ZONE) * zones_index);
+	memcpy (backup_zones, menu_items, sizeof (ZONE) * zones_index);
+	backup_zones_index = zones_index;
+}
+
+void zones_restore_backup (void) {
+	memcpy (menu_items, backup_zones, sizeof (ZONE) * backup_zones_index);
+	zones_index = backup_zones_index;
+}
+
+void zones_destroy_backup (void) {
+	if (backup_zones) free (backup_zones);
 }
 
 /*

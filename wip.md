@@ -95,7 +95,12 @@ Sobre 1:
 Sobre 2:
 	* Mi primera idea es añadir un comando especial "LOC" que decide cuando empieza la localización actual y que funciona como una etiqueta dinámica a la que se volverá al terminar 999 si no hay un END explícito o al escribir RETLOC.
 
-PROBLEMA: He puesto hostias para resetear el flag interno de pulsar "X" en dos-like pero parece que no sirvió para nada, internamente lanza sus historias para cerrar ?
+[X] PROBLEMA: He puesto hostias para resetear el flag interno de pulsar "X" en dos-like pero parece que no sirvió para nada, internamente lanza sus historias para cerrar ? -> resuelto
+
+[ ] Tengo que hacer que ir a 999 sea más seguro:
+	[ ] guardar y restaurar las opciones del menu
+	[ ] guardar y restaurar las zonas de pantalla
+	[ ] guardar y restaurar la pantalla
 
 [ ] SAVE / LOAD state - graba todo: 
 	* Bloque actual (#).

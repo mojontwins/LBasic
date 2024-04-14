@@ -44,6 +44,10 @@ int getpal_i (int index);
 int shuttingdown( void );
 void resetshuttingdown ( void );
 
+// I've set these so I can override the [X] button
+void setexitbuttonenable (int enable);
+void forceshutdown (void);
+
 void cputs( char const* string );
 void textcolor( int color );
 void textbackground( int color );
@@ -388,6 +392,8 @@ enum soundbank_type_t {
 struct internals_t {
     thread_mutex_t mutex;
     thread_atomic_int_t exit_flag;
+    thread_atomic_int_t close_button_disabled;
+    thread_atomic_int_t force_exit_from_code;
 
     struct {
         thread_signal_t signal;
@@ -536,6 +542,10 @@ static void internals_create( int sound_buffer_size ) {
     internals->audio.soundbanks[ DEFAULT_SOUNDBANK_SB16 ].size = 0;
 
     internals->audio.soundmode = soundmode_8bit_mono_22050;
+
+    // I've added these things so I can override the exit button
+    setexitbuttonenable (1);
+    thread_atomic_int_store( &internals->force_exit_from_code, 0 );
 }
 
 
@@ -565,6 +575,14 @@ int shuttingdown( void ) {
 
 void resetshuttingdown ( void ) {
     thread_atomic_int_store( &internals->exit_flag, 0 );
+}
+
+void setexitbuttonenable (int enable) {
+    thread_atomic_int_store( &internals->close_button_disabled, !enable );
+}
+
+void forceshutdown (void) {
+    thread_atomic_int_store( &internals->force_exit_from_code, 1 );
 }
 
 void setvideomode( enum videomode_t mode ) {
@@ -3279,9 +3297,22 @@ static int app_proc( app_t* app, void* user_data ) {
         if( app_state == APP_STATE_EXIT_REQUESTED ) {
             // Signal that we need to force the user thread to exit
             thread_atomic_int_store( &internals->exit_flag, 1 );
+
+            // Ability to disable [X] is dangerous! But I need it
+            if ( thread_atomic_int_load( &internals->close_button_disabled ) ) {
+                app_cancel_exit ( app );
+            } else {
+                signalvbl();
+                break; 
+            }
+        }
+
+        if ( thread_atomic_int_load( &internals->force_exit_from_code ) ) {
+            // Signal that we need to force the user thread to exit
+            thread_atomic_int_store( &internals->exit_flag, 1 );
             signalvbl();
             break; 
-        }
+        }   
 
         // Copy data from user thread
         thread_mutex_lock( &internals->mutex );

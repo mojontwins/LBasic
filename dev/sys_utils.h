@@ -63,6 +63,12 @@ unsigned char *menu_get_label (int index);
 void menu_set_last_selected (int selected);
 int menu_has_item (unsigned char *item);
 
+// To make backups
+
+void menu_create_backup (void);
+void menu_restore_backup (void);
+void menu_destroy_backup (void);
+
 /*
  * INVENTORY
  */
@@ -145,6 +151,12 @@ char *zones_get_label (int index);
 int zones_find (int x, int y);
 int zones_get_type (int index);
 int zones_get_token_type (unsigned char *text);
+
+// To make backups
+
+void zones_create_backup (void);
+void zones_restore_backup (void);
+void zones_destroy_backup (void);
 
 /*
  * RESP

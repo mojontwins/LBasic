@@ -1193,6 +1193,11 @@ int lbasi_run (char *spec, int autoboot) {
 					update_path_spec (filename);
 					backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 					
+					// Let's backup some stuff
+					menu_create_backup ();
+					zones_create_backup ();
+					// TODO backup everything ?
+
 					if (debug) log ("# Running interpreter: %s\n", filename);
 					res = lbasi_run_file (file);
 					fclose (file);
@@ -1205,6 +1210,9 @@ int lbasi_run (char *spec, int autoboot) {
 						strcpy (next_file, cur_file);
 						return_loc = remember_loc;
 
+						// Restore backups
+						menu_restore_backup ();
+						zones_restore_backup ();
 					}
 				}
 
@@ -1255,6 +1263,7 @@ int lbasi_run (char *spec, int autoboot) {
 	}
 
 	backend_shutdown ();
+	menu_destroy_backup ();
 
 	return res;
 }
