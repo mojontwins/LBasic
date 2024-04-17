@@ -418,7 +418,7 @@ int lbasi_run_file (FILE *file) {
 		// *** GFX MODE ***
 
 		else if (strcmp (command_token, "mode") == 0) {
-			// mode TEXT, GFX, GFX_SQ, GFX_MED, GFX_HI
+			// mode TEXT, GFX, GFX_SQ, GFX_MED, GFX_HI, GFX_LO
 			char *mode = get_token (1);
 
 			utils_tolower (mode);

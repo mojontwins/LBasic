@@ -712,6 +712,10 @@ void buf_setmode(int mode) {
 			settextstyle (2, 0, 0, 0);
 			buf_char_height = 16;
 			break;
+		case LS_MODE_GFX_LOW:
+			setvideomode (videomode_160x200);
+			settextstyle (1, 0, 0, 0);
+			break;
 		default:
 			setvideomode (videomode_80x25_9x16);
 			settextstyle (3, 0, 0, 0);
