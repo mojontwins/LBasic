@@ -50,6 +50,40 @@ void rtrim (char *str) {
 	str [n + 1] = 0; 
 }
 
+int save_game (char *pathspec, int save_number) {
+	// Won't save too high
+	if (save_number > 255) return 0;
+
+	char name_buffer[512];
+	sprintf (name_buffer, "%sSAVEGAME.S%2X", pathspec, save_number);
+
+ 	FILE *pf = fopen (name_buffer, "wb");
+ 	if (!pf) return 0;
+ 	
+ 	save_all_flags (pf);
+ 	save_all_inventory (pf);
+ 	fclose (pf);
+
+ 	return 1;
+}
+
+int load_game (char *pathspec, int save_number) {
+	// Won't save too high
+	if (save_number > 255) return 0;
+
+	char name_buffer[512];
+	sprintf (name_buffer, "%sSAVEGAME.S%2X", pathspec, save_number);
+
+ 	FILE *pf = fopen (name_buffer, "rb");
+ 	if (!pf) return 0;
+
+ 	load_all_flags (pf);
+ 	load_all_inventory (pf);
+ 	fclose (pf);
+ 	
+ 	return 1;
+}
+
 /*
  * FLAGS
  */
@@ -150,6 +184,16 @@ int flags_find_or_create_alias (char *s) {
 	}
 
 	return aliases_index - 1;
+}
+
+void save_all_flags (FILE *file) {
+	fwrite (aliases, sizeof(char), sizeof(aliases), file);
+	fwrite (flags, sizeof(int), MAX_FLAGS, file);
+}
+
+void load_all_flags (FILE *file) {
+	fread (aliases, sizeof(char), sizeof(aliases), file);
+	fread (flags, sizeof(int), MAX_FLAGS, file);
 }
 
 /* 
@@ -422,6 +466,18 @@ int inventory_get_items (void) {
 
 unsigned char *inventory_get_item (int index) {
 	return inventory_items [index];
+}
+
+void save_all_inventory (FILE *file) {
+	fwrite (&inventory_index, sizeof (int), 1, file);
+	fwrite (&inventory_max_items, sizeof (int), 1, file);
+	fwrite (inventory_items, sizeof(char), MAX_INVENTORY_ITEMS * INVENTORY_ITEM_MAX_LENGTH, file);
+}
+
+void load_all_inventory (FILE *file) {
+	fread (&inventory_index, sizeof (int), 1, file);
+	fread (&inventory_max_items, sizeof (int), 1, file);
+	fread (inventory_items, sizeof(char), MAX_INVENTORY_ITEMS * INVENTORY_ITEM_MAX_LENGTH, file);
 }
 
 /*

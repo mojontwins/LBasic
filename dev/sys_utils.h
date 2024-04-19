@@ -26,6 +26,8 @@ int flags_parse_lvalue (char *s);
 int flags_reset_aliases (void);
 int flags_find_alias (char *s);
 int flags_find_or_create_alias (char *s);
+void save_all_flags (FILE *file);
+void load_all_flags (FILE *file);
 
 /* 
  * LABELS
@@ -76,7 +78,6 @@ void menu_destroy_backup (void);
 #define MAX_INVENTORY_ITEMS 256
 #define INVENTORY_ITEM_MAX_LENGTH 40
 
-
 void inventory_reset (void);
 void inventory_set_max_items (int max_items);
 int menu_get_token_type (unsigned char *text);
@@ -88,6 +89,9 @@ int inventory_has_item (unsigned char *item);
 int inventory_find_index (unsigned char *item);
 int inventory_get_items (void);
 unsigned char *inventory_get_item (int index);
+
+void save_all_inventory (FILE *file);
+void load_all_inventory (FILE *file);
 
 /*
  * EXITS
