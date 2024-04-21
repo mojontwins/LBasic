@@ -26,6 +26,7 @@ enum videomode_t {
     videomode_640x350,
     videomode_640x400,
     videomode_640x480,
+    videomode_160x200,
 
     force_size_videomode = 0x7ffffff // ensure videomode_t is 32-bit value
 };
@@ -639,6 +640,13 @@ void setvideomode( enum videomode_t mode ) {
             internals->screen.font = font8x8;
             internals->screen.cellwidth = 8;
             internals->screen.cellheight = 8;
+            break;
+        case videomode_160x200:
+            internals->screen.width = 160;
+            internals->screen.height = 200;
+            internals->screen.font = NULL;
+            internals->screen.cellwidth = 1;
+            internals->screen.cellheight = 1;
             break;
         case videomode_320x200:
             internals->screen.width = 320;

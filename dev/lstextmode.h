@@ -4,6 +4,7 @@
 #define LS_MODE_GFX_HIRES	3
 #define LS_MODE_GFX_MED		4
 #define LS_MODE_GFX_DBL		5
+#define LS_MODE_GFX_LOW		6
 
 void lstextmode_init (void);
 void buf_set_buf_char_delay (int d);

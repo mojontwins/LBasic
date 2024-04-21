@@ -554,6 +554,8 @@ void backend_set_mode (char *mode) {
 		buf_setmode (LS_MODE_GFX_HIRES);
 	} else if (strcmp (mode, "gfx_dbl") == 0) {
 		buf_setmode (LS_MODE_GFX_DBL);
+	} else if (strcmp (mode, "gfx_lo") == 0) {
+		buf_setmode (LS_MODE_GFX_LOW);
 	}
 }
 
