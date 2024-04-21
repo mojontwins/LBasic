@@ -2,6 +2,8 @@ cls
 print "SALIR?"
 menu reset
 menu put "Salir"
+menu put "Save"
+menu put "Load"
 menu put "No"
 
 :exit_m
@@ -10,5 +12,26 @@ ret
 
 :exit_salir
 end
+
+:exit_save
+savegame 0 $99
+
+eq $99 0 :badsave
+
+print "Save OK"
+ret
+
+:badsave
+print "Save mal"
+ret
+
+:exit_load
+loadgame 0 $99
+
+eq $99 0 :badload
+
+:badload
+print "Load mal"
+ret
 
 :exit_no

@@ -33,6 +33,8 @@ char next_file [256];
 char cur_file [256];
 char initial_label [LABEL_LEN];
 int return_loc = 0;
+int remember_loc = 0;
+int initial_loc = 0;
 
 // Set to 0 for release!
 int debug = 1;
@@ -129,6 +131,8 @@ void lbasi_read_labels (FILE *file) {
 }
 
 int lbasi_run_file (FILE *file) {
+	if (debug) log ("= RUNNING %s", file);
+
 	int res = 0;
 	int choice_res;
 	int run = 1;
@@ -151,11 +155,18 @@ int lbasi_run_file (FILE *file) {
 		lbasi_goto_loc (file, return_loc);
 	}
 
-	return_loc = 0;
+	// return_loc = 0;
 
 	if (strlen (initial_label)) {
-		if (debug) log ("! Jumping to initial label: %s\n", initial_label);
-		lbasi_goto (file, initial_label);
+		if (initial_label [0] == '>') {
+			if (debug) log ("! Jumping to initial loc: %d\n", initial_loc);
+			lbasi_goto_loc (file, initial_loc);
+
+		} else {
+			if (debug) log ("! Jumping to initial label: %s\n", initial_label);
+			lbasi_goto (file, initial_label);
+
+		}
 	}
 
 	next_file [0] = 0;
@@ -176,13 +187,40 @@ int lbasi_run_file (FILE *file) {
 		if (strcmp (command_token, "loc") == 0) {
 			return_loc = lbasi_save_loc (file);
 			if (debug) log ("> Saved loc: %d\n", return_loc);
-		}
+		} else
 
 		// Force exit
 		if (strcmp (command_token, "end") == 0) {
 			run = 0;
 			res = 1;
-		}
+		} else
+
+		// Save / load game
+		if (strcmp (command_token, "savegame") == 0) {
+			int save_number = flags_parse_value (get_token (1));
+			int result = save_game (main_path_spec, save_number, cur_file, &return_loc);
+			if (strlen (get_token (2))) {
+				flags_set (flags_parse_lvalue (get_token (2)), result);
+			}
+
+			if (debug) log ("> save %s %d %s %d ->w %d %d\n", main_path_spec, save_number, cur_file, return_loc, flags_parse_lvalue (get_token (2)), result);
+
+		} else if (strcmp (command_token, "loadgame") == 0) {
+			int save_number = flags_parse_value (get_token (1));
+			int result = load_game (main_path_spec, save_number, cur_file, &return_loc);
+			if (strlen (get_token (2))) {
+				flags_set (flags_parse_lvalue (get_token (2)), result);
+			}
+
+			strcpy (next_file, main_path_spec);
+			strcat (next_file, get_token (1));
+			
+			strcpy (initial_label, ">");
+			initial_loc = return_loc;
+
+			res = 8;
+			run = 0;
+		} else
 
 		// ---
 
@@ -1130,6 +1168,8 @@ int lbasi_run_tmp (char *tmp, char *spec) {
 }
 
 int lbasi_run (char *spec, int autoboot) {
+	if (debug) log ("= lbasi_run spec = %s\n", spec);
+
 	int res = autoboot ? 2 : 1;
 	int cur_block = 0;
 	int playing = 1;
@@ -1139,6 +1179,7 @@ int lbasi_run (char *spec, int autoboot) {
 
 	FILE *file;
 
+	if (debug) log ("= lbasi_run INIT\n");
 	init_strings ();
 	
 	flags_clear ();
@@ -1162,6 +1203,9 @@ int lbasi_run (char *spec, int autoboot) {
 			sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 		}
 
+		if (debug) log ("= str_status_top %s\n", str_status_top);
+		if (debug) log ("= lbasi_run about to open %s\n", filename);
+		
 		if ((file = fopen (filename, "r")) != NULL) {
 			update_path_spec (filename);
 
@@ -1169,6 +1213,7 @@ int lbasi_run (char *spec, int autoboot) {
 			strcpy (cur_file, filename);
 
 			if (!backend_on) {
+				if (debug) log ("= lbasi_run backend_init\n");
 				backend_init ();
 				backend_on = 1;
 			}
@@ -1182,7 +1227,7 @@ int lbasi_run (char *spec, int autoboot) {
 			fclose (file);
 			
 			if (res < 0) {
-				int remember_loc = return_loc;
+				remember_loc = return_loc;
 				return_loc = 0;
 
 				// Trap for BREAK - run .999
@@ -1199,11 +1244,15 @@ int lbasi_run (char *spec, int autoboot) {
 					// TODO backup everything ?
 
 					if (debug) log ("# Running interpreter: %s\n", filename);
-					res = lbasi_run_file (file);
+					res = lbasi_run_file (file, 1);
 					fclose (file);
 
 					if (res < 0 || res == 1) {
 						playing = 0;
+
+					} else if (res == 8) {
+						// Chain! can be a load game or a pure chain
+						// So let this do its thing...
 
 					} else {
 						// Re-run and jump to loc

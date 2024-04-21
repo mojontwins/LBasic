@@ -50,7 +50,16 @@ void rtrim (char *str) {
 	str [n + 1] = 0; 
 }
 
-int save_game (char *pathspec, int save_number) {
+char save_signature [] = { 'L', 'B', 'S', 'G', '6' };
+int compare_sig (char *sig) {
+	for (int i = 0; i < 5; i ++) {
+		if (sig [i] != save_signature [i]) return 0;
+	}
+
+	return 1;
+}
+
+int save_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
 	// Won't save too high
 	if (save_number > 255) return 0;
 
@@ -60,6 +69,16 @@ int save_game (char *pathspec, int save_number) {
  	FILE *pf = fopen (name_buffer, "wb");
  	if (!pf) return 0;
  	
+ 	// Signature
+ 	fwrite (save_signature, sizeof (char), sizeof (save_signature), pf);
+
+ 	// Current execution point
+ 	int cpsl = strlen (curpathspec) + 1;
+ 	fwrite (&cpsl, sizeof (int), 1, pf);
+ 	fwrite (curpathspec, sizeof (char), cpsl, pf);
+ 	fwrite (loc, sizeof (int), 1, pf);
+
+ 	// Save data
  	save_all_flags (pf);
  	save_all_inventory (pf);
  	fclose (pf);
@@ -67,15 +86,29 @@ int save_game (char *pathspec, int save_number) {
  	return 1;
 }
 
-int load_game (char *pathspec, int save_number) {
+int load_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
 	// Won't save too high
 	if (save_number > 255) return 0;
 
 	char name_buffer[512];
 	sprintf (name_buffer, "%sSAVEGAME.S%2X", pathspec, save_number);
-
+ 	
  	FILE *pf = fopen (name_buffer, "rb");
  	if (!pf) return 0;
+
+	// Signature & check
+	char sig [sizeof (save_signature)];
+	fread (sig, sizeof (char), sizeof (save_signature), pf);
+	if (!compare_sig (sig)) return 0;
+
+	// Current execution point
+	int cpsl = 0;
+	fread (&cpsl, sizeof (int), 1, pf);
+	if (cpsl < 1) return 0;
+	fread (curpathspec, sizeof (char), cpsl, pf);
+	fread (loc, sizeof (int), 1, pf);
+
+	// Read data
 
  	load_all_flags (pf);
  	load_all_inventory (pf);
@@ -188,12 +221,12 @@ int flags_find_or_create_alias (char *s) {
 
 void save_all_flags (FILE *file) {
 	fwrite (aliases, sizeof(char), sizeof(aliases), file);
-	fwrite (flags, sizeof(int), MAX_FLAGS, file);
+	fwrite (s_flags, sizeof(int), MAX_FLAGS, file);
 }
 
 void load_all_flags (FILE *file) {
 	fread (aliases, sizeof(char), sizeof(aliases), file);
-	fread (flags, sizeof(int), MAX_FLAGS, file);
+	fread (s_flags, sizeof(int), MAX_FLAGS, file);
 }
 
 /* 

@@ -5,6 +5,11 @@ menu reset
 menu put "Cambiar"
 menu put "No hace nada"
 
+let $10 10
+let $11 11
+let $12 4
+let $13 2
+
 :first_loc
 
 # Save return point

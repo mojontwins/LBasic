@@ -11,6 +11,9 @@ int utils_adjust_coords (int coord, int min, int max);
 char *strndup (char *str, size_t chars);
 void rtrim (char *str);
 
+int save_game (char *pathspec, int save_number, char *curpathspec, int *loc);
+int load_game (char *pathspec, int save_number, char *curpathspec, int *loc);
+
 /*
  * FLAGS
  */

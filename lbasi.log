@@ -1,34 +1,21 @@
+= lbasi_run spec = lbs/ch_tes/ch_test
+= lbasi_run INIT
+= str_status_top LBASIC: lbs/ch_tes/ch_test, BLOQUE: 0
+= lbasi_run about to open lbs/ch_tes/ch_test.000
+= lbasi_run backend_init
 # Running interpreter: lbs/ch_tes/ch_test.000
-+ Exit interpreter res=8
-# Running interpreter: lbs/ch_tes/ch_test.lbs
-> Saved loc: 169
+= RUNNING + Exit interpreter res=-1
+# Running interpreter: lbs/ch_tes/ch_test.999
+= RUNNING @ go :exit_save success
++ Exit interpreter res=-1
+interpreter: lbs/ch_tes/ch_test.lbs
+= RUNNING > Saved loc: 217
 @ go :first_loc_cambiar success
-> Saved loc: 331
-@ go :second_loc_cambiar success
-@ go :first_loc success
-> Saved loc: 169
-@ go :first_loc_cambiar success
-> Saved loc: 331
-@ go :second_loc_cambiar success
-@ go :first_loc success
-> Saved loc: 169
-@ go :first_loc_cambiar success
-> Saved loc: 331
+> Saved loc: 379
 + Exit interpreter res=-1
 # Running interpreter: lbs/ch_tes/ch_test.999
-@ go :exit_no success
-+ Exit interpreter res=0
-# Running interpreter: lbs/ch_tes/ch_test.lbs
-! Jumping to saved loc: 331
-@ go :second_loc_cambiar success
-@ go :first_loc success
-> Saved loc: 169
-@ go :first_loc_cambiar success
-> Saved loc: 331
-@ go :second_loc_cambiar success
-@ go :first_loc success
-> Saved loc: 169
-+ Exit interpreter res=-1
-# Running interpreter: lbs/ch_tes/ch_test.999
+= RUNNING @ go :exit_save success
+> save lbs/ch_tes/ 0 lbs/ch_tes/ch_test.lbs 0 ->w 99 1
+@ go :exit_m success
 @ go :exit_salir success
-+ Exit interpreter res=-1
++ Exit interpreter res=1
