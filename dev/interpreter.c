@@ -213,13 +213,14 @@ int lbasi_run_file (FILE *file, int is_system_block) {
 				flags_set (flags_parse_lvalue (get_token (2)), result);
 			}
 
-			strcpy (next_file, main_path_spec);
 			strcat (next_file, temp_buffer);
 			
 			// Force a "chain" on arbitrary pos.
 			strcpy (initial_label, ">");
 			initial_loc = return_loc;
 			res = 8;
+
+			if (debug) log ("> Chain to: %s : %s%d\n", next_file, initial_label, initial_loc);
 
 			// Stop running
 			run = 0;
@@ -448,6 +449,8 @@ int lbasi_run_file (FILE *file, int is_system_block) {
 			strcpy (next_file, main_path_spec);
 			strcat (next_file, get_token (1));
 			strcpy (initial_label, get_token (2));
+
+			if (debug) log ("> Chain to: %s : %s\n", next_file, initial_label);
 			res = 8;
 			run = 0;
 
@@ -1220,7 +1223,7 @@ int lbasi_run (char *spec, int autoboot) {
 			sprintf (str_status_top, "LBASIC: %s, BLOQUE: %d", spec, cur_block);
 		}
 
-		if (debug) log ("= str_status_top %s\n", str_status_top);
+		if (debug) log ("= str_status_top \"%s\"\n", str_status_top);
 		if (debug) log ("= lbasi_run about to open %s\n", filename);
 		
 		if ((file = fopen (filename, "r")) != NULL) {
