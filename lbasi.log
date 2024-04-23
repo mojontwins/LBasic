@@ -13,5 +13,5 @@
 # Running interpreter: lbs/ch_tes/ch_tes.999
 = RUNNING @ go :exit_load success
 + Exit interpreter res=8
-= str_status_top LBASIC: lbs/ch_tes/0
-= lbasi_run about to open lbs/ch_tes/0
+= str_status_top LBASIC: lbs/ch_tes/lbs/ch_tes/ch_tes.lbs
+= lbasi_run about to open lbs/ch_tes/lbs/ch_tes/ch_tes.lbs
