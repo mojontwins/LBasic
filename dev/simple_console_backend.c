@@ -476,3 +476,11 @@ void backend_setexitbuttonenable (int enable) {
 void backend_forceshutdown (void) {
 	// NO OP
 }
+
+void backend_sve_for_special (void) {
+	// NO OP
+}
+
+void backend_rec_for_special (void) {
+	// NO OP
+}

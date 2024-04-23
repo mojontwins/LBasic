@@ -1251,3 +1251,11 @@ void backend_shutdown (void) {
 	free (backend_talk.ovl_pixels);
 	lstextmode_shutdown ();
 }
+
+void backend_sve_for_special (void) {
+	buf_sec_sve ();
+}
+
+void backend_rec_for_special (void) {
+	buf_sec_rec ();
+}

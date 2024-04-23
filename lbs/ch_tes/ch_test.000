@@ -1,3 +1,0 @@
-print "Hola!"
-pause
-chain "ch_test.lbs"

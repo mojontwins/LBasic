@@ -64,7 +64,7 @@ int save_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
 	if (save_number > 255) return 0;
 
 	char name_buffer[512];
-	sprintf (name_buffer, "%sSAVEGAME.S%2X", pathspec, save_number);
+	sprintf (name_buffer, "%sSAVEGAME.S%02X", pathspec, save_number);
 
  	FILE *pf = fopen (name_buffer, "wb");
  	if (!pf) return 0;
@@ -91,7 +91,7 @@ int load_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
 	if (save_number > 255) return 0;
 
 	char name_buffer[512];
-	sprintf (name_buffer, "%sSAVEGAME.S%2X", pathspec, save_number);
+	sprintf (name_buffer, "%sSAVEGAME.S%02X", pathspec, save_number);
  	
  	FILE *pf = fopen (name_buffer, "rb");
  	if (!pf) return 0;

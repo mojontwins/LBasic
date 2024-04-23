@@ -1,3 +1,4 @@
+color 7 0 
 cls
 print "SALIR?"
 menu reset

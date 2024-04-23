@@ -33,8 +33,8 @@ char next_file [256];
 char cur_file [256];
 char initial_label [LABEL_LEN];
 int return_loc = 0;
-int remember_loc = 0;
 int initial_loc = 0;
+int turn_status_on = 1;
 
 // Set to 0 for release!
 int debug = 1;
@@ -130,13 +130,14 @@ void lbasi_read_labels (FILE *file) {
 	fseek (file, 0, SEEK_SET);
 }
 
-int lbasi_run_file (FILE *file) {
+int lbasi_run_file (FILE *file, int is_system_block) {
 	if (debug) log ("= RUNNING %s", file);
 
 	int res = 0;
 	int choice_res;
 	int run = 1;
 	int skipvbl = 0;
+	int file_pos_before_reading_cur_line;
 
 	char line_buffer [LINE_BUFFER_SIZE];
 	char temp_buffer [256];
@@ -150,14 +151,13 @@ int lbasi_run_file (FILE *file) {
 	lbasi_read_labels (file);
 	labels_set_ret (ret_label);
 
-	if (return_loc) {
+	if (return_loc && !is_system_block) {
 		if (debug) log ("! Jumping to saved loc: %d\n", return_loc);
 		lbasi_goto_loc (file, return_loc);
+		return_loc = 0;
 	}
 
-	// return_loc = 0;
-
-	if (strlen (initial_label)) {
+	if (strlen (initial_label) && !is_system_block) {
 		if (initial_label [0] == '>') {
 			if (debug) log ("! Jumping to initial loc: %d\n", initial_loc);
 			lbasi_goto_loc (file, initial_loc);
@@ -167,11 +167,12 @@ int lbasi_run_file (FILE *file) {
 			lbasi_goto (file, initial_label);
 
 		}
+		initial_label [0] = 0;
 	}
 
 	next_file [0] = 0;
-	initial_label [0] = 0;
 
+	file_pos_before_reading_cur_line = lbasi_save_loc (file);
 	while (run && fgets (line_buffer, LINE_BUFFER_SIZE, file) != NULL) {
 		skipvbl = 0;
 		
@@ -184,8 +185,8 @@ int lbasi_run_file (FILE *file) {
 		utils_tolower (command_token);
 
 		// Save curent loc return point
-		if (strcmp (command_token, "loc") == 0) {
-			return_loc = lbasi_save_loc (file);
+		if (strcmp (command_token, "loc") == 0 && !is_system_block) {
+			return_loc = file_pos_before_reading_cur_line;
 			if (debug) log ("> Saved loc: %d\n", return_loc);
 		} else
 
@@ -215,10 +216,12 @@ int lbasi_run_file (FILE *file) {
 			strcpy (next_file, main_path_spec);
 			strcat (next_file, get_token (1));
 			
+			// Force a "chain" on arbitrary pos.
 			strcpy (initial_label, ">");
 			initial_loc = return_loc;
-
 			res = 8;
+
+			// Stop running
 			run = 0;
 		} else
 
@@ -308,7 +311,7 @@ int lbasi_run_file (FILE *file) {
 		} else if (strcmp (command_token, "statusbar") == 0) {
 			char *onoff = get_token (1);
 			utils_tolower (onoff);
-			backend_set_show_status (strcmp (onoff, "off") == 0);
+			backend_set_show_status (strcmp (onoff, "on") == 0);
 
 		} else if (strcmp (command_token, "margins") == 0) {
 			backend_set_margins (
@@ -1120,6 +1123,15 @@ int lbasi_run_file (FILE *file) {
 
 			backend_resetbreak ();
 		}
+
+		// Save cur loc (before next line)
+		file_pos_before_reading_cur_line = lbasi_save_loc (file);
+
+		// This pospones status bar default on by 1 frame so you can actually turn it off
+		if (turn_status_on) {
+			turn_status_on = 0;
+			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
+		}
 	}
 
 	lstokens_free ();
@@ -1159,7 +1171,8 @@ int lbasi_run_tmp (char *tmp, char *spec) {
 		backend_set_show_status (1);
 		backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
-		res = lbasi_run_file (file);
+		return_loc = 0;
+		res = lbasi_run_file (file, 0);
 		
 		fclose (file);
 	}
@@ -1190,6 +1203,10 @@ int lbasi_run (char *spec, int autoboot) {
 	zones_reset ();
 
 	attempts = DEFAULT_ATTEMPTS;
+	return_loc = 0;
+
+	backend_set_show_status (0);
+	turn_status_on = 1;
 
 	while (playing) {
 		// Make filename
@@ -1223,13 +1240,10 @@ int lbasi_run (char *spec, int autoboot) {
 			backend_statusbar (clr_statusbar_1, clr_statusbar_2, str_status_top, str_status_bottom, attempts);
 
 			if (debug) log ("# Running interpreter: %s\n", filename);
-			res = lbasi_run_file (file);
+			res = lbasi_run_file (file, 0);
 			fclose (file);
 			
 			if (res < 0) {
-				remember_loc = return_loc;
-				return_loc = 0;
-
 				// Trap for BREAK - run .999
 				sprintf (filename, "%s.%03d", spec, 999);
 				sprintf (str_status_top, "LBASIC: %s, BLOQUE: EXIT", spec, cur_block);
@@ -1241,6 +1255,8 @@ int lbasi_run (char *spec, int autoboot) {
 					// Let's backup some stuff
 					menu_create_backup ();
 					zones_create_backup ();
+					backend_sve_for_special ();
+
 					// TODO backup everything ?
 
 					if (debug) log ("# Running interpreter: %s\n", filename);
@@ -1257,15 +1273,19 @@ int lbasi_run (char *spec, int autoboot) {
 					} else {
 						// Re-run and jump to loc
 						strcpy (next_file, cur_file);
-						return_loc = remember_loc;
-
+						
 						// Restore backups
 						menu_restore_backup ();
 						zones_restore_backup ();
+						backend_rec_for_special ();
 					}
 				}
 
-			} else switch (res) {
+			} 
+
+			// We can be getting here after a chain in the special block
+
+			switch (res) {
 				case 0:
 					// Next block
 					cur_block ++;
@@ -1278,7 +1298,6 @@ int lbasi_run (char *spec, int autoboot) {
 
 				case 8:
 					// Custom chain
-
 					break;
 
 				case 4:

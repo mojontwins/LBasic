@@ -72,3 +72,5 @@ void backend_interface_off (void);
 void backend_interface_config (char *interface, int x, int y, int m);
 void backend_setexitbuttonenable (int enable);
 void backend_forceshutdown (void);
+void backend_sve_for_special (void);
+void backend_rec_for_special (void);

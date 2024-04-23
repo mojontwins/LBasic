@@ -30,6 +30,7 @@ int buf_char_delay = 4;
 int buf_do_delay;
 
 char *buf_copy;
+char *buf_sec_copy;
 int buf_size;
 
 int buf_scrwidth = 80;
@@ -740,6 +741,9 @@ void buf_setmode(int mode) {
 
 	free (buf_copy);
 	buf_copy = malloc (buf_size);
+
+	free (buf_sec_copy);
+	buf_sec_copy = malloc (buf_size);
 }
 
 void buf_sve (void) {
@@ -748,6 +752,14 @@ void buf_sve (void) {
 
 void buf_rec (void) {
 	memcpy (screenbuffer (), buf_copy, buf_size);
+}
+
+void buf_sec_sve (void) {
+	memcpy (buf_sec_copy, screenbuffer (), buf_size);
+}
+
+void buf_sec_rec (void) {
+	memcpy (screenbuffer (), buf_sec_copy, buf_size);
 }
 
 int buf_getmode (void) {
@@ -963,4 +975,5 @@ void buf_load_font_16 (char *font) {
 
 void lstextmode_shutdown (void) {
 	free (buf_copy);
+	free (buf_sec_copy);
 }

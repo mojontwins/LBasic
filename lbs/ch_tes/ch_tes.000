@@ -1,0 +1,4 @@
+statusbar off
+print "Hola!"
+pause
+chain "ch_tes.lbs"
