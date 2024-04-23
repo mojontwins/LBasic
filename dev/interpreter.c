@@ -208,13 +208,13 @@ int lbasi_run_file (FILE *file, int is_system_block) {
 
 		} else if (strcmp (command_token, "loadgame") == 0) {
 			int save_number = flags_parse_value (get_token (1));
-			int result = load_game (main_path_spec, save_number, cur_file, &return_loc);
+			int result = load_game (main_path_spec, save_number, temp_buffer, &return_loc);
 			if (strlen (get_token (2))) {
 				flags_set (flags_parse_lvalue (get_token (2)), result);
 			}
 
 			strcpy (next_file, main_path_spec);
-			strcat (next_file, get_token (1));
+			strcat (next_file, temp_buffer);
 			
 			// Force a "chain" on arbitrary pos.
 			strcpy (initial_label, ">");

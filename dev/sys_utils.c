@@ -90,7 +90,7 @@ int load_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
 	// Won't save too high
 	if (save_number > 255) return 0;
 
-	char name_buffer[512];
+	char name_buffer [512];
 	sprintf (name_buffer, "%sSAVEGAME.S%02X", pathspec, save_number);
  	
  	FILE *pf = fopen (name_buffer, "rb");
