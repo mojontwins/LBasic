@@ -74,6 +74,11 @@ void menu_create_backup (void);
 void menu_restore_backup (void);
 void menu_destroy_backup (void);
 
+// Write to disk / save to disk
+
+void save_menu (FILE *pf);
+void load_menu (FILE *pf);
+
 /*
  * INVENTORY
  */
@@ -112,6 +117,11 @@ int exits_get_options (void);
 unsigned char *exits_get_option_text (int index);
 unsigned char *exits_get_option_label (int index);
 
+// Write to disk / save to disk
+
+void save_exits (FILE *pf);
+void load_exits (FILE *pf);
+
 /*
  * ACTIONS
  */
@@ -132,6 +142,11 @@ void actions_delete_item (unsigned char *item);
 int actions_get_actions (void);
 unsigned char *actions_get_action (int index);
 int actions_get_type (int index);
+
+// Write to disk / save to disk
+
+void save_actions (FILE *pf);
+void load_actions (FILE *pf);
 
 /*
  * ZONES
@@ -164,6 +179,11 @@ int zones_get_token_type (unsigned char *text);
 void zones_create_backup (void);
 void zones_restore_backup (void);
 void zones_destroy_backup (void);
+
+// Write to disk / save to disk
+
+void save_zones (FILE *pf);
+void load_zones (FILE *pf);
 
 /*
  * RESP

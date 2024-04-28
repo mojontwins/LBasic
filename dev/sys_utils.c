@@ -81,6 +81,11 @@ int save_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
  	// Save data
  	save_all_flags (pf);
  	save_all_inventory (pf);
+ 	save_menu (pf);
+ 	save_exits (pf);
+ 	save_actions (pf);
+ 	save_zones (pf);
+
  	fclose (pf);
 
  	return 1;
@@ -112,6 +117,11 @@ int load_game (char *pathspec, int save_number, char *curpathspec, int *loc) {
 
  	load_all_flags (pf);
  	load_all_inventory (pf);
+ 	load_menu (pf);
+ 	load_exits (pf);
+ 	load_actions (pf);
+ 	load_zones (pf);
+
  	fclose (pf);
  	
  	return 1;
@@ -415,6 +425,18 @@ void menu_destroy_backup (void) {
 	if (backup_menu_items) free (backup_menu_items);
 }
 
+// Write to disk / save to disk
+
+void save_menu (FILE *pf) {
+	fwrite (&menu_index, sizeof (int), 1, pf);
+	fwrite (menu_items, sizeof (MENU_ITEM), menu_index, pf);
+}
+
+void load_menu (FILE *pf) {
+	fread (&menu_index, sizeof (int), 1, pf);
+	fread (menu_items, sizeof (MENU_ITEM), menu_index, pf);
+}
+
 /*
  * INVENTORY
  */
@@ -582,6 +604,18 @@ unsigned char *exits_get_option_label (int index) {
 	return exits_items [index].label;
 }
 
+// Write to disk / save to disk
+
+void save_exits (FILE *pf) {
+	fwrite (&exits_index, sizeof (int), 1, pf);
+	fwrite (exits_items, sizeof (EXIT), exits_index, pf);
+}
+
+void load_exits (FILE *pf) {
+	fread (&exits_index, sizeof (int), 1, pf);
+	fread (exits_items, sizeof (EXIT), exits_index, pf);
+}
+
 /*
  * ACTIONS
  */
@@ -647,6 +681,18 @@ unsigned char *actions_get_action (int index) {
 
 int actions_get_type (int index) {
 	return actions [index].type;
+}
+
+// Write to disk / save to disk
+
+void save_actions (FILE *pf) {
+	fwrite (&actions_index, sizeof (int), 1, pf);
+	fwrite (actions, sizeof (ACTION), actions_index, pf);
+}
+
+void load_actions (FILE *pf) {
+	fread (&actions_index, sizeof (int), 1, pf);
+	fread (actions, sizeof (ACTION), actions_index, pf);
 }
 
 /*
@@ -792,6 +838,18 @@ void zones_restore_backup (void) {
 
 void zones_destroy_backup (void) {
 	if (backup_zones) free (backup_zones);
+}
+
+// Write to disk / save to disk
+
+void save_zones (FILE *pf) {
+	fwrite (&zones_index, sizeof (int), 1, pf);
+	fwrite (zones, sizeof (ZONE), zones_index, pf);
+}
+
+void load_zones (FILE *pf) {
+	fread (&zones_index, sizeof (int), 1, pf);
+	fread (zones, sizeof (ZONE), zones_index, pf);
 }
 
 /*

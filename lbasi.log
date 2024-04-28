@@ -4,7 +4,7 @@
 = lbasi_run about to open lbs/ch_tes/ch_tes.000
 = lbasi_run backend_init
 # Running interpreter: lbs/ch_tes/ch_tes.000
-= RUNNING > Chain to: lbs/ch_tes/ch_tes.lbs ; $s
+= RUNNING > Chain to: lbs/ch_tes/ch_tes.lbs : 
 + Exit interpreter res=8
 = str_status_top "LBASIC: lbs/ch_tes/ch_tes.lbs"
 = lbasi_run about to open lbs/ch_tes/ch_tes.lbs
@@ -27,10 +27,12 @@
 @ go :second_loc_cambiar success
 @ go :first_loc success
 > Saved loc: 212
+@ go :first_loc_no_hace_nada FAILED
+@ go :first_loc_m success
 + Exit interpreter res=-1
 # Running interpreter: lbs/ch_tes/ch_tes.999
 = RUNNING @ go :exit_load success
-> Chain to: lbs/ch_tes/ch_tes.lbs ; >374
+> Chain to: lbs/ch_tes/ch_tes.lbs : >374
 + Exit interpreter res=8
 = str_status_top "LBASIC: lbs/ch_tes/ch_tes.lbs"
 = lbasi_run about to open lbs/ch_tes/ch_tes.lbs
@@ -39,7 +41,19 @@
 ! Jumping to initial loc: 374
 > Saved loc: 374
 @ go :second_loc_salir FAILED
+@ go :second_loc_m success
+@ go :second_loc_no FAILED
+@ go :second_loc_m success
+@ go :second_loc_no FAILED
+@ go :second_loc_m success
+@ go :second_loc_salir FAILED
 + Exit interpreter res=-1
 # Running interpreter: lbs/ch_tes/ch_tes.999
-= RUNNING @ go :exit_salir success
-+ Exit interpreter res=-1
+= RUNNING @ go :exit_save success
+> save lbs/ch_tes/ 0 lbs/ch_tes/ch_tes.lbs 374 ->w 99 1
+@ go :exit_m success
+@ go :exit_save success
+> save lbs/ch_tes/ 0 lbs/ch_tes/ch_tes.lbs 374 ->w 99 1
+@ go :exit_m success
+@ go :exit_salir success
++ Exit interpreter res=1
